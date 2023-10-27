@@ -1,18 +1,40 @@
 <script setup>
 // Just testing
+import { ref } from 'vue';
+import Home from './components/Home.vue';
+import Search from './components/Search.vue';
+
+const currentTab = ref('Home');
+const tabs = {
+    Home,
+    Search
+};
+const icons = {
+    Home: 'fa-house',
+    Search: 'fa-magnifying-glass'
+};
+const changeTab = (tab) => {
+    currentTab.value = tab;
+};
 </script>
 
 <template>
   <div class="container">
     <div class="menu">
-        <div class="menu-item active">
-            <a href="#" class="active"><font-awesome-icon icon="fa-solid fa-house" class="icon" />Inicio</a>
-        </div>
-        <div class="menu-item">
-            <a href="#"><font-awesome-icon icon="fa-solid fa-magnifying-glass" class="icon" />Buscar</a>
+        <div
+            v-for="(component, name) in tabs"
+            :key="name"
+            class="menu-item"
+            @click="changeTab(name)"
+        >
+            <div :class="['menu-item-content', { active: currentTab === name }]">
+                <font-awesome-icon :icon="['fa-solid ', icons[name]]" class="icon" />{{ name }}
+            </div>
         </div>
     </div>
-    <div class="main"></div>
+    <div class="main">
+        <component :is="tabs[currentTab]" />
+    </div>
   </div>
 </template>
 
@@ -48,16 +70,17 @@
         align-items: center;
     }
 
-    .menu-item a {
+    .menu-item-content {
         display: flex;
         align-items: center;
         text-decoration: none;
-        color: rgb(190, 190, 190);
+        color: rgb(175, 175, 175);
     }
 
-    .menu-item a:hover {
+    .menu-item-content:hover {
         color: white;
         transition: all .3s ease;
+        cursor: pointer;
     }
 
     .icon {
