@@ -1,33 +1,34 @@
 <script setup>
     import { ref } from 'vue';
+    import HomeMenu from './HomeMenu.vue';
+    import HomeMain from './HomeMain.vue';
 
+    const color = ref('#2e114f');
+
+    function changeGradientColor () {
+        Vibrant.from('/img/maldives.jpg').getPalette((err, palette) => {
+            color.value = `rgb(${palette.Vibrant._rgb[0]}, ${palette.Vibrant._rgb[1]}, ${palette.Vibrant._rgb[2]})`;
+        });
+    }
 </script>
 
 <template>
-    <div class="menu">
-
-    </div>
-    <div class="main"></div>
+    <HomeMenu :color="color" />
+    <HomeMain @change-background="changeGradientColor" :color="color" />
 </template>
 
 <style scoped>
-    h1 {
-        color: white;
-    }
-
-    .menu {
-        width: 100%;
-        height: 60px;
-        background: #2e114f;
-        border-radius: 10px 10px 0 0;
-    }
 
     .main {
         width: 100%;
         height: calc(100% - 60px);
-        background: linear-gradient(to bottom, #2e114f 0%, #111 30%);
         border-radius: 0 0 10px 10px;
         box-sizing: border-box;
         padding: 15px;
+    }
+
+    img {
+        width: 570px;
+        margin-top: 400px;
     }
 </style>

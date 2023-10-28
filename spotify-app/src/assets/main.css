@@ -10,5 +10,5 @@ html, body, #app {
 #app {
   box-sizing: border-box;
   padding: 8px;
-  background-color: #050505;
+  background-color: #000;
 }
