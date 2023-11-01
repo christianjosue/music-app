@@ -1,7 +1,8 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, proxyRefs, ref } from 'vue';
 import IconPlay from './icons/IconPlay.vue';
 import IconPause from './icons/IconPause.vue';
+import IconNextSong from './icons/IconNextSong.vue';
 
 const songs = ref([
     {
@@ -10,6 +11,7 @@ const songs = ref([
         src: '/audio/baby-nueva.mp3'
     }
 ])
+const progress = ref(null);
 const currentTrack = ref({});
 const currentTime = ref(null);
 const index = ref(0);
@@ -21,6 +23,7 @@ var audio = null;
 
 onMounted(() => {
     audio = new Audio();
+    progress.value.focus();
     currentTrack.value = songs.value[index.value];
     audio.src = currentTrack.value.src;
     audio.ontimeupdate = () => {
@@ -69,10 +72,9 @@ function generateTime() {
 }
 
 function updateProgressBar(x) {
-    let progress = this.$refs.progress;
     let maxduration = audio.duration;
-    let position = x - progress.offsetLeft;
-    let percentage = (100 * position) / progress.offsetWidth;
+    let position = x - progress.value.offsetLeft;
+    let percentage = (100 * position) / progress.value.offsetWidth;
     if (percentage > 100) {
     percentage = 100;
     }
@@ -84,12 +86,29 @@ function updateProgressBar(x) {
     audio.currentTime = (maxduration * percentage) / 100;
     audio.play();
 }
+
+function clickProgress(e) {
+    isPlaying.value = true;
+    audio.pause();
+    updateProgressBar(e.pageX);
+}
 </script>
 
 <template>
-    <div @click="playMusic" class="play-btn">
-        <IconPlay v-show="!isPlaying" />
-        <IconPause v-show="isPlaying" />
+    <div class="player-buttons">
+        <div @click="playMusic" class="play-btn">
+            <IconPlay v-show="!isPlaying" />
+            <IconPause v-show="isPlaying" />
+        </div>
+        <div class="next-song">
+            <IconNextSong />
+        </div>
+    </div>
+    <div class="progress" ref="progress">
+        <div class="progress-bar" @click="clickProgress">
+            <div class="progress-current" :style="{ width: barWidth }"></div>
+        </div>
+        <div class="progress-time">{{ currentTime }}</div>
     </div>
 </template>
 
@@ -107,5 +126,45 @@ function updateProgressBar(x) {
 
     .play-btn:hover {
         transform: scale(1.05);
+    }
+
+    .player-buttons {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .next-song {
+        width: 50px;
+        height: 50px;
+    }
+
+    .next-song > * {
+        width: 100%;
+        height: 100%;
+    }
+
+    .progress-bar {  
+        height: 6px;
+        width: 100%;
+        cursor: pointer;
+        background-color: #d0d8e6;
+        display: inline-block;
+        border-radius: 10px;
+    }
+
+    .progress-current {
+        height: inherit;
+        width: 0%;
+        background-color: #a3b3ce;
+        border-radius: 10px;
+    }
+
+    .progress-time {
+        margin-top: 2px;
+        color: #71829e;
+        font-weight: 700;
+        font-size: 16px;
+        opacity: 0.7;
     }
 </style>
