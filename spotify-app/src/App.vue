@@ -1,5 +1,4 @@
 <script setup>
-// Just testing
 import { ref } from 'vue';
 import Home from './components/Home.vue';
 import Search from './components/Search.vue';

@@ -1,30 +1,38 @@
 <script setup>
-import { onMounted, proxyRefs, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import IconPlay from './icons/IconPlay.vue';
 import IconPause from './icons/IconPause.vue';
-import IconNextSong from './icons/IconNextSong.vue';
+import IconNextTrack from './icons/IconNextTrack.vue';
+import IconPrevTrack from './icons/IconPrevTrack.vue';
 
-const songs = ref([
+const tracks = ref([
+    {
+        title: 'Dejavu',
+        artist: 'JC Reyes',
+        src: '/audio/dejavu.mp3'
+    },
     {
         title: 'Baby Nueva',
         artist: 'Bad Bunny',
         src: '/audio/baby-nueva.mp3'
     }
-])
-const progress = ref(null);
+]);
+const progress = ref(0);
+const currentIndex = ref(0);
 const currentTrack = ref({});
-const currentTime = ref(null);
+const currentTime = ref(0);
 const index = ref(0);
-const barWidth = ref(null);
-const duration = ref(null);
-const circleLeft = ref(null);
+const barWidth = ref(0);
+const duration = ref(0);
+const circleLeft = ref(0);
 const isPlaying = ref(false);
-var audio = null;
+const transition = ref('');
+var audio;
 
 onMounted(() => {
     audio = new Audio();
     progress.value.focus();
-    currentTrack.value = songs.value[index.value];
+    currentTrack.value = tracks.value[index.value];
     audio.src = currentTrack.value.src;
     audio.ontimeupdate = () => {
         generateTime();
@@ -33,7 +41,8 @@ onMounted(() => {
         generateTime();
     }
     audio.onended = () => {
-        generateTime();
+        nextTrack();
+        isPlaying.value = true;
     }
 })
 
@@ -92,23 +101,60 @@ function clickProgress(e) {
     audio.pause();
     updateProgressBar(e.pageX);
 }
+
+function prevTrack() {
+    transition.value = 'scale-in';
+    if (currentIndex.value > 0) {
+        currentIndex.value--;
+    } else {
+        currentIndex.value = tracks.value.length - 1;
+    }
+    currentTrack.value = tracks.value[currentIndex.value];
+    resetPlayer();
+}
+
+function nextTrack() {
+    transition.value = 'scale-out';
+    if (currentIndex.value < tracks.value.length - 1) {
+        currentIndex.value++;
+    } else {
+        currentIndex.value = 0;
+    }
+    currentTrack.value = tracks.value[currentIndex.value];
+    resetPlayer();
+}
+
+function resetPlayer() {
+    barWidth.value = 0;
+    circleLeft.value = 0;
+    audio.currentTime = 0;
+    audio.src = currentTrack.value.src;
+    setTimeout(() => {
+        if (isPlaying.value) {
+            audio.play();
+        } else {
+            audio.pause();
+        }
+    }, 300);
+}
 </script>
 
 <template>
     <div class="player-buttons">
+        <IconPrevTrack @click="prevTrack" />
         <div @click="playMusic" class="play-btn">
             <IconPlay v-show="!isPlaying" />
             <IconPause v-show="isPlaying" />
         </div>
-        <div class="next-song">
-            <IconNextSong />
-        </div>
+        <IconNextTrack @click="nextTrack"/>
     </div>
     <div class="progress" ref="progress">
         <div class="progress-bar" @click="clickProgress">
             <div class="progress-current" :style="{ width: barWidth }"></div>
         </div>
         <div class="progress-time">{{ currentTime }}</div>
+        <p>{{ currentTrack.title }}</p>
+        <p>{{ currentTrack.artist }}</p>
     </div>
 </template>
 
@@ -116,7 +162,6 @@ function clickProgress(e) {
     .play-btn {
         width: 40px;
         height: 40px;
-        margin-top: 20px;
         background: white;
         display: flex;
         justify-content: center;
@@ -130,25 +175,17 @@ function clickProgress(e) {
 
     .player-buttons {
         width: 100%;
+        margin-top: 20px;
         display: flex;
         justify-content: center;
-    }
-
-    .next-song {
-        width: 50px;
-        height: 50px;
-    }
-
-    .next-song > * {
-        width: 100%;
-        height: 100%;
+        align-items: center;
     }
 
     .progress-bar {  
         height: 6px;
         width: 100%;
         cursor: pointer;
-        background-color: #d0d8e6;
+        background-color: #838383;
         display: inline-block;
         border-radius: 10px;
     }
@@ -156,15 +193,19 @@ function clickProgress(e) {
     .progress-current {
         height: inherit;
         width: 0%;
-        background-color: #a3b3ce;
+        background-color: white;
         border-radius: 10px;
     }
 
     .progress-time {
         margin-top: 2px;
-        color: #71829e;
+        color: white;
         font-weight: 700;
         font-size: 16px;
         opacity: 0.7;
+    }
+
+    p {
+        color: white;
     }
 </style>

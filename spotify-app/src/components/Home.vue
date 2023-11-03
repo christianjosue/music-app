@@ -2,6 +2,7 @@
     import { ref } from 'vue';
     import HomeMenu from './HomeMenu.vue';
     import HomeMain from './HomeMain.vue';
+    import Player from './Player.vue';
 
     const color = ref('#2e114f');
 
