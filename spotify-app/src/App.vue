@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import Home from './components/Home.vue';
 import Search from './components/Search.vue';
 
@@ -15,6 +15,23 @@ const icons = {
 const changeTab = (tab) => {
     currentTab.value = tab;
 };
+
+onMounted(async () => {
+    const tokenData = await getToken();
+    const token = tokenData.access_token;
+    localStorage.setItem('token', token);
+    
+    async function getToken() {
+        const res = await fetch('https://accounts.spotify.com/api/token', {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            method: 'POST',
+            body: `grant_type=client_credentials&client_id=2c3177fe53f94b248964461ec12cf97e&client_secret=d44ea857c455433b9df0e8e6fd0decf4`
+        });
+        return await res.json();
+    }
+})
 </script>
 
 <template>

@@ -10,9 +10,7 @@ defineProps({
 </script>
 
 <template>
-    <div class="menu" :style="{ background: color }">
-
-    </div>
+    <div class="menu" :style="{ background: color }"></div>
 </template>
 
 <style scoped>
