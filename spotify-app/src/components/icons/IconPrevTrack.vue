@@ -7,7 +7,7 @@
 
 <style scoped>
 svg {
-    width: 22px;
-    margin-right: 20px;
+    width: 15px;
+    margin-right: 25px;
 }
 </style>

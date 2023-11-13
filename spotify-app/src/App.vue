@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue';
 import Home from './components/Home.vue';
 import Search from './components/Search.vue';
+import Player from './components/Player.vue';
 
 const currentTab = ref('Home');
 const tabs = {
@@ -15,23 +16,6 @@ const icons = {
 const changeTab = (tab) => {
     currentTab.value = tab;
 };
-
-onMounted(async () => {
-    const tokenData = await getToken();
-    const token = tokenData.access_token;
-    localStorage.setItem('token', token);
-    
-    async function getToken() {
-        const res = await fetch('https://accounts.spotify.com/api/token', {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            method: 'POST',
-            body: `grant_type=client_credentials&client_id=2c3177fe53f94b248964461ec12cf97e&client_secret=d44ea857c455433b9df0e8e6fd0decf4`
-        });
-        return await res.json();
-    }
-})
 </script>
 
 <template>
@@ -52,17 +36,20 @@ onMounted(async () => {
         <component :is="tabs[currentTab]" />
     </div>
   </div>
+  <div class="player">
+    <Player />
+  </div>
 </template>
 
 <style scoped>
     .container {
         display: flex;
         width: 100%;
-        height: 100%;
+        height: 90%;
     }
 
     .menu {
-        width: 22%;
+        flex: 1;
         background-color: #111;
         border-radius: 10px;
         margin-right: 10px;
@@ -71,7 +58,7 @@ onMounted(async () => {
     }
 
     .main {
-        width: 78%;
+        flex: 4;
         background-color: #111;
         border-radius: 10px;
     }

@@ -1,22 +1,26 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import IconPlay from './icons/IconPlay.vue';
 import IconPause from './icons/IconPause.vue';
 import IconNextTrack from './icons/IconNextTrack.vue';
 import IconPrevTrack from './icons/IconPrevTrack.vue';
+import IconFavourite from './icons/IconFavourite.vue';
 
 const tracks = ref([
     {
         title: 'Dejavu',
         artist: 'JC Reyes',
-        src: '/audio/dejavu.mp3'
+        src: '/audio/dejavu.mp3',
+        thumbnail: 'https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/98/f2/e6/98f2e60a-d2ac-c20d-4ac2-e7d2f5811ed5/190296284182.jpg/600x600bf-60.jpg'
     },
     {
         title: 'Baby Nueva',
         artist: 'Bad Bunny',
-        src: '/audio/baby-nueva.mp3'
+        src: '/audio/baby-nueva.mp3',
+        thumbnail: 'https://upload.wikimedia.org/wikipedia/en/7/74/Bad_Bunny_-_Nadie_Sabe_Lo_Que_Va_a_Pasar_Ma%C3%B1ana.png'
     }
 ]);
+var audio;
 const progress = ref(0);
 const currentIndex = ref(0);
 const currentTrack = ref({});
@@ -27,7 +31,20 @@ const duration = ref(0);
 const circleLeft = ref(0);
 const isPlaying = ref(false);
 const transition = ref('');
-var audio;
+const volume = ref(50);
+const colorVolume = ref('#fff');
+const volumeIcon = computed(() => {
+    switch (true) {
+        case volume.value === 0:
+            return 'xmark';
+        case volume.value > 0 && volume.value <= 25:
+            return 'off';
+        case volume.value > 25 && volume.value <= 75:
+            return 'low';
+        case volume.value > 75:
+            return 'high';
+    }
+});
 
 onMounted(() => {
     audio = new Audio();
@@ -137,31 +154,77 @@ function resetPlayer() {
         }
     }, 300);
 }
+
+function changeVolume(e) {
+    const range = e.target.value;
+    volume.value = range / e.target.max * 100;
+}
+
+function changeColor() {
+    colorVolume.value = (colorVolume.value == '#fff') ? '#1db954' : '#fff';
+}
 </script>
 
 <template>
-    <div class="player-buttons">
-        <IconPrevTrack @click="prevTrack" />
-        <div @click="playMusic" class="play-btn">
-            <IconPlay v-show="!isPlaying" />
-            <IconPause v-show="isPlaying" />
+    <div class="container">
+        <div class="track-container">
+            <div class="track-thumbnail" :style="{ backgroundImage: `url(${currentTrack.thumbnail})` }"></div>
+            <div class="track-data">
+                <div class="track-title">{{ currentTrack.title }}</div>
+                <div class="track-artist">{{ currentTrack.artist }}</div>
+            </div>
+            <div class="track-favourite">
+                <IconFavourite />
+            </div>
         </div>
-        <IconNextTrack @click="nextTrack"/>
-    </div>
-    <div class="progress" ref="progress">
-        <div class="progress-bar" @click="clickProgress">
-            <div class="progress-current" :style="{ width: barWidth }"></div>
+        <div class="player">
+            <div class="player-buttons">
+                <IconPrevTrack @click="prevTrack" />
+                <div @click="playMusic" class="play-btn">
+                    <IconPlay v-show="!isPlaying" />
+                    <IconPause v-show="isPlaying" />
+                </div>
+                <IconNextTrack @click="nextTrack"/>
+            </div>
+            <div class="progress" ref="progress">
+                <div class="progress-time current-time">{{ currentTime }}</div>
+                <div class="progress-bar" @click="clickProgress">
+                    <div class="progress-current" :style="{ width: barWidth }"></div>
+                </div>
+                <div class="progress-time total-time">{{ duration }}</div>
+            </div>
         </div>
-        <div class="progress-time">{{ currentTime }}</div>
-        <p>{{ currentTrack.title }}</p>
-        <p>{{ currentTrack.artist }}</p>
+        <div class="player-options">
+            <font-awesome-icon :icon="['fas', `volume-${volumeIcon}`]" style="color: #ffffff;" />
+            <div class="range">
+                <input @input="changeVolume" @mouseover="changeColor" @mouseleave="changeColor" 
+                    :style="{ background: `linear-gradient(to right, ${colorVolume} ${volume}%, #838383 ${volume}%)` }"
+                    type="range" min="0" max="100" :value="volume" id="range2" class="range-input" />
+            </div>
+        </div>
     </div>
 </template>
 
 <style scoped>
+    .container {
+        display: flex;
+        justify-content: space-between;
+        height: 100%;
+    }
+    .player {
+        flex: 4;
+    }
+    .player-options {
+        flex: 3;
+        display: flex;
+        justify-content: right;
+        align-items: center;
+        margin-top: 15px;
+        margin-right: 10px;
+    }
     .play-btn {
-        width: 40px;
-        height: 40px;
+        width: 35px;
+        height: 35px;
         background: white;
         display: flex;
         justify-content: center;
@@ -176,13 +239,19 @@ function resetPlayer() {
     .player-buttons {
         width: 100%;
         margin-top: 20px;
+        margin-bottom: 10px;
         display: flex;
         justify-content: center;
         align-items: center;
     }
 
+    .progress {
+        display: flex;
+        align-items: center;
+    }
+
     .progress-bar {  
-        height: 6px;
+        height: 4px;
         width: 100%;
         cursor: pointer;
         background-color: #838383;
@@ -196,16 +265,104 @@ function resetPlayer() {
         background-color: white;
         border-radius: 10px;
     }
+    .progress-bar:hover > .progress-current {
+        background-color: #1db954;
+    }
 
     .progress-time {
         margin-top: 2px;
         color: white;
-        font-weight: 700;
-        font-size: 16px;
+        font-weight: 400;
+        font-size: 12px;
         opacity: 0.7;
     }
+    
+    .current-time {
+        margin-right: 10px;
+    }
 
-    p {
+    .total-time {
+        margin-left: 10px;
+    }
+
+    .track-container {
+        flex: 3;
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+        margin-left: 5px;
+    }
+
+    .track-data {
+        margin-right: 20px;
+        margin-left: 20px;
+    }
+
+    .track-title {
         color: white;
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 2px;
+    }
+
+    .track-artist {
+        color: #838383;
+        font-size: 12px;
+    }
+
+    .track-thumbnail {
+        width: 70px;
+        height: 70px;
+        background-size: cover;
+        background-repeat: no-repeat;
+        border-radius: 5px;
+    }
+
+    .range-input {
+        -webkit-appearance: none;
+        appearance: none; 
+        width: 100px;
+        cursor: pointer;
+        outline: none;
+        border-radius: 15px;
+        height: 4px;
+        background: #ccc;
+        cursor: auto;
+    }
+
+    .range-input::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none; 
+        display: none;
+        height: 13px;
+        width: 13px;
+        background-color: #fff;
+        border-radius: 50%;
+        border: none;
+        transition: .2s ease-in-out;
+    }
+
+    .range-input:hover::-webkit-slider-thumb {
+        display: block;
+    }
+
+    .range-input::-moz-range-thumb {
+        height: 15px;
+        width: 15px;
+        background-color: #f50;
+        border-radius: 50%;
+        border: none;
+        transition: .2s ease-in-out;
+    }
+
+    .value2, .value3, .value4 {
+        font-size: 26px;    
+        width: 50px;
+        text-align: center;
+    }
+    .range {
+        display: flex;
+        align-items: center;
+        margin-left: 10px;
     }
 </style>

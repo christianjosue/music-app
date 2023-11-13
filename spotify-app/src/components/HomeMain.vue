@@ -1,6 +1,4 @@
 <script setup>
-import Player from './Player.vue';
-
 defineProps({
     color: {
         type: String,
@@ -14,7 +12,7 @@ function greet() {
     const time = new Date();
     const hours = time.getHours();
     var message = '¡Buenas tardes!';
-    if (hours >= 21 && hours <= 6) {
+    if (hours >= 21 || hours <= 6) {
         message = '¡Buenas noches!';
     } else if (hours >= 7 && hours <= 12) {
         message = '¡Buenos días!';
@@ -53,7 +51,6 @@ function greet() {
                 <div class="playlist-title">Me muevo con Dios</div>
             </div>
         </div>
-        <Player />
         <!-- <img @mouseover="$emit('changeBackground')" src="/img/maldives.jpg" alt="maldives"> -->
     </div>
 </template>
@@ -72,6 +69,8 @@ function greet() {
         box-sizing: border-box;
         padding: 15px;
         transition: background 1s ease;
+        overflow-x: hidden;
+        overflow-y: auto;
     }
 
     .main-playlist-container {
@@ -112,5 +111,18 @@ function greet() {
         padding: 20px;
         font-size: 16px;
         font-weight: 600;
+    }
+
+    ::-webkit-scrollbar {
+        width: 12px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, .2);
+        transition: all .3s ease;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, .4);
+        transition: all .3s ease;
     }
 </style>

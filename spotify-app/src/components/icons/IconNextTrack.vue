@@ -20,7 +20,7 @@ function changeColor() {
 
 <style scoped>
 svg {
-    width: 22px;
-    margin-left: 20px;
+    width: 15px;
+    margin-left: 25px;
 }
 </style>
