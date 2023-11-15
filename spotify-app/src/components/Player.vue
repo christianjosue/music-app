@@ -31,7 +31,7 @@ const duration = ref(0);
 const circleLeft = ref(0);
 const isPlaying = ref(false);
 const transition = ref('');
-const volume = ref(50);
+const volume = ref(0);
 const colorVolume = ref('#fff');
 const volumeIcon = computed(() => {
     switch (true) {
@@ -61,6 +61,7 @@ onMounted(() => {
         nextTrack();
         isPlaying.value = true;
     }
+    volume.value = audio.volume * 100;
 })
 
 function playMusic() {
@@ -158,6 +159,7 @@ function resetPlayer() {
 function changeVolume(e) {
     const range = e.target.value;
     volume.value = range / e.target.max * 100;
+    audio.volume = volume.value / 100;
 }
 
 function changeColor() {
