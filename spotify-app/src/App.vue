@@ -1,43 +1,39 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { provide, ref } from 'vue';
 import Home from './components/Home.vue';
 import Search from './components/Search.vue';
 import Player from './components/Player.vue';
 
-const currentTab = ref('Home');
-const tabs = {
-    Home,
-    Search
-};
-const icons = {
-    Home: 'fa-house',
-    Search: 'fa-magnifying-glass'
-};
-const changeTab = (tab) => {
-    currentTab.value = tab;
-};
+const soundView = ref(false);
+const isHome = ref(true);
+provide('soundView', soundView);
+
+function activeSoundView() {
+    soundView.value = soundView.value ? false : true;
+}
 </script>
 
 <template>
   <div class="container">
     <div class="menu">
-        <div
-            v-for="(component, name) in tabs"
-            :key="name"
-            class="menu-item"
-            @click="changeTab(name)"
-        >
-            <div :class="['menu-item-content', { active: currentTab === name }]">
-                <font-awesome-icon :icon="['fa-solid ', icons[name]]" class="icon" />{{ name }}
+        <div class="menu-item" @click="isHome = true">
+            <div :class="['menu-item-content', { active: isHome }]">
+                <font-awesome-icon icon="fa-solid fa-house" class="icon" />Home
+            </div>
+        </div>
+        <div class="menu-item" @click="isHome = false">
+            <div :class="['menu-item-content', { active: !isHome }]">
+                <font-awesome-icon icon="fa-solid fa-magnifying-glass" class="icon" />Search
             </div>
         </div>
     </div>
     <div class="main">
-        <component :is="tabs[currentTab]" />
+        <Home v-if="isHome" :active-sound-view="soundView" />
+        <Search v-else />
     </div>
   </div>
   <div class="player">
-    <Player />
+    <Player @active-sound-view="activeSoundView" />
   </div>
 </template>
 

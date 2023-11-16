@@ -5,6 +5,7 @@ import IconPause from './icons/IconPause.vue';
 import IconNextTrack from './icons/IconNextTrack.vue';
 import IconPrevTrack from './icons/IconPrevTrack.vue';
 import IconFavourite from './icons/IconFavourite.vue';
+import IconPlaylist from './icons/IconPlaylist.vue';
 
 const tracks = ref([
     {
@@ -197,7 +198,8 @@ function changeColor() {
             </div>
         </div>
         <div class="player-options">
-            <font-awesome-icon :icon="['fas', `volume-${volumeIcon}`]" style="color: #ffffff;" />
+            <IconPlaylist @active-sound-view="$emit('activeSoundView')" />
+            <font-awesome-icon :icon="['fas', `volume-${volumeIcon}`]" style="color: #ffffff; margin-left: 15px;" />
             <div class="range">
                 <input @input="changeVolume" @mouseover="changeColor" @mouseleave="changeColor" 
                     :style="{ background: `linear-gradient(to right, ${colorVolume} ${volume}%, #838383 ${volume}%)` }"

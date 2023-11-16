@@ -84,7 +84,7 @@ function greet() {
         display: flex;
         width: 470px;
         height: 80px;
-        background: rgba(95, 69, 125);
+        background: rgba(95, 69, 125, 0.3);
         margin-top: 15px;
         border-radius: 10px;
     }

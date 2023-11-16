@@ -2,7 +2,12 @@
     import { ref } from 'vue';
     import HomeMenu from './HomeMenu.vue';
     import HomeMain from './HomeMain.vue';
-    import Player from './Player.vue';
+    defineProps({
+        activeSoundView: {
+            type: Boolean,
+            default: false
+        }
+    });
 
     const color = ref('#2e114f');
 
@@ -16,6 +21,7 @@
 <template>
     <HomeMenu :color="color" />
     <HomeMain @change-background="changeGradientColor" :color="color" />
+    <div class="sound-view" v-show="activeSoundView"></div>
 </template>
 
 <style scoped>
@@ -31,5 +37,11 @@
     img {
         width: 570px;
         margin-top: 400px;
+    }
+
+    .sound-view {
+        background-color: white;
+        width: 50px;
+        height: 50px;
     }
 </style>
