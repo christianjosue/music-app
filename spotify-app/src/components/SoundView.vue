@@ -7,7 +7,7 @@ const track = inject('currentTrack');
 <template>
   <div class="sound-view-container">
     <div class="menu">
-        <div style="font-weight: 500;">Canciones que te gustan</div>
+        <div style="font-weight: 600;">Canciones que te gustan</div>
         <font-awesome-icon class="cross" icon="fa-solid fa-xmark" style="color: #ffffff;" />
     </div>
     <div class="thumbnail" :style="{ backgroundImage: `url(${track.thumbnail})` }"></div>
@@ -36,9 +36,10 @@ const track = inject('currentTrack');
 }
 .thumbnail {
     border-radius: 10px;
+    box-sizing: border-box;
+    padding-top: 100%;
     width: 90%;
     margin: auto;
-    height: 300px;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;

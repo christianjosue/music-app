@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref, ssrContextKey } from "vue";
+import { computed, onMounted, ref } from "vue";
 import IconPlay from "./icons/IconPlay.vue";
 import IconPause from "./icons/IconPause.vue";
 import IconNextTrack from "./icons/IconNextTrack.vue";
