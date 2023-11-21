@@ -1,12 +1,15 @@
 <script setup>
-import { provide, ref } from "vue";
+import { computed, provide, ref } from "vue";
 import Home from "./components/Home.vue";
 import Search from "./components/Search.vue";
 import Player from "./components/Player.vue";
 
 const soundView = ref(false);
 const isHome = ref(true);
-const currentTrack = ref({});
+const currentIndex = ref(0);
+const currentTrack = computed(() => {
+  return tracks.value[currentIndex.value];
+})
 const tracks = ref([
   {
     title: "Dejavu",
@@ -23,11 +26,24 @@ const tracks = ref([
       "https://upload.wikimedia.org/wikipedia/en/7/74/Bad_Bunny_-_Nadie_Sabe_Lo_Que_Va_a_Pasar_Ma%C3%B1ana.png",
   },
 ]);
-provide("soundView", soundView);
 provide("currentTrack", currentTrack);
 
-function activeSoundView() {
-  soundView.value = soundView.value ? false : true;
+function prevTrack(currentTime) {
+  if (currentTime < 3) {
+    if (currentIndex.value > 0) {
+      currentIndex.value--;
+    } else {
+      currentIndex.value = tracks.value.length - 1;
+    }
+  }
+}
+
+function nextTrack() {
+  if (currentIndex.value < tracks.value.length - 1) {
+    currentIndex.value++;
+  } else {
+    currentIndex.value = 0;
+  }
 }
 </script>
 
@@ -49,15 +65,20 @@ function activeSoundView() {
       </div>
     </div>
     <div class="main">
-      <Home v-if="isHome" :active-sound-view="soundView" />
+      <Home v-if="isHome" 
+        :sound-view="soundView" 
+        @close-sound-view="soundView = false" 
+      />
       <Search v-else />
     </div>
   </div>
   <div class="player">
     <Player
-      @active-sound-view="activeSoundView"
-      @update-track="(track) => (currentTrack = track)"
-      :tracks="tracks"
+      @active-sound-view="soundView = !soundView"
+      @prev-track="prevTrack"
+      @next-track="nextTrack"
+      :current-track="currentTrack"
+      :sound-view="soundView"
     />
   </div>
 </template>

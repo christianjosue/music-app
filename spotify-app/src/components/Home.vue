@@ -4,7 +4,7 @@ import HomeMenu from "./HomeMenu.vue";
 import HomeMain from "./HomeMain.vue";
 import SoundView from "./SoundView.vue";
 defineProps({
-  activeSoundView: {
+  soundView: {
     type: Boolean,
     default: false,
   },
@@ -25,7 +25,7 @@ function changeGradientColor() {
       <HomeMenu :color="color" />
       <HomeMain @change-background="changeGradientColor" :color="color" />
     </div>
-    <SoundView v-show="activeSoundView" />
+    <SoundView v-show="soundView" @close="$emit('closeSoundView')" />
   </div>
 </template>
 

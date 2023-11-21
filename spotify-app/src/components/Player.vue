@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, onBeforeMount, onMounted, onUpdated, ref } from "vue";
 import IconPlay from "./icons/IconPlay.vue";
 import IconPause from "./icons/IconPause.vue";
 import IconNextTrack from "./icons/IconNextTrack.vue";
@@ -7,20 +7,18 @@ import IconPrevTrack from "./icons/IconPrevTrack.vue";
 import IconFavourite from "./icons/IconFavourite.vue";
 import IconPlaylist from "./icons/IconPlaylist.vue";
 const props = defineProps({
-  tracks: {
-    type: Array,
-    default: [],
-    required: true,
+  currentTrack: {
+    type: Object,
+    default: {}
   },
+  soundView: {
+    type: Boolean,
+    default: false
+  }
 });
-defineEmits(['updateTrack']);
 var audio;
-const tracks = ref(props.tracks);
 const progress = ref(0);
-const currentIndex = ref(0);
-const currentTrack = ref({});
 const currentTime = ref(0);
-const index = ref(0);
 const barWidth = ref(0);
 const duration = ref(0);
 const circleLeft = ref(0);
@@ -43,8 +41,7 @@ const volumeIcon = computed(() => {
 onMounted(() => {
   audio = new Audio();
   progress.value.focus();
-  currentTrack.value = tracks.value[index.value];
-  audio.src = currentTrack.value.src;
+  audio.src = props.currentTrack.src;
   audio.ontimeupdate = () => {
     generateTime();
   };
@@ -52,7 +49,6 @@ onMounted(() => {
     generateTime();
   };
   audio.onended = () => {
-    nextTrack();
     isPlaying.value = true;
   };
   volume.value = audio.volume * 100;
@@ -114,33 +110,11 @@ function clickProgress(e) {
   updateProgressBar(e.pageX);
 }
 
-function prevTrack() {
-  if (audio.currentTime < 3) {
-    if (currentIndex.value > 0) {
-      currentIndex.value--;
-    } else {
-      currentIndex.value = tracks.value.length - 1;
-    }
-    currentTrack.value = tracks.value[currentIndex.value];
-  }
-  resetPlayer();
-}
-
-function nextTrack() {
-  if (currentIndex.value < tracks.value.length - 1) {
-    currentIndex.value++;
-  } else {
-    currentIndex.value = 0;
-  }
-  currentTrack.value = tracks.value[currentIndex.value];
-  resetPlayer();
-}
-
 function resetPlayer() {
   barWidth.value = 0;
   circleLeft.value = 0;
   audio.currentTime = 0;
-  audio.src = currentTrack.value.src;
+  audio.src = props.currentTrack.src;
   setTimeout(() => {
     if (isPlaying.value) {
       audio.play();
@@ -156,7 +130,7 @@ function changeVolume(e) {
   audio.volume = volume.value / 100;
 }
 
-function changeColor() {
+function changeVolumeColor() {
   colorVolume.value = colorVolume.value == "#fff" ? "#1db954" : "#fff";
 }
 </script>
@@ -166,11 +140,11 @@ function changeColor() {
     <div class="track-container">
       <div
         class="track-thumbnail"
-        :style="{ backgroundImage: `url(${currentTrack.thumbnail})` }"
+        :style="{ backgroundImage: `url(${props.currentTrack.thumbnail})` }"
       ></div>
       <div class="track-data">
-        <div class="track-title">{{ currentTrack.title }}</div>
-        <div class="track-artist">{{ currentTrack.artist }}</div>
+        <div class="track-title">{{ props.currentTrack.title }}</div>
+        <div class="track-artist">{{ props.currentTrack.artist }}</div>
       </div>
       <div class="track-favourite">
         <IconFavourite />
@@ -180,15 +154,12 @@ function changeColor() {
       <div class="player-buttons">
         <IconPrevTrack
           @click="
-            prevTrack();
-            $emit('updateTrack', currentTrack);
+            $emit('prevTrack', audio.currentTime);
+            this.$nextTick(() => resetPlayer())
           "
         />
         <div
-          @click="
-            $emit('updateTrack', currentTrack);
-            playMusic();
-          "
+          @click="playMusic"
           class="play-btn"
         >
           <IconPlay v-show="!isPlaying" />
@@ -196,8 +167,8 @@ function changeColor() {
         </div>
         <IconNextTrack
           @click="
-            nextTrack();
-            $emit('updateTrack', currentTrack);
+            $emit('nextTrack');
+            this.$nextTick(() => resetPlayer())
           "
         />
       </div>
@@ -210,7 +181,7 @@ function changeColor() {
       </div>
     </div>
     <div class="player-options">
-      <IconPlaylist @active-sound-view="$emit('activeSoundView')" />
+      <IconPlaylist @active-sound-view="$emit('activeSoundView')" :is-active="soundView" />
       <font-awesome-icon
         :icon="['fas', `volume-${volumeIcon}`]"
         style="color: #ffffff; margin-left: 15px"
@@ -218,8 +189,8 @@ function changeColor() {
       <div class="range">
         <input
           @input="changeVolume"
-          @mouseover="changeColor"
-          @mouseleave="changeColor"
+          @mouseover="changeVolumeColor"
+          @mouseleave="changeVolumeColor"
           :style="{
             background: `linear-gradient(to right, ${colorVolume} ${volume}%, #838383 ${volume}%)`,
           }"
@@ -227,7 +198,6 @@ function changeColor() {
           min="0"
           max="100"
           :value="volume"
-          id="range2"
           class="range-input"
         />
       </div>
@@ -385,13 +355,6 @@ function changeColor() {
   transition: 0.2s ease-in-out;
 }
 
-.value2,
-.value3,
-.value4 {
-  font-size: 26px;
-  width: 50px;
-  text-align: center;
-}
 .range {
   display: flex;
   align-items: center;

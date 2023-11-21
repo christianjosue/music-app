@@ -1,5 +1,6 @@
 <script setup>
 import { inject } from 'vue';
+defineEmits(['close']);
 
 const track = inject('currentTrack');
 </script>
@@ -8,7 +9,9 @@ const track = inject('currentTrack');
   <div class="sound-view-container">
     <div class="menu">
         <div style="font-weight: 600;">Canciones que te gustan</div>
-        <font-awesome-icon class="cross" icon="fa-solid fa-xmark" style="color: #ffffff;" />
+        <div @click="$emit('close')" class="cross-container">
+          <font-awesome-icon class="cross" icon="fa-solid fa-xmark" />
+        </div>
     </div>
     <div class="thumbnail" :style="{ backgroundImage: `url(${track.thumbnail})` }"></div>
   </div>
@@ -33,6 +36,22 @@ const track = inject('currentTrack');
 }
 .cross {
     font-size: 18px;
+    color: #fff;
+}
+.cross-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  background: rgba(255, 255, 255, 0);
+  border-radius: 50%;
+  transition: background .2s ease;
+  cursor: pointer;
+  position: relative;
+}
+.cross-container:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 .thumbnail {
     border-radius: 10px;
