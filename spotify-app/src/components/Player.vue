@@ -18,14 +18,14 @@ const props = defineProps({
   playlistColor: String
 });
 var audio;
-const progress = ref(0);
 const currentTime = ref(0);
-const barWidth = ref(null);
 const duration = ref(0);
-const circleLeft = ref(0);
 const isPlaying = ref(false);
-const volume = ref(0);
+const volume = ref(100);
 const colorVolume = ref("#fff");
+const currentProgressTrack = ref(0);
+const colorProgressTrack = ref("#fff");
+const reload = ref(true);
 const volumeIcon = computed(() => {
   switch (true) {
     case volume.value === 0:
@@ -42,7 +42,6 @@ const volumeIcon = computed(() => {
 onMounted(() => {
   const { emit } = getCurrentInstance();
   audio = new Audio();
-  progress.value.focus();
   audio.src = props.currentTrack.src;
   audio.ontimeupdate = () => {
     generateTime();
@@ -56,7 +55,6 @@ onMounted(() => {
       .then(() => emit('nextTrack'))
       .then(() => resetPlayer());
   };
-  volume.value = audio.volume * 100;
 });
 
 function playMusic() {
@@ -70,13 +68,18 @@ function playMusic() {
 }
 
 function generateTime() {
-  let width = (100 / audio.duration) * audio.currentTime;
-  barWidth.value = `${width}%`;
-  circleLeft.value = `${width}%`;
+  let curmin, cursec;
   let durmin = Math.floor(audio.duration / 60);
   let dursec = Math.floor(audio.duration - durmin * 60);
-  let curmin = Math.floor(audio.currentTime / 60);
-  let cursec = Math.floor(audio.currentTime - curmin * 60);
+  if (reload.value) {
+    currentProgressTrack.value = (audio.currentTime * 100) / audio.duration;
+    curmin = Math.floor(audio.currentTime / 60);
+    cursec = Math.floor(audio.currentTime - curmin * 60);
+  } else {
+    const currentTime = currentProgressTrack.value * audio.duration / 100;
+    curmin = Math.floor(currentTime / 60);
+    cursec = Math.floor(currentTime - curmin * 60);
+  }
   if (durmin < 10) {
     durmin = "0" + durmin;
   }
@@ -93,28 +96,7 @@ function generateTime() {
   currentTime.value = `${curmin}:${cursec}`;
 }
 
-function updateProgressBar(event) {
-  const progressBar = progress.value;
-  const rect = progressBar.getBoundingClientRect();
-  const maxduration = audio.duration;
-  const position = (event.clientX - rect.left) / progressBar.clientWidth;
-  const percentage = Math.min(100, Math.max(0, position * 100));
-
-  barWidth.value = `${percentage}%`;
-  circleLeft.value = `${percentage}%`;
-  audio.currentTime = maxduration * (percentage / 100);
-  audio.play();
-}
-
-function clickProgress(e) {
-  isPlaying.value = true;
-  audio.pause();
-  updateProgressBar(e);
-}
-
 function resetPlayer() {
-  barWidth.value = 0;
-  circleLeft.value = 0;
   audio.currentTime = 0;
   audio.src = props.currentTrack.src;
   setTimeout(() => {
@@ -132,8 +114,17 @@ function changeVolume(e) {
   audio.volume = volume.value / 100;
 }
 
+function changeProgressTrack(e) {
+  isPlaying.value = true;
+  currentProgressTrack.value = e.target.value;
+}
+
 function changeVolumeColor() {
   colorVolume.value = colorVolume.value == "#fff" ? "#1db954" : "#fff";
+}
+
+function changeProgressTrackColor() {
+  colorProgressTrack.value = colorProgressTrack.value === "#fff" ? "#1db954" : "#fff";
 }
 </script>
 
@@ -176,9 +167,21 @@ function changeVolumeColor() {
       </div>
       <div class="progress" ref="progress">
         <div class="progress-time current-time">{{ currentTime }}</div>
-        <div class="progress-bar" @click="clickProgress">
-          <div class="progress-current" :style="{ width: barWidth }"></div>
-        </div>
+        <input 
+          @input="changeProgressTrack"
+          @mouseup="audio.currentTime = audio.duration * currentProgressTrack / 100; reload = true;"
+          @mousedown="reload = false"
+          @mouseover="changeProgressTrackColor"
+          @mouseleave="changeProgressTrackColor"
+          :style="{
+            background: `linear-gradient(to right, ${colorProgressTrack} ${currentProgressTrack}%, #838383 ${currentProgressTrack}%)`,
+          }"
+          type="range" 
+          class="progress-track"
+          min="0"
+          max="100"
+          :value="currentProgressTrack"
+        />
         <div class="progress-time total-time">{{ duration }}</div>
       </div>
     </div>
@@ -205,7 +208,7 @@ function changeVolumeColor() {
           min="0"
           max="100"
           :value="volume"
-          class="range-input"
+          class="range-volume"
         />
       </div>
     </div>
@@ -257,25 +260,6 @@ function changeVolumeColor() {
   align-items: center;
 }
 
-.progress-bar {
-  height: 4px;
-  width: 100%;
-  cursor: pointer;
-  background-color: #838383;
-  display: inline-block;
-  border-radius: 10px;
-}
-
-.progress-current {
-  height: inherit;
-  width: 0%;
-  background-color: white;
-  border-radius: 10px;
-}
-.progress-bar:hover > .progress-current {
-  background-color: #1db954;
-}
-
 .progress-time {
   margin-top: 2px;
   color: white;
@@ -325,10 +309,10 @@ function changeVolumeColor() {
   border-radius: 5px;
 }
 
-.range-input {
+.range-volume,
+.progress-track {
   -webkit-appearance: none;
   appearance: none;
-  width: 100px;
   cursor: pointer;
   outline: none;
   border-radius: 15px;
@@ -337,7 +321,16 @@ function changeVolumeColor() {
   cursor: auto;
 }
 
-.range-input::-webkit-slider-thumb {
+.range-volume {
+  width: 100px;
+}
+
+.progress-track {
+  width: 100%;
+}
+
+.range-volume::-webkit-slider-thumb,
+.progress-track::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   display: none;
@@ -349,11 +342,13 @@ function changeVolumeColor() {
   transition: 0.2s ease-in-out;
 }
 
-.range-input:hover::-webkit-slider-thumb {
+.range-volume:hover::-webkit-slider-thumb,
+.progress-track:hover::-webkit-slider-thumb {
   display: block;
 }
 
-.range-input::-moz-range-thumb {
+.range-volume::-moz-range-thumb,
+.progress-track::-moz-range-thumb {
   height: 15px;
   width: 15px;
   background-color: #f50;
