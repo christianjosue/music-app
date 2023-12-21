@@ -5,6 +5,7 @@ import Search from "./components/Search.vue";
 import Player from "./components/Player.vue";
 
 const soundView = ref(false);
+const playlistColor = ref('#838383');
 const isHome = ref(true);
 const currentIndex = ref(0);
 const currentTrack = computed(() => {
@@ -17,6 +18,8 @@ const tracks = ref([
     src: "/audio/dejavu.mp3",
     thumbnail:
       "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/98/f2/e6/98f2e60a-d2ac-c20d-4ac2-e7d2f5811ed5/190296284182.jpg/600x600bf-60.jpg",
+    artistImg2: '/img/jcreyes-info.jpg',
+    monthlyListeners: 4173670
   },
   {
     title: "Baby Nueva",
@@ -24,6 +27,8 @@ const tracks = ref([
     src: "/audio/baby-nueva.mp3",
     thumbnail:
       "https://upload.wikimedia.org/wikipedia/en/7/74/Bad_Bunny_-_Nadie_Sabe_Lo_Que_Va_a_Pasar_Ma%C3%B1ana.png",
+    artistImg2: '/img/bad-bunny-thumbnail.webp',
+    monthlyListeners: 4173670
   },
 ]);
 provide("currentTrack", currentTrack);
@@ -43,6 +48,14 @@ function nextTrack() {
     currentIndex.value++;
   } else {
     currentIndex.value = 0;
+  }
+}
+
+function handleChangePlaylistColor(color) {
+  if (soundView.value == true) {
+    playlistColor.value = '#1db954';
+  } else {
+    playlistColor.value = color;
   }
 }
 </script>
@@ -67,7 +80,7 @@ function nextTrack() {
     <div class="main">
       <Home v-if="isHome" 
         :sound-view="soundView" 
-        @close-sound-view="soundView = false" 
+        @close-sound-view="soundView = false; playlistColor = '#838383';" 
       />
       <Search v-else />
     </div>
@@ -77,8 +90,10 @@ function nextTrack() {
       @active-sound-view="soundView = !soundView"
       @prev-track="prevTrack"
       @next-track="nextTrack"
+      @change-playlist-color="handleChangePlaylistColor"
       :current-track="currentTrack"
       :sound-view="soundView"
+      :playlist-color="playlistColor"
     />
   </div>
 </template>

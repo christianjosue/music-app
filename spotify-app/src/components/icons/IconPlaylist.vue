@@ -1,21 +1,20 @@
 <script setup>
-import { computed, inject, ref } from "vue";
-defineProps({
+const props = defineProps({
   isActive: {
     type: Boolean,
     default: false
   },
+  color: String
 })
-defineEmits(['activeSoundView']);
-const color = ref("#838383");
+defineEmits(['activeSoundView', 'changePlaylistColor']);
 </script>
 
 <template>
   <div :class="['svg-container', { show: isActive }]">
     <svg
       @click="$emit('activeSoundView')"
-      @mouseenter="color = isActive ? '#1db954' : '#fff'"
-      @mouseleave="color = isActive ? '#1db954' : '#838383'"
+      @mouseenter="$emit('changePlaylistColor', '#fff')"
+      @mouseleave="$emit('changePlaylistColor', '#838383')"
       width="20"
       height="20"
       viewBox="0 0 668 668"

@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeMount, onMounted, onUpdated, ref } from "vue";
+import { computed, getCurrentInstance, onMounted, ref } from "vue";
 import IconPlay from "./icons/IconPlay.vue";
 import IconPause from "./icons/IconPause.vue";
 import IconNextTrack from "./icons/IconNextTrack.vue";
@@ -14,12 +14,13 @@ const props = defineProps({
   soundView: {
     type: Boolean,
     default: false
-  }
+  },
+  playlistColor: String
 });
 var audio;
 const progress = ref(0);
 const currentTime = ref(0);
-const barWidth = ref(0);
+const barWidth = ref(null);
 const duration = ref(0);
 const circleLeft = ref(0);
 const isPlaying = ref(false);
@@ -39,6 +40,7 @@ const volumeIcon = computed(() => {
 });
 
 onMounted(() => {
+  const { emit } = getCurrentInstance();
   audio = new Audio();
   progress.value.focus();
   audio.src = props.currentTrack.src;
@@ -50,6 +52,9 @@ onMounted(() => {
   };
   audio.onended = () => {
     isPlaying.value = true;
+    Promise.resolve()
+      .then(() => emit('nextTrack'))
+      .then(() => resetPlayer());
   };
   volume.value = audio.volume * 100;
 });
@@ -88,26 +93,23 @@ function generateTime() {
   currentTime.value = `${curmin}:${cursec}`;
 }
 
-function updateProgressBar(x) {
-  let maxduration = audio.duration;
-  let position = x - progress.value.offsetLeft;
-  let percentage = (100 * position) / progress.value.offsetWidth;
-  if (percentage > 100) {
-    percentage = 100;
-  }
-  if (percentage < 0) {
-    percentage = 0;
-  }
+function updateProgressBar(event) {
+  const progressBar = progress.value;
+  const rect = progressBar.getBoundingClientRect();
+  const maxduration = audio.duration;
+  const position = (event.clientX - rect.left) / progressBar.clientWidth;
+  const percentage = Math.min(100, Math.max(0, position * 100));
+
   barWidth.value = `${percentage}%`;
   circleLeft.value = `${percentage}%`;
-  audio.currentTime = (maxduration * percentage) / 100;
+  audio.currentTime = maxduration * (percentage / 100);
   audio.play();
 }
 
 function clickProgress(e) {
   isPlaying.value = true;
   audio.pause();
-  updateProgressBar(e.pageX);
+  updateProgressBar(e);
 }
 
 function resetPlayer() {
@@ -147,7 +149,7 @@ function changeVolumeColor() {
         <div class="track-artist">{{ props.currentTrack.artist }}</div>
       </div>
       <div class="track-favourite">
-        <IconFavourite />
+        <IconFavourite :width="15" />
       </div>
     </div>
     <div class="player">
@@ -181,7 +183,12 @@ function changeVolumeColor() {
       </div>
     </div>
     <div class="player-options">
-      <IconPlaylist @active-sound-view="$emit('activeSoundView')" :is-active="soundView" />
+      <IconPlaylist 
+        @active-sound-view="$emit('activeSoundView')"
+        @change-playlist-color="$emit('changePlaylistColor', $event)"
+        :is-active="soundView"
+        :color="playlistColor"
+        />
       <font-awesome-icon
         :icon="['fas', `volume-${volumeIcon}`]"
         style="color: #ffffff; margin-left: 15px"
