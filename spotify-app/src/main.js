@@ -19,10 +19,11 @@ import { faVolumeOff } from '@fortawesome/free-solid-svg-icons'
 import { faVolumeLow } from '@fortawesome/free-solid-svg-icons'
 import { faVolumeHigh } from '@fortawesome/free-solid-svg-icons'
 import { faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faHeadphones } from '@fortawesome/free-solid-svg-icons'
 import * as Vibrant from 'node-vibrant'
 
 /* add icons to the library */
-library.add(faUserSecret, faHouse, faMagnifyingGlass, faCirclePlay, faVolumeXmark, faVolumeOff, faVolumeLow, faVolumeHigh, faXmark)
+library.add(faUserSecret, faHouse, faMagnifyingGlass, faCirclePlay, faVolumeXmark, faVolumeOff, faVolumeLow, faVolumeHigh, faXmark, faHeadphones)
 
 createApp(App)
 .component('font-awesome-icon', FontAwesomeIcon)

@@ -3,10 +3,13 @@ import { computed, provide, ref } from "vue";
 import Home from "./components/Home.vue";
 import Search from "./components/Search.vue";
 import Player from "./components/Player.vue";
+import Library from "./components/Library.vue";
 
 const soundView = ref(false);
 const playlistColor = ref('#838383');
 const isHome = ref(true);
+const isSearch = ref(false);
+const isLibrary = ref(false);
 const currentIndex = ref(0);
 const currentTrack = computed(() => {
   return tracks.value[currentIndex.value];
@@ -63,17 +66,26 @@ function handleChangePlaylistColor(color) {
 <template>
   <div class="container">
     <div class="menu">
-      <div class="menu-item" @click="isHome = true">
-        <div :class="['menu-item-content', { active: isHome }]">
-          <font-awesome-icon icon="fa-solid fa-house" class="icon" />Home
+      <div class="menu-top">
+        <div class="menu-item" @click="isHome = true; isLibrary = false; isSearch = false;">
+          <div :class="['menu-item-content', { active: isHome }]">
+            <font-awesome-icon icon="fa-solid fa-house" class="icon" />Home
+          </div>
+        </div>
+        <div class="menu-item" @click="isHome = false; isLibrary = false; isSearch = true;">
+          <div :class="['menu-item-content', { active: isSearch }]">
+            <font-awesome-icon
+              icon="fa-solid fa-magnifying-glass"
+              class="icon"
+            />Search
+          </div>
         </div>
       </div>
-      <div class="menu-item" @click="isHome = false">
-        <div :class="['menu-item-content', { active: !isHome }]">
-          <font-awesome-icon
-            icon="fa-solid fa-magnifying-glass"
-            class="icon"
-          />Search
+      <div class="menu-bottom">
+        <div class="menu-item" @click="isHome = false; isLibrary = true; isSearch = false;">
+          <div :class="['menu-item-content', { active: isLibrary }]">
+            <font-awesome-icon icon="fa-solid fa-headphones" class="icon" />Your library
+          </div>
         </div>
       </div>
     </div>
@@ -82,7 +94,8 @@ function handleChangePlaylistColor(color) {
         :sound-view="soundView" 
         @close-sound-view="soundView = false; playlistColor = '#838383';" 
       />
-      <Search v-else />
+      <Search v-else-if="isSearch" />
+      <Library v-else />
     </div>
   </div>
   <div class="player">
@@ -107,11 +120,27 @@ function handleChangePlaylistColor(color) {
 
 .menu {
   flex: 1;
+  margin-right: 10px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-top {
   background-color: #111;
   border-radius: 10px;
-  margin-right: 10px;
   box-sizing: border-box;
-  padding: 25px;
+  padding: 25px 25px 0 25px;
+  height: fit-content;
+}
+
+.menu-bottom {
+  flex: 1;
+  margin-top: 10px;
+  background-color: #111;
+  border-radius: 10px;
+  box-sizing: border-box;
+  padding: 25px 25px 0 25px;
 }
 
 .main {
@@ -123,7 +152,7 @@ function handleChangePlaylistColor(color) {
   font-size: 17px;
   font-weight: 400;
   box-sizing: border-box;
-  margin-bottom: 30px;
+  padding-bottom: 30px;
   display: flex;
   align-items: center;
 }
