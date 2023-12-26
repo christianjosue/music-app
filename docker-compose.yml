@@ -1,0 +1,38 @@
+version: '3'
+services:
+  vuejs:
+    build:
+      context: ./spotify-app
+    ports:
+      - "5173:5173" # Cambia el puerto si es necesario
+
+  laravel:
+    build:
+      context: ./api
+    ports:
+      - "8000:8000" # Cambia el puerto si es necesario
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_DATABASE: dbspotify
+      DB_USERNAME: admin
+      DB_PASSWORD: admin
+
+  db:
+    image: mysql:latest
+    ports:
+      - "3306:3306" # Cambia el puerto si es necesario
+    environment:
+      MYSQL_DATABASE: dbspotify
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_ROOT_PASSWORD: root
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8081:80"  # Puerto para phpMyAdmin
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: admin
