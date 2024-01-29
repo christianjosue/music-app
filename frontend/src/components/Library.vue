@@ -1,10 +1,14 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { API_URL } from '../../config';
+import MenuOptions from './MenuOptions.vue';
+import LibraryMain from './LibraryMain.vue';
+import LibraryList from './LibraryList.vue';
 
 const test = ref('');
 const loading = ref(true);
 onMounted(async () => {
-  const response = await fetch('http://127.0.0.1:8000/api/test');
+  const response = await fetch(`${API_URL}/api/test`);
   const data = await response.json();
   test.value = data.test;
   loading.value = false;
@@ -12,7 +16,11 @@ onMounted(async () => {
 </script>
 
 <template>
-<h1>Library</h1>
+<MenuOptions />
+<div class="container">
+  <LibraryMain />
+  <LibraryList />
+</div>
 <div v-if="loading" class="kabobloader">
   <div class="bounce1"></div>
   <div class="bounce2"></div>
@@ -28,6 +36,12 @@ h1, h3 {
 
 body {
   background:linear-gradient(90deg, #262626,#2E2F33);
+}
+
+.container {
+  background: linear-gradient(to bottom, #2e114f 0%, #111 60%);
+  border-radius: 0 0 10px 10px;
+  height: calc(100% - 60px);
 }
 
 .kabobloader {
