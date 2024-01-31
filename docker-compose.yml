@@ -3,16 +3,18 @@ services:
   vuejs:
     image: node:latest
     ports:
-      - "8080:5173" # Cambia el puerto si es necesario
+      - "5173:5173"
     volumes:
       - ./frontend:/app
     working_dir: /app
+    command: >
+      sh -c "npm install && npm rebuild esbuild && npm run dev -- --host 0.0.0.0"
 
   laravel:
     build:
       context: ./api
     ports:
-      - "8000:8000" # Cambia el puerto si es necesario
+      - "8000:8000"
     depends_on:
       - db
     environment:
@@ -24,12 +26,13 @@ services:
   db:
     image: mysql:latest
     ports:
-      - "3306:3306" # Cambia el puerto si es necesario
+      - "3306:3306"
     environment:
       MYSQL_DATABASE: dbspotify
       MYSQL_USER: admin
       MYSQL_PASSWORD: admin
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_HOST: '%'
     volumes:
       - db_data:/var/lib/mysql
 
