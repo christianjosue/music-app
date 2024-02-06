@@ -5,28 +5,25 @@ import MenuOptions from './MenuOptions.vue';
 import LibraryMain from './LibraryMain.vue';
 import LibraryList from './LibraryList.vue';
 
-const test = ref('');
-const loading = ref(true);
+const tracklist = ref({});
 onMounted(async () => {
-  const response = await fetch(`${API_URL}/api/test`);
-  const data = await response.json();
-  test.value = data.test;
-  loading.value = false;
+  const response = await fetch(`${API_URL}/api/tracklist/1`);
+  tracklist.value = await response.json();
+  console.log(tracklist.value);
 });
 </script>
 
 <template>
 <MenuOptions />
-<div class="container">
-  <LibraryMain />
-  <LibraryList />
+<div v-if="Object.keys(tracklist).length > 0" class="container">
+  <LibraryMain :tracklist="tracklist" />
+  <LibraryList :tracks="tracklist.tracks" />
 </div>
-<div v-if="loading" class="kabobloader">
+<div v-if="!Object.keys(tracklist).length" class="kabobloader">
   <div class="bounce1"></div>
   <div class="bounce2"></div>
   <div class="bounce3"></div>
 </div>
-<h3 v-else>{{ test }}</h3>
 </template>
 
 <style scoped>
@@ -42,6 +39,8 @@ body {
   background: linear-gradient(to bottom, #2e114f 0%, #111 60%);
   border-radius: 0 0 10px 10px;
   height: calc(100% - 60px);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .kabobloader {

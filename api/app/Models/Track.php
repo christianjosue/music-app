@@ -14,15 +14,22 @@ class Track extends Model
      *
      * @var string
      */
-    protected $table = 'track';
+    protected $table = 'tracks';
 
     protected $fillable = [
+        'idAlbum',
         'title',
         'src',
-        'thumbnail'
+        'thumbnail',
+        'duration',
+        'created_at'
     ];
 
     public function tracklists() {
-        return $this->belongsToMany(Tracklist::class, 'track_tracklist', 'idTrack', 'idTracklist');
+        return $this->belongsToMany(Tracklist::class, 'tracklist_tracks', 'idTrack', 'idTracklist');
+    }
+
+    public function artists() {
+        return $this->belongsToMany(User::class, 'user_tracks', 'idTrack', 'idArtist');
     }
 }

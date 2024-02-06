@@ -1,17 +1,49 @@
 <script setup>
+import { computed, ref } from 'vue';
+
 const test = 'https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/d9/1f/38/d91f3855-1536-3197-eb2f-95fab4038503/PCSP_05459_A.jpg/1200x1200bb.jpg';
+const props = defineProps({
+    tracklist: {
+        type: Object,
+        default: {}
+    }
+});
+const privacy = computed(() => {
+    return props.tracklist.privacy ? 'Public' : 'Private';
+});
+const numberFollowers = ref(0);
+const numberTracks = ref(0);
+const totalTime = ref('');
+numberFollowers.value = props.tracklist.followers.length;
+numberTracks.value = props.tracklist.tracks.length;
+totalTime.value = getTotalTime();
+
+function getTotalTime() {
+    let totalHours = 0;
+    let totalMinutes = 0;
+    props.tracklist.tracks.forEach(track => {
+        const [hours, minutes] = track.duration.split(':');
+        totalHours += parseInt(hours);
+        totalMinutes += parseInt(minutes); 
+    });
+    let hoursToAdd = Math.trunc(totalMinutes / 60);
+    let realMinutes = totalMinutes % 60;
+    totalHours += hoursToAdd;
+
+    return `${totalHours}h ${realMinutes}min`;
+}
 </script>
 
 <template>
 <div class="tracklist-container">
-    <div class="thumbnail" :style="{ backgroundImage: `url(${test})` }"></div>
+    <div class="thumbnail" :style="{ backgroundImage: `url(${tracklist.thumbnail})` }"></div>
     <div class="tracklist-content">
-        <h5>Private List</h5>
-        <h1>Shingeki</h1>
+        <h5>{{ privacy }} List</h5>
+        <h1>{{ tracklist.name }}</h1>
         <div class="tracklist-details">
-            <div style="font-weight: bold;">josemijmrl14&nbsp;&nbsp;·&nbsp;&nbsp;</div>
-            <div>1 like&nbsp;&nbsp;·&nbsp;&nbsp;</div>
-            <div>83 tracks, 6h 9min</div>
+            <div style="font-weight: bold;">{{ tracklist.owners[0].name }}&nbsp;&nbsp;·&nbsp;&nbsp;</div>
+            <div v-if="numberFollowers > 0">{{ numberFollowers }} likes&nbsp;&nbsp;·&nbsp;&nbsp;</div>
+            <div>{{ numberTracks }} tracks,&nbsp;&nbsp;{{ totalTime }}</div>
         </div>
     </div>
 </div>

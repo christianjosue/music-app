@@ -14,7 +14,7 @@ class Artist extends Model
      *
      * @var string
      */
-    protected $table = 'artist';
+    protected $table = 'artists';
 
     protected $fillable = [
         'name'

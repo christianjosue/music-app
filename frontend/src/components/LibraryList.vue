@@ -1,5 +1,12 @@
 <script setup>
 import ListTrack from './ListTrack.vue';
+
+const props = defineProps({
+    tracks: {
+        type: Array,
+        default: []
+    }
+});
 </script>
 
 <template>
@@ -26,14 +33,15 @@ import ListTrack from './ListTrack.vue';
                 <th style="width: 5%;">#</th>
                 <th style="width: 40%;">Title</th>
                 <th style="width: 30%;">Álbum</th>
-                <th style="width: 15%;">Added's date</th>
+                <th style="width: 15%;">Added's</th>
                 <th style="width: 10%;"><font-awesome-icon icon="fa-solid fa-clock" /></th>
             </tr>
-            <ListTrack />
-            <ListTrack />
-            <ListTrack />
-            <ListTrack />
-            <ListTrack />
+            <ListTrack 
+                v-for="(track, index) in tracks"
+                :key="track.id"
+                :index="index+1"
+                :track="track" 
+            />
         </table>
     </div>
 </div>
@@ -48,7 +56,6 @@ h6 {
 .list-container {
     box-sizing: border-box;
     padding: 25px;
-    overflow-y: auto;
     width: 100%;
     height: 500px;
     background: linear-gradient(to bottom, rgba(0, 0, 0, .3) 0%, transparent 20%);

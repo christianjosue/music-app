@@ -1,22 +1,55 @@
 <script setup>
+import { computed, ref } from 'vue';
 
+const props = defineProps({
+    track: {
+        type: Object,
+        default: {}
+    },
+    index: {}
+});
+const album = computed(() => {
+    return !props.track.idAlbum ? props.track.title : 'Test';
+});
+const addedAt = ref('');
+addedAt.value = formatTime();
+
+function formatTime() {
+    const date = props.track.created_at.split('T')[0];
+    var dateObject = new Date(date);
+
+    var day = dateObject.getDate();
+    var month = dateObject.getMonth() + 1; // Note: months in JavaScript are between 0 and 11
+    var year = dateObject.getFullYear();
+
+    var months = [
+        "jan", "feb", "mar", "apr", "may", "jun",
+        "jul", "aug", "sep", "oct", "nov", "dec"
+    ];
+
+    return `${day} ${months[month - 1]} ${year}`;
+}
 </script>
 
 <template>
     <tr class="track">
-        <td class="list-number">1</td>
+        <td class="list-number">{{ props.index }}</td>
         <td>
             <div class="title-section">
-                <div class="thumbnail" style="background-image: url('https://m.media-amazon.com/images/I/71elKeWZL-L._UF894,1000_QL80_.jpg');"></div>
+                <div class="thumbnail" :style="{ backgroundImage: `url(${track.thumbnail})` }"></div>
                 <div class="title-content">
-                    <p class="track-name">Attack on Titan</p>
-                    <p class="artist">Hiroyuki Sawano</p>
+                    <p class="track-name">{{ track.title }}</p>
+                    <p class="artist">
+                        <div v-for="artist in track.artists">
+                            {{ artist.name }}
+                        </div>
+                    </p>
                 </div>
             </div>
         </td>
-        <td class="album">TV Anime "Attack On Titan" Original Soundtrack</td>
-        <td class="date">17 nov 2023</td>
-        <td class="time">4:22</td>
+        <td class="album">{{ album }}</td>
+        <td class="date">{{ addedAt }}</td>
+        <td class="time">{{ track.duration }}</td>
     </tr>
 </template>
 
