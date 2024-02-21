@@ -19,3 +19,4 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 Route::get('/tracklist/{id}', [TracklistController::class, 'tracklist']);
+Route::get('/tracklists/{id}', [TracklistController::class, 'tracklists']);

@@ -1,9 +1,11 @@
 <script setup>
-import { computed, provide, ref } from "vue";
+import { computed, onMounted, provide, ref } from "vue";
+import { API_URL } from '../config.js';
 import Home from "./components/Home.vue";
 import Search from "./components/Search.vue";
 import Player from "./components/Player.vue";
 import Library from "./components/Library.vue";
+import LibraryMenu from "./components/LibraryMenu.vue";
 
 const soundView = ref(false);
 const playlistColor = ref('#838383');
@@ -11,6 +13,8 @@ const isHome = ref(true);
 const isSearch = ref(false);
 const isLibrary = ref(false);
 const currentIndex = ref(0);
+const user = ref({});
+const idTracklist = ref(0);
 const currentTrack = computed(() => {
   return tracks.value[currentIndex.value];
 });
@@ -35,6 +39,12 @@ const tracks = ref([
   },
 ]);
 provide("currentTrack", currentTrack);
+
+onMounted(async () => {
+  const response = await fetch(`${API_URL}/api/tracklists/1`);
+  user.value = await response.json();
+  console.log(user.value);
+});
 
 function prevTrack(currentTime) {
   if (currentTime < 3) {
@@ -61,6 +71,14 @@ function handleChangePlaylistColor(color) {
     playlistColor.value = color;
   }
 }
+
+function setIdTracklist(id) {
+  idTracklist.value = id;
+}
+
+function checkSelectedTracklist(id) {
+  return idTracklist.value == id ? true : false;
+}
 </script>
 
 <template>
@@ -82,11 +100,23 @@ function handleChangePlaylistColor(color) {
         </div>
       </div>
       <div class="menu-bottom">
-        <div class="menu-item" @click="isHome = false; isLibrary = true; isSearch = false;">
+        <div class="menu-item library">
           <div :class="['menu-item-content', { active: isLibrary }]">
             <font-awesome-icon icon="fa-solid fa-headphones" class="icon" />Your library
           </div>
         </div>
+        <LibraryMenu 
+          v-for="tracklist in user.tracklists"
+          :key="tracklist.id"
+          :tracklist="tracklist"
+          :is-active="checkSelectedTracklist(tracklist.id)"
+          @click="
+            isHome = false;
+            isLibrary = true; 
+            isSearch = false; 
+            setIdTracklist(tracklist.id);
+          "
+        />
       </div>
     </div>
     <div class="main">
@@ -95,7 +125,7 @@ function handleChangePlaylistColor(color) {
         @close-sound-view="soundView = false; playlistColor = '#838383';" 
       />
       <Search v-else-if="isSearch" />
-      <Library v-else />
+      <Library :idTracklist="idTracklist" v-else />
     </div>
   </div>
   <div class="player">
@@ -137,10 +167,14 @@ function handleChangePlaylistColor(color) {
 .menu-bottom {
   flex: 1;
   margin-top: 10px;
+  padding: 10px;
   background-color: #111;
   border-radius: 10px;
   box-sizing: border-box;
-  padding: 25px 25px 0 25px;
+}
+
+.library {
+  padding: 15px 15px 30px 15px !important;
 }
 
 .main {

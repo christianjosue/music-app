@@ -1,16 +1,27 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { API_URL } from '../../config';
+import { ref, watch } from 'vue';
+import { API_URL } from '../../config.js';
 import MenuOptions from './MenuOptions.vue';
 import LibraryMain from './LibraryMain.vue';
 import LibraryList from './LibraryList.vue';
 
-const tracklist = ref({});
-onMounted(async () => {
-  const response = await fetch(`${API_URL}/api/tracklist/1`);
-  tracklist.value = await response.json();
-  console.log(tracklist.value);
+const props = defineProps({
+  idTracklist: {
+    type: Number,
+    default: 0
+  }
 });
+
+const tracklist = ref({});
+
+watch(
+  () => props.idTracklist,
+  async () => {
+    const response = await fetch(`${API_URL}/api/tracklist/${props.idTracklist}`);
+    tracklist.value = await response.json();  
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
