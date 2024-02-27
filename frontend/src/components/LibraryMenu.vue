@@ -15,7 +15,7 @@ const props = defineProps({
 
 <template>
 <div :class="['menu-item', { active: isActive }]">
-    <img src="https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/d9/1f/38/d91f3855-1536-3197-eb2f-95fab4038503/PCSP_05459_A.jpg/1200x1200bb.jpg" alt="">
+    <img :src="tracklist.thumbnail" alt="thumbnail">
     <div class="menu-content">
         <h6>{{ tracklist.name }}</h6>
         <p>Lista · {{ tracklist.owners[0].name }}</p>

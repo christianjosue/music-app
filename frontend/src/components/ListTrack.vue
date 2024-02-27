@@ -1,19 +1,35 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
+import ListTrackPlayer from './ListTrackPlayer.vue';
 
 const props = defineProps({
     track: {
         type: Object,
         default: {}
     },
+    isPlaying: {
+        type: Boolean,
+        default: false
+    },
     index: {}
 });
+defineEmits(['playTrack', 'pauseTrack']);
 const album = computed(() => {
     return !props.track.idAlbum ? props.track.title : 'Test';
 });
 const addedAt = ref('');
-addedAt.value = formatTime();
+const onHover = ref(false);
+const isPlayingNow = ref(false);
 
+watch(
+  () => props.isPlaying,
+  async () => {
+    isPlayingNow.value = props.isPlaying;
+  },
+  { immediate: true }
+);
+
+addedAt.value = formatTime();
 function formatTime() {
     const date = props.track.created_at.split('T')[0];
     var dateObject = new Date(date);
@@ -32,8 +48,18 @@ function formatTime() {
 </script>
 
 <template>
-    <tr class="track">
-        <td class="list-number">{{ props.index }}</td>
+    <tr 
+        class="track" 
+        @mouseover="onHover = true" 
+        @mouseleave="onHover = false"
+    >
+        <ListTrackPlayer
+            :is-playing="isPlayingNow"
+            :on-hover="onHover"
+            :index="index"
+            @play-track="$emit('playTrack')"
+            @pause-track="$emit('pauseTrack')"
+        />
         <td>
             <div class="title-section">
                 <div class="thumbnail" :style="{ backgroundImage: `url(${track.thumbnail})` }"></div>

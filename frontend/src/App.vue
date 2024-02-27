@@ -77,7 +77,7 @@ function setIdTracklist(id) {
 }
 
 function checkSelectedTracklist(id) {
-  return idTracklist.value == id ? true : false;
+  return idTracklist.value == id;
 }
 </script>
 

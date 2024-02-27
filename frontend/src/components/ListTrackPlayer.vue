@@ -1,0 +1,91 @@
+<script setup>
+import { ref } from 'vue';
+
+const reproduce = ref(false);
+const props = defineProps({
+  onHover: {
+    type: Boolean,
+    default: false
+  },
+  isPlaying: {
+    type: Boolean,
+    default: false
+  },
+  index: {}
+});
+
+</script>
+
+<template>
+<td class="container-list">
+    <font-awesome-icon v-if="onHover && isPlaying" @click="$emit('pauseTrack')" icon="fa-solid fa-pause" />
+    <font-awesome-icon v-else-if="onHover && !isPlaying" @click="$emit('playTrack')" icon="fa-solid fa-play" />
+    <div class="icon" v-else-if="!onHover && isPlaying">
+        <span />
+        <span />
+        <span />
+    </div>
+    <div class="list-number" v-else>{{ index }}</div>
+</td>
+
+</template>
+
+<style scoped>
+td {
+  padding-left: 10px;
+}
+.list-number {
+  color: #838383;
+  font-size: 14px;
+}
+.icon {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  width: 13px;
+  height: 13px;
+  padding-left: 20px;
+}
+
+span {
+  width: 3px;
+  height: 100%;
+  background-color: #1db954;
+  border-radius: 3px;
+  transform-origin: bottom;
+  animation: bounce 2.2s ease infinite alternate;
+  content: '';
+}
+
+span {
+  &:nth-of-type(2) {
+      animation-delay: -2.2s; /* Start at the end of animation */
+  }
+
+  &:nth-of-type(3) {
+      animation-delay: -3.7s; /* Start mid-way of return of animation */
+  }
+}
+
+@keyframes bounce {
+  10% {
+    transform: scaleY(0.3); /* start by scaling to 30% */
+  }
+
+  30% {
+    transform: scaleY(1); /* scale up to 100% */
+  }
+
+  60% {
+    transform: scaleY(0.5); /* scale down to 50% */
+  }
+
+  80% {
+    transform: scaleY(0.75); /* scale up to 75% */
+  }
+
+  100% {
+    transform: scaleY(0.6); /* scale down to 60% */
+  }
+}
+</style>

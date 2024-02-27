@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from 'vue';
 import ListTrack from './ListTrack.vue';
 
 const props = defineProps({
@@ -7,6 +8,16 @@ const props = defineProps({
         default: []
     }
 });
+
+const idPlayingTrack = ref(0);
+
+function setPlayingTrack(id) {
+    idPlayingTrack.value = id;
+}
+
+function checkPlayingTrack(id) {
+    return idPlayingTrack.value == id;
+}
 </script>
 
 <template>
@@ -40,7 +51,10 @@ const props = defineProps({
                 v-for="(track, index) in tracks"
                 :key="track.id"
                 :index="index+1"
-                :track="track" 
+                :track="track"
+                @play-track="setPlayingTrack(track.id)"
+                @pause-track="setPlayingTrack(0)"
+                :is-playing="checkPlayingTrack(track.id)"
             />
         </table>
     </div>
