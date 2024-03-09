@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, provide, ref } from "vue";
+import { computed, onMounted, provide, ref, watch } from "vue";
 import { API_URL } from '../config.js';
 import Home from "./components/Home.vue";
 import Search from "./components/Search.vue";
@@ -14,31 +14,57 @@ const isSearch = ref(false);
 const isLibrary = ref(false);
 const currentIndex = ref(0);
 const user = ref({});
+const playTrack = ref(false);
 const idTracklist = ref(0);
-const currentTrack = computed(() => {
-  return tracks.value[currentIndex.value];
+// const currentTrack = computed(() => {
+//   return tracks.value[currentIndex.value];
+// });
+const currentTracklist = ref({});
+const currentTrack = ref({
+  title: "Dejavu",
+  artists: [{name: "JC Test"}],
+  src: "/audio/dejavu.mp3",
+  thumbnail:
+    "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/98/f2/e6/98f2e60a-d2ac-c20d-4ac2-e7d2f5811ed5/190296284182.jpg/600x600bf-60.jpg",
+  artistImg2: '/img/jcreyes-info.jpg',
+  monthlyListeners: 4173670
 });
-const tracks = ref([
-  {
-    title: "Dejavu",
-    artist: "JC Reyes",
-    src: "/audio/dejavu.mp3",
-    thumbnail:
-      "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/98/f2/e6/98f2e60a-d2ac-c20d-4ac2-e7d2f5811ed5/190296284182.jpg/600x600bf-60.jpg",
-    artistImg2: '/img/jcreyes-info.jpg',
-    monthlyListeners: 4173670
+const tracks = ref([]);
+// const tracks = ref([
+//   {
+//     title: "Dejavu",
+//     artist: "JC Reyes",
+//     src: "/audio/dejavu.mp3",
+//     thumbnail:
+//       "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/98/f2/e6/98f2e60a-d2ac-c20d-4ac2-e7d2f5811ed5/190296284182.jpg/600x600bf-60.jpg",
+//     artistImg2: '/img/jcreyes-info.jpg',
+//     monthlyListeners: 4173670
+//   },
+//   {
+//     title: "Baby Nueva",
+//     artist: "Bad Bunny",
+//     src: "/audio/baby-nueva.mp3",
+//     thumbnail:
+//       "https://upload.wikimedia.org/wikipedia/en/7/74/Bad_Bunny_-_Nadie_Sabe_Lo_Que_Va_a_Pasar_Ma%C3%B1ana.png",
+//     artistImg2: '/img/bad-bunny-thumbnail.webp',
+//     monthlyListeners: 4173670
+//   },
+// ]);
+
+watch(
+  () => idTracklist.value,
+  async () => {
+    const response = await fetch(`${API_URL}/api/tracklist/${idTracklist.value}`);
+    currentTracklist.value = await response.json();
   },
-  {
-    title: "Baby Nueva",
-    artist: "Bad Bunny",
-    src: "/audio/baby-nueva.mp3",
-    thumbnail:
-      "https://upload.wikimedia.org/wikipedia/en/7/74/Bad_Bunny_-_Nadie_Sabe_Lo_Que_Va_a_Pasar_Ma%C3%B1ana.png",
-    artistImg2: '/img/bad-bunny-thumbnail.webp',
-    monthlyListeners: 4173670
-  },
-]);
+  { immediate: true }
+);
+
 provide("currentTrack", currentTrack);
+// provide("updateTrackState", {
+//   isPlaying: playTrack,
+//   updateTrackState: playCurrentTrack
+// })
 
 onMounted(async () => {
   const response = await fetch(`${API_URL}/api/tracklists/1`);
@@ -74,6 +100,27 @@ function handleChangePlaylistColor(color) {
 
 function setIdTracklist(id) {
   idTracklist.value = id;
+}
+
+function setCurrentTrack(idTrack) {
+  console.log(idTrack);
+  currentTracklist.value.tracks.forEach(track => {
+    if (track.id == idTrack) {
+      currentTrack.value = track;
+      playTrack.value = true;
+    }
+  });
+  console.log(currentTrack.value);
+}
+
+function pauseTrack() {
+  playTrack.value = false;
+  console.log("Track state: " + playTrack.value);
+}
+
+function playCurrentTrack() {
+  console.log('change state');
+  playTrack.value = !playTrack.value;
 }
 
 function checkSelectedTracklist(id) {
@@ -125,18 +172,25 @@ function checkSelectedTracklist(id) {
         @close-sound-view="soundView = false; playlistColor = '#838383';" 
       />
       <Search v-else-if="isSearch" />
-      <Library :idTracklist="idTracklist" v-else />
+      <Library 
+        :tracklist="currentTracklist" 
+        @play-track="(idTrack) => setCurrentTrack(idTrack)"
+        @pause-track="pauseTrack()"
+        v-else 
+      />
     </div>
   </div>
   <div class="player">
     <Player
       @active-sound-view="soundView = !soundView"
+      @play-current-track="playCurrentTrack"
       @prev-track="prevTrack"
       @next-track="nextTrack"
       @change-playlist-color="handleChangePlaylistColor"
       :current-track="currentTrack"
       :sound-view="soundView"
       :playlist-color="playlistColor"
+      :play-track="playTrack"
     />
   </div>
 </template>

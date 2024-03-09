@@ -1,34 +1,25 @@
 <script setup>
-import { ref, watch } from 'vue';
-import { API_URL } from '../../config.js';
 import MenuOptions from './MenuOptions.vue';
 import LibraryMain from './LibraryMain.vue';
 import LibraryList from './LibraryList.vue';
-
+defineEmits(['playTrack', 'pauseTrack']);
 const props = defineProps({
-  idTracklist: {
-    type: Number,
-    default: 0
+  tracklist: {
+    type: Object,
+    default: {}
   }
 });
-
-const tracklist = ref({});
-
-watch(
-  () => props.idTracklist,
-  async () => {
-    const response = await fetch(`${API_URL}/api/tracklist/${props.idTracklist}`);
-    tracklist.value = await response.json();  
-  },
-  { immediate: true }
-);
 </script>
 
 <template>
 <MenuOptions />
 <div v-if="Object.keys(tracklist).length > 0" class="container">
   <LibraryMain :tracklist="tracklist" />
-  <LibraryList :tracks="tracklist.tracks" />
+  <LibraryList 
+    :tracks="tracklist.tracks" 
+    @play-track="$emit('playTrack', $event)"
+    @pause-track="$emit('pauseTrack')"
+  />
 </div>
 <div v-if="!Object.keys(tracklist).length" class="kabobloader">
   <div class="bounce1"></div>

@@ -1,7 +1,6 @@
 <script setup>
-import { ref } from 'vue';
+import { inject, ref } from 'vue';
 
-const reproduce = ref(false);
 const props = defineProps({
   onHover: {
     type: Boolean,
@@ -13,6 +12,8 @@ const props = defineProps({
   },
   index: {}
 });
+
+// const { isPlaying, updateTrackState } = inject('updateTrackState');
 
 </script>
 

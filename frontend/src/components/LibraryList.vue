@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import ListTrack from './ListTrack.vue';
-
+defineEmits(['playTrack', 'pauseTrack']);
 const props = defineProps({
     tracks: {
         type: Array,
@@ -52,8 +52,14 @@ function checkPlayingTrack(id) {
                 :key="track.id"
                 :index="index+1"
                 :track="track"
-                @play-track="setPlayingTrack(track.id)"
-                @pause-track="setPlayingTrack(0)"
+                @play-track="
+                    setPlayingTrack(track.id);
+                    this.$nextTick(() => $emit('playTrack', idPlayingTrack))
+                "
+                @pause-track="
+                    setPlayingTrack(0);
+                    this.$nextTick(() => $emit('pauseTrack'))
+                "
                 :is-playing="checkPlayingTrack(track.id)"
             />
         </table>

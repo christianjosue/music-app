@@ -23,7 +23,7 @@ const isPlayingNow = ref(false);
 
 watch(
   () => props.isPlaying,
-  async () => {
+  () => {
     isPlayingNow.value = props.isPlaying;
   },
   { immediate: true }

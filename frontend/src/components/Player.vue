@@ -1,5 +1,5 @@
 <script setup>
-import { computed, getCurrentInstance, onMounted, ref } from "vue";
+import { computed, getCurrentInstance, onMounted, ref, watch } from "vue";
 import IconPlay from "./icons/IconPlay.vue";
 import IconPause from "./icons/IconPause.vue";
 import IconNextTrack from "./icons/IconNextTrack.vue";
@@ -15,7 +15,11 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  playlistColor: String
+  playlistColor: String,
+  playTrack: {
+    type: Boolean,
+    default: false
+  }
 });
 var audio;
 const currentTime = ref(0);
@@ -57,7 +61,28 @@ onMounted(() => {
   };
 });
 
+watch(
+  () => props.currentTrack,
+  () => {
+    if (audio) {
+      resetPlayer();
+    }
+  },
+  { immediate: true }
+);
+
+watch(
+  () => props.playTrack,
+  () => {
+    if (audio) {
+      playMusic();
+    }
+  },
+  { immediate: true }
+)
+
 function playMusic() {
+  console.log('hola');
   if (audio.paused) {
     audio.play();
     isPlaying.value = true;
@@ -133,11 +158,11 @@ function changeProgressTrackColor() {
     <div class="track-container">
       <div
         class="track-thumbnail"
-        :style="{ backgroundImage: `url(${props.currentTrack.thumbnail})` }"
+        :style="{ backgroundImage: `url(${currentTrack.thumbnail})` }"
       ></div>
       <div class="track-data">
-        <div class="track-title">{{ props.currentTrack.title }}</div>
-        <div class="track-artist">{{ props.currentTrack.artist }}</div>
+        <div class="track-title">{{ currentTrack.title }}</div>
+        <div class="track-artist">{{ currentTrack.artists[0].name }}</div>
       </div>
       <div class="track-favourite">
         <IconFavourite :width="15" />
@@ -152,7 +177,7 @@ function changeProgressTrackColor() {
           "
         />
         <div
-          @click="playMusic"
+          @click="$emit('playCurrentTrack')"
           class="play-btn"
         >
           <IconPlay v-show="!isPlaying" />
