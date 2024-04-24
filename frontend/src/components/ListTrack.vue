@@ -1,15 +1,12 @@
 <script setup>
-import { computed, ref, watch } from 'vue';
-import ListTrackPlayer from './ListTrackPlayer.vue';
-
+import { computed, inject, ref, watch } from 'vue';
 const props = defineProps({
     track: {
         type: Object,
         default: {}
     },
-    isPlaying: {
-        type: Boolean,
-        default: false
+    key: {
+        type: Number
     },
     index: {}
 });
@@ -19,15 +16,6 @@ const album = computed(() => {
 });
 const addedAt = ref('');
 const onHover = ref(false);
-const isPlayingNow = ref(false);
-
-watch(
-  () => props.isPlaying,
-  () => {
-    isPlayingNow.value = props.isPlaying;
-  },
-  { immediate: true }
-);
 
 addedAt.value = formatTime();
 function formatTime() {
@@ -45,6 +33,7 @@ function formatTime() {
 
     return `${day} ${months[month - 1]} ${year}`;
 }
+const idPlayingTrack = inject('idPlayingTrack');
 </script>
 
 <template>
@@ -53,13 +42,22 @@ function formatTime() {
         @mouseover="onHover = true" 
         @mouseleave="onHover = false"
     >
-        <ListTrackPlayer
-            :is-playing="isPlayingNow"
-            :on-hover="onHover"
-            :index="index"
-            @play-track="$emit('playTrack')"
-            @pause-track="$emit('pauseTrack')"
-        />
+        <td class="container-list">
+            <font-awesome-icon v-if="onHover && idPlayingTrack == track.id" 
+                @click="$emit('pauseTrack')"
+                icon="fa-solid fa-pause"
+            />
+            <font-awesome-icon v-else-if="onHover && idPlayingTrack != track.id" 
+                @click="$emit('playTrack')"
+                icon="fa-solid fa-play"
+            />
+            <div class="icon" v-else-if="!onHover && idPlayingTrack == track.id">
+                <span />
+                <span />
+                <span />
+            </div>
+            <div class="list-number" v-else>{{ index }}</div>
+        </td>
         <td>
             <div class="title-section">
                 <div class="thumbnail" :style="{ backgroundImage: `url(${track.thumbnail})` }"></div>
@@ -129,5 +127,59 @@ td {
 }
 .track:hover {
     background: rgba(255, 255, 255, .1);
+}
+.list-number {
+  color: #838383;
+  font-size: 14px;
+}
+.icon {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  width: 13px;
+  height: 13px;
+  padding-left: 20px;
+}
+
+span {
+  width: 3px;
+  height: 100%;
+  background-color: #1db954;
+  border-radius: 3px;
+  transform-origin: bottom;
+  animation: bounce 2.2s ease infinite alternate;
+  content: '';
+}
+
+span {
+  &:nth-of-type(2) {
+      animation-delay: -2.2s; /* Start at the end of animation */
+  }
+
+  &:nth-of-type(3) {
+      animation-delay: -3.7s; /* Start mid-way of return of animation */
+  }
+}
+
+@keyframes bounce {
+  10% {
+    transform: scaleY(0.3); /* start by scaling to 30% */
+  }
+
+  30% {
+    transform: scaleY(1); /* scale up to 100% */
+  }
+
+  60% {
+    transform: scaleY(0.5); /* scale down to 50% */
+  }
+
+  80% {
+    transform: scaleY(0.75); /* scale up to 75% */
+  }
+
+  100% {
+    transform: scaleY(0.6); /* scale down to 60% */
+  }
 }
 </style>

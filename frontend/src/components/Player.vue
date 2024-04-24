@@ -82,7 +82,6 @@ watch(
 )
 
 function playMusic() {
-  console.log('hola');
   if (audio.paused) {
     audio.play();
     isPlaying.value = true;

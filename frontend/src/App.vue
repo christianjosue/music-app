@@ -7,6 +7,7 @@ import Player from "./components/Player.vue";
 import Library from "./components/Library.vue";
 import LibraryMenu from "./components/LibraryMenu.vue";
 
+const idPlayingTrack = ref(0);
 const soundView = ref(false);
 const playlistColor = ref('#838383');
 const isHome = ref(true);
@@ -16,9 +17,6 @@ const currentIndex = ref(0);
 const user = ref({});
 const playTrack = ref(false);
 const idTracklist = ref(0);
-// const currentTrack = computed(() => {
-//   return tracks.value[currentIndex.value];
-// });
 const currentTracklist = ref({});
 const currentTrack = ref({
   title: "Dejavu",
@@ -30,26 +28,9 @@ const currentTrack = ref({
   monthlyListeners: 4173670
 });
 const tracks = ref([]);
-// const tracks = ref([
-//   {
-//     title: "Dejavu",
-//     artist: "JC Reyes",
-//     src: "/audio/dejavu.mp3",
-//     thumbnail:
-//       "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/98/f2/e6/98f2e60a-d2ac-c20d-4ac2-e7d2f5811ed5/190296284182.jpg/600x600bf-60.jpg",
-//     artistImg2: '/img/jcreyes-info.jpg',
-//     monthlyListeners: 4173670
-//   },
-//   {
-//     title: "Baby Nueva",
-//     artist: "Bad Bunny",
-//     src: "/audio/baby-nueva.mp3",
-//     thumbnail:
-//       "https://upload.wikimedia.org/wikipedia/en/7/74/Bad_Bunny_-_Nadie_Sabe_Lo_Que_Va_a_Pasar_Ma%C3%B1ana.png",
-//     artistImg2: '/img/bad-bunny-thumbnail.webp',
-//     monthlyListeners: 4173670
-//   },
-// ]);
+provide('isPlaying', playTrack);
+provide('idPlayingTrack', idPlayingTrack);
+provide('setCurrentTrack', setCurrentTrack);
 
 watch(
   () => idTracklist.value,
@@ -103,19 +84,17 @@ function setIdTracklist(id) {
 }
 
 function setCurrentTrack(idTrack) {
-  console.log(idTrack);
-  currentTracklist.value.tracks.forEach(track => {
-    if (track.id == idTrack) {
-      currentTrack.value = track;
-      playTrack.value = true;
-    }
-  });
-  console.log(currentTrack.value);
-}
-
-function pauseTrack() {
-  playTrack.value = false;
-  console.log("Track state: " + playTrack.value);
+  idPlayingTrack.value = idTrack;
+  if (idTrack == 0) {
+    playTrack.value = false;
+  } else {
+    currentTracklist.value.tracks.forEach(track => {
+      if (track.id == idTrack) {
+        currentTrack.value = track;
+        playTrack.value = true;
+      }
+    });
+  }
 }
 
 function playCurrentTrack() {
@@ -172,12 +151,7 @@ function checkSelectedTracklist(id) {
         @close-sound-view="soundView = false; playlistColor = '#838383';" 
       />
       <Search v-else-if="isSearch" />
-      <Library 
-        :tracklist="currentTracklist" 
-        @play-track="(idTrack) => setCurrentTrack(idTrack)"
-        @pause-track="pauseTrack()"
-        v-else 
-      />
+      <Library v-else :tracklist="currentTracklist" />
     </div>
   </div>
   <div class="player">
