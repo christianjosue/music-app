@@ -19,9 +19,16 @@ const props = defineProps({
   playTrack: {
     type: Boolean,
     default: false
+  },
+  idPlayingTrack: {
+    type: Number
+  },
+  setCurrentTrack: {
+    type: Function
   }
 });
 var audio;
+const idPlayingTrackCopy = ref(0);
 const currentTime = ref(0);
 const duration = ref(0);
 const isPlaying = ref(false);
@@ -81,7 +88,17 @@ watch(
   { immediate: true }
 )
 
+watch(
+  () => props.idPlayingTrack,
+  () => {
+    if (props.idPlayingTrack != 0) {
+      idPlayingTrackCopy.value = props.idPlayingTrack;
+    }
+  }
+)
+
 function playMusic() {
+  console.log('playMusic');
   if (audio.paused) {
     audio.play();
     isPlaying.value = true;
@@ -175,12 +192,9 @@ function changeProgressTrackColor() {
             this.$nextTick(() => resetPlayer())
           "
         />
-        <div
-          @click="$emit('playCurrentTrack')"
-          class="play-btn"
-        >
-          <IconPlay v-show="!isPlaying" />
-          <IconPause v-show="isPlaying" />
+        <div class="play-btn">
+          <IconPlay v-show="!isPlaying" @click="setCurrentTrack(idPlayingTrackCopy)" />
+          <IconPause v-show="isPlaying" @click="setCurrentTrack(0)" />
         </div>
         <IconNextTrack
           @click="

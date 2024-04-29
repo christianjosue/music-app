@@ -42,10 +42,6 @@ watch(
 );
 
 provide("currentTrack", currentTrack);
-// provide("updateTrackState", {
-//   isPlaying: playTrack,
-//   updateTrackState: playCurrentTrack
-// })
 
 onMounted(async () => {
   const response = await fetch(`${API_URL}/api/tracklists/1`);
@@ -58,17 +54,19 @@ function prevTrack(currentTime) {
     if (currentIndex.value > 0) {
       currentIndex.value--;
     } else {
-      currentIndex.value = tracks.value.length - 1;
+      currentIndex.value = 0;
     }
+    setCurrentTrackByIndex();
   }
 }
 
 function nextTrack() {
-  if (currentIndex.value < tracks.value.length - 1) {
+  if (currentIndex.value < currentTracklist.value.tracks.length - 1) {
     currentIndex.value++;
   } else {
     currentIndex.value = 0;
   }
+  setCurrentTrackByIndex();
 }
 
 function handleChangePlaylistColor(color) {
@@ -88,8 +86,9 @@ function setCurrentTrack(idTrack) {
   if (idTrack == 0) {
     playTrack.value = false;
   } else {
-    currentTracklist.value.tracks.forEach(track => {
+    currentTracklist.value.tracks.forEach((track, index) => {
       if (track.id == idTrack) {
+        currentIndex.value = index;
         currentTrack.value = track;
         playTrack.value = true;
       }
@@ -97,9 +96,11 @@ function setCurrentTrack(idTrack) {
   }
 }
 
-function playCurrentTrack() {
-  console.log('change state');
-  playTrack.value = !playTrack.value;
+function setCurrentTrackByIndex() {
+  console.log(currentIndex.value);
+  currentTrack.value = currentTracklist.value.tracks[currentIndex.value];
+  idPlayingTrack.value = currentTrack.value.id;
+  playTrack.value = true;
 }
 
 function checkSelectedTracklist(id) {
@@ -157,7 +158,6 @@ function checkSelectedTracklist(id) {
   <div class="player">
     <Player
       @active-sound-view="soundView = !soundView"
-      @play-current-track="playCurrentTrack"
       @prev-track="prevTrack"
       @next-track="nextTrack"
       @change-playlist-color="handleChangePlaylistColor"
@@ -165,6 +165,8 @@ function checkSelectedTracklist(id) {
       :sound-view="soundView"
       :playlist-color="playlistColor"
       :play-track="playTrack"
+      :set-current-track="setCurrentTrack"
+      :id-playing-track="idPlayingTrack"
     />
   </div>
 </template>
