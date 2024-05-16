@@ -1,9 +1,13 @@
 <script setup>
-import { computed, inject, ref, watch } from 'vue';
+import { computed, inject, ref } from 'vue';
 const props = defineProps({
     track: {
         type: Object,
         default: {}
+    },
+    idTracklist: {
+        type: Number,
+        default: 0
     },
     key: {
         type: Number
@@ -34,6 +38,7 @@ function formatTime() {
     return `${day} ${months[month - 1]} ${year}`;
 }
 const idPlayingTrack = inject('idPlayingTrack');
+const checkPlayingTracklist = inject('checkPlayingTracklist');
 </script>
 
 <template>
@@ -43,15 +48,15 @@ const idPlayingTrack = inject('idPlayingTrack');
         @mouseleave="onHover = false"
     >
         <td class="container-list">
-            <font-awesome-icon v-if="onHover && idPlayingTrack == track.id" 
+            <font-awesome-icon v-if="onHover && idPlayingTrack == track.id && checkPlayingTracklist(idTracklist)"
                 @click="$emit('pauseTrack')"
                 icon="fa-solid fa-pause"
             />
-            <font-awesome-icon v-else-if="onHover && idPlayingTrack != track.id" 
+            <font-awesome-icon v-else-if="onHover && (idPlayingTrack != track.id || (idPlayingTrack == track.id && !checkPlayingTracklist(idTracklist)))"
                 @click="$emit('playTrack')"
                 icon="fa-solid fa-play"
             />
-            <div class="icon" v-else-if="!onHover && idPlayingTrack == track.id">
+            <div class="icon" v-else-if="!onHover && idPlayingTrack == track.id && checkPlayingTracklist(idTracklist)">
                 <span />
                 <span />
                 <span />

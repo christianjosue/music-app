@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, provide, ref, watch } from "vue";
+import { onMounted, provide, ref, watch } from "vue";
 import { API_URL } from '../config.js';
 import Home from "./components/Home.vue";
 import Search from "./components/Search.vue";
@@ -8,6 +8,7 @@ import Library from "./components/Library.vue";
 import LibraryMenu from "./components/LibraryMenu.vue";
 
 const idPlayingTrack = ref(0);
+const idPlayingTracklist = ref(0);
 const soundView = ref(false);
 const playlistColor = ref('#838383');
 const isHome = ref(true);
@@ -27,10 +28,10 @@ const currentTrack = ref({
   artistImg2: '/img/jcreyes-info.jpg',
   monthlyListeners: 4173670
 });
-const tracks = ref([]);
 provide('isPlaying', playTrack);
 provide('idPlayingTrack', idPlayingTrack);
 provide('setCurrentTrack', setCurrentTrack);
+provide('checkPlayingTracklist', checkPlayingTracklist);
 
 watch(
   () => idTracklist.value,
@@ -81,8 +82,9 @@ function setIdTracklist(id) {
   idTracklist.value = id;
 }
 
-function setCurrentTrack(idTrack) {
+function setCurrentTrack(idTrack, idTracklist) {
   idPlayingTrack.value = idTrack;
+  idPlayingTracklist.value = idTracklist;
   if (idTrack == 0) {
     playTrack.value = false;
   } else {
@@ -105,6 +107,10 @@ function setCurrentTrackByIndex() {
 
 function checkSelectedTracklist(id) {
   return idTracklist.value == id;
+}
+
+function checkPlayingTracklist(idTracklist) {
+  return idPlayingTracklist.value == idTracklist;
 }
 </script>
 
@@ -167,6 +173,7 @@ function checkSelectedTracklist(id) {
       :play-track="playTrack"
       :set-current-track="setCurrentTrack"
       :id-playing-track="idPlayingTrack"
+      :id-playing-tracklist="idPlayingTracklist"
     />
   </div>
 </template>

@@ -15,7 +15,7 @@ const props = defineProps({
 <MenuOptions />
 <div v-if="Object.keys(tracklist).length > 0" class="container">
   <LibraryMain :tracklist="tracklist" />
-  <LibraryList :tracks="tracklist.tracks" />
+  <LibraryList :tracks="tracklist.tracks" :id-tracklist="tracklist.id"/>
 </div>
 <div v-if="!Object.keys(tracklist).length" class="kabobloader">
   <div class="bounce1"></div>

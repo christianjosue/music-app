@@ -6,6 +6,10 @@ const props = defineProps({
     tracks: {
         type: Array,
         default: []
+    },
+    idTracklist: {
+        type: Number,
+        default: 0
     }
 });
 const setCurrentTrack = inject('setCurrentTrack');
@@ -43,8 +47,9 @@ const setCurrentTrack = inject('setCurrentTrack');
                 :key="track.id"
                 :index="index+1"
                 :track="track"
-                @play-track="setCurrentTrack(track.id)"
-                @pause-track="setCurrentTrack(0)"
+                :id-tracklist="props.idTracklist"
+                @play-track="setCurrentTrack(track.id, idTracklist)"
+                @pause-track="setCurrentTrack(0, idTracklist)"
             />
         </table>
     </div>

@@ -23,12 +23,16 @@ const props = defineProps({
   idPlayingTrack: {
     type: Number
   },
+  idPlayingTracklist: {
+    type: Number
+  },
   setCurrentTrack: {
     type: Function
   }
 });
 var audio;
 const idPlayingTrackCopy = ref(0);
+const idPlayingTracklistCopy = ref(0);
 const currentTime = ref(0);
 const duration = ref(0);
 const isPlaying = ref(false);
@@ -71,7 +75,7 @@ onMounted(() => {
 watch(
   () => props.currentTrack,
   () => {
-    if (audio) {
+    if (audio && idPlayingTrackCopy.value != props.currentTrack.id || idPlayingTracklistCopy.value != props.idPlayingTracklist) {
       resetPlayer();
     }
   },
@@ -93,12 +97,12 @@ watch(
   () => {
     if (props.idPlayingTrack != 0) {
       idPlayingTrackCopy.value = props.idPlayingTrack;
+      idPlayingTracklistCopy.value = props.idPlayingTracklist;
     }
   }
 )
 
 function playMusic() {
-  console.log('playMusic');
   if (audio.paused) {
     audio.play();
     isPlaying.value = true;
@@ -193,8 +197,8 @@ function changeProgressTrackColor() {
           "
         />
         <div class="play-btn">
-          <IconPlay v-show="!isPlaying" @click="setCurrentTrack(idPlayingTrackCopy)" />
-          <IconPause v-show="isPlaying" @click="setCurrentTrack(0)" />
+          <IconPlay v-show="!isPlaying" @click="setCurrentTrack(idPlayingTrackCopy, idPlayingTracklistCopy)" />
+          <IconPause v-show="isPlaying" @click="setCurrentTrack(0, idPlayingTrackCopy)" />
         </div>
         <IconNextTrack
           @click="
