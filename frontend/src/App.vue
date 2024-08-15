@@ -7,27 +7,20 @@ import Player from "./components/Player.vue";
 import Library from "./components/Library.vue";
 import LibraryMenu from "./components/LibraryMenu.vue";
 
+const audio = ref('');
+const user = ref({});
+const currentTrack = ref({});
+const currentTracklist = ref({});
+const idTracklist = ref(0);
+const currentIndex = ref(0);
 const idPlayingTrack = ref(0);
 const idPlayingTracklist = ref(0);
 const soundView = ref(false);
-const playlistColor = ref('#838383');
-const isHome = ref(true);
 const isSearch = ref(false);
 const isLibrary = ref(false);
-const currentIndex = ref(0);
-const user = ref({});
-const playTrack = ref(false);
-const idTracklist = ref(0);
-const currentTracklist = ref({});
-const currentTrack = ref({
-  title: "Dejavu",
-  artists: [{name: "JC Test"}],
-  src: "/audio/dejavu.mp3",
-  thumbnail:
-    "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/98/f2/e6/98f2e60a-d2ac-c20d-4ac2-e7d2f5811ed5/190296284182.jpg/600x600bf-60.jpg",
-  artistImg2: '/img/jcreyes-info.jpg',
-  monthlyListeners: 4173670
-});
+const isHome = ref(true);
+const playTrack = ref(true);
+const playlistColor = ref('#838383');
 provide('isPlaying', playTrack);
 provide('idPlayingTrack', idPlayingTrack);
 provide('setCurrentTrack', setCurrentTrack);
@@ -47,27 +40,30 @@ provide("currentTrack", currentTrack);
 onMounted(async () => {
   const response = await fetch(`${API_URL}/api/tracklists/1`);
   user.value = await response.json();
-  console.log(user.value);
 });
 
 function prevTrack(currentTime) {
-  if (currentTime < 3) {
+  if (currentTime < 3 && Object.keys(currentTrack.value).length > 0) {
     if (currentIndex.value > 0) {
       currentIndex.value--;
     } else {
       currentIndex.value = 0;
     }
-    setCurrentTrackByIndex();
+    let track = currentTracklist.value.tracks[currentIndex.value];
+    getTrack(track, currentIndex.value, track.id, currentTracklist.value.id);
   }
 }
 
 function nextTrack() {
-  if (currentIndex.value < currentTracklist.value.tracks.length - 1) {
-    currentIndex.value++;
-  } else {
-    currentIndex.value = 0;
+  if (Object.keys(currentTrack.value).length > 0) {
+    if (currentIndex.value < currentTracklist.value.tracks.length - 1) {
+      currentIndex.value++;
+    } else {
+      currentIndex.value = 0;
+    }
+    let track = currentTracklist.value.tracks[currentIndex.value];
+    getTrack(track, currentIndex.value, track.id, currentTracklist.value.id);
   }
-  setCurrentTrackByIndex();
 }
 
 function handleChangePlaylistColor(color) {
@@ -82,27 +78,31 @@ function setIdTracklist(id) {
   idTracklist.value = id;
 }
 
-function setCurrentTrack(idTrack, idTracklist) {
-  idPlayingTrack.value = idTrack;
-  idPlayingTracklist.value = idTracklist;
-  if (idTrack == 0) {
-    playTrack.value = false;
-  } else {
-    currentTracklist.value.tracks.forEach((track, index) => {
-      if (track.id == idTrack) {
-        currentIndex.value = index;
-        currentTrack.value = track;
-        playTrack.value = true;
-      }
-    });
+function setCurrentTrack(idTrack, idTracklist, isTracklistPlayer = 0) {
+  if (Object.keys(currentTrack.value).length > 0 || isTracklistPlayer) {
+    if (idTrack == 0) {
+      playTrack.value = false;
+    } else {
+      currentTracklist.value.tracks.forEach((track, index) => {
+        if (track.id == idTrack) {
+          getTrack(track, index, idTrack, idTracklist);
+        }
+      });
+    }
   }
 }
 
-function setCurrentTrackByIndex() {
-  console.log(currentIndex.value);
-  currentTrack.value = currentTracklist.value.tracks[currentIndex.value];
-  idPlayingTrack.value = currentTrack.value.id;
-  playTrack.value = true;
+const getTrack = async (track, index, idTrack, idTracklist) => {
+  const response = fetch(`${API_URL}/api/audio/${track.src}`);
+  response.then(async (res) => {
+    audio.value = await res.json();
+    currentIndex.value = index;
+    currentTrack.value = track;
+    playTrack.value = true;
+  }).then(() => {
+    idPlayingTrack.value = idTrack;
+    idPlayingTracklist.value = idTracklist;
+  });
 }
 
 function checkSelectedTracklist(id) {
@@ -163,10 +163,7 @@ function checkPlayingTracklist(idTracklist) {
   </div>
   <div class="player">
     <Player
-      @active-sound-view="soundView = !soundView"
-      @prev-track="prevTrack"
-      @next-track="nextTrack"
-      @change-playlist-color="handleChangePlaylistColor"
+      :audioUrl="audio.url"
       :current-track="currentTrack"
       :sound-view="soundView"
       :playlist-color="playlistColor"
@@ -174,6 +171,10 @@ function checkPlayingTracklist(idTracklist) {
       :set-current-track="setCurrentTrack"
       :id-playing-track="idPlayingTrack"
       :id-playing-tracklist="idPlayingTracklist"
+      @active-sound-view="soundView = !soundView"
+      @prev-track="prevTrack"
+      @next-track="nextTrack"
+      @change-playlist-color="handleChangePlaylistColor"
     />
   </div>
 </template>

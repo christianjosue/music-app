@@ -28,13 +28,16 @@ const props = defineProps({
   },
   setCurrentTrack: {
     type: Function
+  },
+  audioUrl: {
+    type: String
   }
 });
 var audio;
 const idPlayingTrackCopy = ref(0);
 const idPlayingTracklistCopy = ref(0);
-const currentTime = ref(0);
-const duration = ref(0);
+const currentTime = ref("00:00");
+const duration = ref("00:00");
 const isPlaying = ref(false);
 const volume = ref(100);
 const colorVolume = ref("#fff");
@@ -53,11 +56,14 @@ const volumeIcon = computed(() => {
       return "high";
   }
 });
+const thumbnail = computed(() => {
+  return Object.keys(props.currentTrack).length == 0 ? "https://static-00.iconduck.com/assets.00/musical-notes-icon-256x256-d8u6pk7h.png" : props.currentTrack.thumbnail;
+});
 
 onMounted(() => {
   const { emit } = getCurrentInstance();
   audio = new Audio();
-  audio.src = props.currentTrack.src;
+  audio.src = props.audioUrl;
   audio.ontimeupdate = () => {
     generateTime();
   };
@@ -76,6 +82,7 @@ watch(
   () => props.currentTrack,
   () => {
     if (audio && idPlayingTrackCopy.value != props.currentTrack.id || idPlayingTracklistCopy.value != props.idPlayingTracklist) {
+      isPlaying.value = true;
       resetPlayer();
     }
   },
@@ -142,15 +149,17 @@ function generateTime() {
 }
 
 function resetPlayer() {
-  audio.currentTime = 0;
-  audio.src = props.currentTrack.src;
-  setTimeout(() => {
-    if (isPlaying.value) {
-      audio.play();
-    } else {
-      audio.pause();
-    }
-  }, 300);
+  if (Object.keys(props.currentTrack).length > 0) {
+    audio.currentTime = 0;
+    audio.src = props.audioUrl;
+    setTimeout(() => {
+      if (isPlaying.value) {
+        audio.play();
+      } else {
+        audio.pause();
+      }
+    }, 300);
+  }
 }
 
 function changeVolume(e) {
@@ -160,8 +169,10 @@ function changeVolume(e) {
 }
 
 function changeProgressTrack(e) {
-  isPlaying.value = true;
-  currentProgressTrack.value = e.target.value;
+  if (Object.keys(props.currentTrack).length > 0) {
+    isPlaying.value = true;
+    currentProgressTrack.value = e.target.value;
+  }
 }
 
 function changeVolumeColor() {
@@ -171,6 +182,13 @@ function changeVolumeColor() {
 function changeProgressTrackColor() {
   colorProgressTrack.value = colorProgressTrack.value === "#fff" ? "#1db954" : "#fff";
 }
+
+function updateProgressBar() {
+  if (Object.keys(props.currentTrack).length > 0) {
+    audio.currentTime = audio.duration * currentProgressTrack.value / 100;
+    reload.value = true;
+  }
+}
 </script>
 
 <template>
@@ -178,11 +196,15 @@ function changeProgressTrackColor() {
     <div class="track-container">
       <div
         class="track-thumbnail"
-        :style="{ backgroundImage: `url(${currentTrack.thumbnail})` }"
+        :style="{ backgroundImage: `url(${thumbnail})` }"
       ></div>
       <div class="track-data">
         <div class="track-title">{{ currentTrack.title }}</div>
-        <div class="track-artist">{{ currentTrack.artists[0].name }}</div>
+        <div class="track-artist">
+          <div v-for="artist in currentTrack.artists">
+            {{ artist.name }}
+          </div>
+        </div>
       </div>
       <div class="track-favourite">
         <IconFavourite :width="15" />
@@ -211,7 +233,7 @@ function changeProgressTrackColor() {
         <div class="progress-time current-time">{{ currentTime }}</div>
         <input 
           @input="changeProgressTrack"
-          @mouseup="audio.currentTime = audio.duration * currentProgressTrack / 100; reload = true;"
+          @mouseup="updateProgressBar"
           @mousedown="reload = false"
           @mouseover="changeProgressTrackColor"
           @mouseleave="changeProgressTrackColor"

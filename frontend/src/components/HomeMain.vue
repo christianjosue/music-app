@@ -11,11 +11,11 @@ defineProps({
 function greet() {
   const time = new Date();
   const hours = time.getHours();
-  var message = "¡Buenas tardes!";
+  var message = "Good afternoon!";
   if (hours >= 21 || hours <= 6) {
-    message = "¡Buenas noches!";
+    message = "Good night!";
   } else if (hours >= 7 && hours <= 12) {
-    message = "¡Buenos días!";
+    message = "Good morning!";
   }
 
   return message;

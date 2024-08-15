@@ -39,6 +39,7 @@ function formatTime() {
 }
 const idPlayingTrack = inject('idPlayingTrack');
 const checkPlayingTracklist = inject('checkPlayingTracklist');
+const isPlaying = inject('isPlaying');
 </script>
 
 <template>
@@ -48,15 +49,15 @@ const checkPlayingTracklist = inject('checkPlayingTracklist');
         @mouseleave="onHover = false"
     >
         <td class="container-list">
-            <font-awesome-icon v-if="onHover && idPlayingTrack == track.id && checkPlayingTracklist(idTracklist)"
+            <font-awesome-icon v-if="onHover && idPlayingTrack == track.id && checkPlayingTracklist(idTracklist) && isPlaying"
                 @click="$emit('pauseTrack')"
                 icon="fa-solid fa-pause"
             />
-            <font-awesome-icon v-else-if="onHover && (idPlayingTrack != track.id || (idPlayingTrack == track.id && !checkPlayingTracklist(idTracklist)))"
+            <font-awesome-icon v-else-if="onHover && (!isPlaying || idPlayingTrack != track.id || (idPlayingTrack == track.id && !checkPlayingTracklist(idTracklist)))"
                 @click="$emit('playTrack')"
                 icon="fa-solid fa-play"
             />
-            <div class="icon" v-else-if="!onHover && idPlayingTrack == track.id && checkPlayingTracklist(idTracklist)">
+            <div class="icon" v-else-if="!onHover && idPlayingTrack == track.id && checkPlayingTracklist(idTracklist) && isPlaying">
                 <span />
                 <span />
                 <span />

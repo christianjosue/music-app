@@ -48,8 +48,8 @@ const setCurrentTrack = inject('setCurrentTrack');
                 :index="index+1"
                 :track="track"
                 :id-tracklist="props.idTracklist"
-                @play-track="setCurrentTrack(track.id, idTracklist)"
-                @pause-track="setCurrentTrack(0, idTracklist)"
+                @play-track="setCurrentTrack(track.id, idTracklist, 1)"
+                @pause-track="setCurrentTrack(0, idTracklist, 1)"
             />
         </table>
     </div>
