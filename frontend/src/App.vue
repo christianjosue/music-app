@@ -25,7 +25,9 @@ provide('isPlaying', playTrack);
 provide('idPlayingTrack', idPlayingTrack);
 provide('setCurrentTrack', setCurrentTrack);
 provide('checkPlayingTracklist', checkPlayingTracklist);
+provide("currentTrack", currentTrack);
 
+// Watch when the value of tracklist's id changes to make a request to the server side to get the correspondant tracklist
 watch(
   () => idTracklist.value,
   async () => {
@@ -34,15 +36,15 @@ watch(
   },
   { immediate: true }
 );
-
-provide("currentTrack", currentTrack);
-
+// Fetch de tracklists corresponding to the logged user
 onMounted(async () => {
   const response = await fetch(`${API_URL}/api/tracklists/1`);
   user.value = await response.json();
 });
-
+// Go to the previous track in the tracklist
 function prevTrack(currentTime) {
+  // If the current track's time is under three seconds, change to the previous track
+  // Otherwise if it's over that three seconds, track will be restarted
   if (currentTime < 3 && Object.keys(currentTrack.value).length > 0) {
     if (currentIndex.value > 0) {
       currentIndex.value--;
@@ -53,9 +55,11 @@ function prevTrack(currentTime) {
     getTrack(track, currentIndex.value, track.id, currentTracklist.value.id);
   }
 }
-
+// Go to the next track in the tracklist
 function nextTrack() {
+  // Check if there is any track loaded in the player
   if (Object.keys(currentTrack.value).length > 0) {
+    // If there is a next track, play it, otherwise start from the first track of the tracklist
     if (currentIndex.value < currentTracklist.value.tracks.length - 1) {
       currentIndex.value++;
     } else {
@@ -65,7 +69,7 @@ function nextTrack() {
     getTrack(track, currentIndex.value, track.id, currentTracklist.value.id);
   }
 }
-
+// Handle de background color of the app depending on the tracklist's main color
 function handleChangePlaylistColor(color) {
   if (soundView.value == true) {
     playlistColor.value = '#1db954';
@@ -73,16 +77,17 @@ function handleChangePlaylistColor(color) {
     playlistColor.value = color;
   }
 }
-
+// Set the value of the tracklist's id
 function setIdTracklist(id) {
   idTracklist.value = id;
 }
-
+// Load the track is going to be played
 function setCurrentTrack(idTrack, idTracklist, isTracklistPlayer = 0) {
   if (Object.keys(currentTrack.value).length > 0 || isTracklistPlayer) {
     if (idTrack == 0) {
       playTrack.value = false;
     } else {
+      // Search the selected track in the tracklist, get it and send it to the player
       currentTracklist.value.tracks.forEach((track, index) => {
         if (track.id == idTrack) {
           getTrack(track, index, idTrack, idTracklist);
@@ -91,7 +96,7 @@ function setCurrentTrack(idTrack, idTracklist, isTracklistPlayer = 0) {
     }
   }
 }
-
+// Get the specified track from the AWS S3 bucket
 const getTrack = async (track, index, idTrack, idTracklist) => {
   const response = fetch(`${API_URL}/api/audio/${track.src}`);
   response.then(async (res) => {
@@ -104,11 +109,11 @@ const getTrack = async (track, index, idTrack, idTracklist) => {
     idPlayingTracklist.value = idTracklist;
   });
 }
-
+// Check if the given tracklist is the same that the selected one
 function checkSelectedTracklist(id) {
   return idTracklist.value == id;
 }
-
+// Check if the playing tracklist is the same that the given one
 function checkPlayingTracklist(idTracklist) {
   return idPlayingTracklist.value == idTracklist;
 }
