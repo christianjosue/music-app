@@ -17,6 +17,7 @@ services:
       - "8000:8000"
     depends_on:
       - db
+      - python
     volumes:
       - ./api:/api
     working_dir: /api
@@ -46,6 +47,15 @@ services:
     environment:
       PMA_HOST: db
       MYSQL_ROOT_PASSWORD: admin
+
+  python:
+    build: 
+      context: ./scripts
+    ports:
+      - "6000:6000"
+    volumes:
+      - ./scripts:/scripts
+    working_dir: /scripts
 
 volumes:
   db_data:

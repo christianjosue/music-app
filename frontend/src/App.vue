@@ -105,6 +105,7 @@ const getTrack = async (track, index, idTrack, idTracklist) => {
     currentTrack.value = track;
     playTrack.value = true;
   }).then(() => {
+    console.log(audio.value);
     idPlayingTrack.value = idTrack;
     idPlayingTracklist.value = idTracklist;
   });

@@ -31,7 +31,10 @@ class TrackController extends Controller
             $request = $s3->createPresignedRequest($cmd, '+20 minutes');
             $presignedUrl = (string) $request->getUri();
 
-            return response()->json(['url' => $presignedUrl]);
+            $test = file_get_contents('http://python:5000/run-script');
+
+
+            return response()->json(['url' => $presignedUrl, 'test' => $test]);
         } catch (AwsException $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
