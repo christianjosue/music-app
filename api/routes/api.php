@@ -21,4 +21,4 @@ use Illuminate\Support\Facades\Route;
 // });
 Route::get('/tracklist/{id}', [TracklistController::class, 'tracklist']);
 Route::get('/tracklists/{id}', [TracklistController::class, 'tracklists']);
-Route::get('/audio/{audio}', [TrackController::class, 'getAudio']);
+Route::post('/getTrack', [TrackController::class, 'getTrack']);

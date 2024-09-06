@@ -1,14 +1,19 @@
-from flask import Flask
-from lyricsgenius import Genius
+from flask import Flask, request, jsonify
+import syncedlyrics
+import logging
 
 app = Flask(__name__)
 
-@app.route('/get-lyrics')
+logging.basicConfig(level=logging.INFO)
+
+@app.route('/get-lyrics', methods = ['POST'])
 def get_lyrics():
-    token = "QHDDpxgdqrSFP4EaPVWXGqGHJNto-EAMkxtCPAykHgid6c7qwyYFiHqcZv2twcUw"
-    genius = Genius(token)
-    song = genius.search_song("JC Reyes", "Dejavu")
-    return song.lyrics
+    data = request.get_json()
+    song = data['song']
+    artist = data['artist']
+    lrc = syncedlyrics.search("[{}] [{}]".format(song, artist))
+
+    return jsonify({'lyrics': lrc})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

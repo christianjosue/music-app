@@ -7,7 +7,7 @@ import Player from "./components/Player.vue";
 import Library from "./components/Library.vue";
 import LibraryMenu from "./components/LibraryMenu.vue";
 
-const audio = ref('');
+const song = ref('');
 const user = ref({});
 const currentTrack = ref({});
 const currentTracklist = ref({});
@@ -21,6 +21,7 @@ const isLibrary = ref(false);
 const isHome = ref(true);
 const playTrack = ref(true);
 const playlistColor = ref('#838383');
+var lyricsObject = {};
 provide('isPlaying', playTrack);
 provide('idPlayingTrack', idPlayingTrack);
 provide('setCurrentTrack', setCurrentTrack);
@@ -98,14 +99,24 @@ function setCurrentTrack(idTrack, idTracklist, isTracklistPlayer = 0) {
 }
 // Get the specified track from the AWS S3 bucket
 const getTrack = async (track, index, idTrack, idTracklist) => {
-  const response = fetch(`${API_URL}/api/audio/${track.src}`);
+  const response = fetch(`${API_URL}/api/getTrack`, {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      "artist": "JC Reyes",
+      "song": "Dejavu",
+      "src": track.src
+    })
+  });
   response.then(async (res) => {
-    audio.value = await res.json();
+    song.value = await res.json();
     currentIndex.value = index;
     currentTrack.value = track;
     playTrack.value = true;
   }).then(() => {
-    console.log(audio.value);
+    lyricsToObject();
     idPlayingTrack.value = idTrack;
     idPlayingTracklist.value = idTracklist;
   });
@@ -117,6 +128,20 @@ function checkSelectedTracklist(id) {
 // Check if the playing tracklist is the same that the given one
 function checkPlayingTracklist(idTracklist) {
   return idPlayingTracklist.value == idTracklist;
+}
+
+// Transforms the string where lyrics comes into an object with the desired format
+function lyricsToObject() {
+  let lyrics = song.value.lyrics.split("\n");
+  lyrics.forEach(line => {
+    let time = line.substring(line.indexOf("[") + 1, line.indexOf("]"));
+    let text = line.substring(line.indexOf("]") + 2);
+    let timeArray = time.split(":");
+    let minutes = parseInt(timeArray[0]);
+    let seconds = parseFloat(timeArray[1]);
+    let totalTime = minutes * 60 + seconds;
+    lyricsObject = { ...lyricsObject, [totalTime]: text };
+  });
 }
 </script>
 
@@ -169,7 +194,8 @@ function checkPlayingTracklist(idTracklist) {
   </div>
   <div class="player">
     <Player
-      :audioUrl="audio.url"
+      :audio-url="song.url"
+      :lyrics="lyricsObject"
       :current-track="currentTrack"
       :sound-view="soundView"
       :playlist-color="playlistColor"

@@ -3,15 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 use Aws\S3\S3Client;
-use Aws\Exception\AwsException;
 
 class TrackController extends Controller
 {
-    public function getAudio($audio)
+    public function getTrack(Request $request)
     {
         $s3 = new S3Client([
             'version' => 'latest',
@@ -25,15 +25,20 @@ class TrackController extends Controller
         try {
             $cmd = $s3->getCommand('GetObject', [
                 'Bucket' => env('AWS_BUCKET'),
-                'Key'    => $audio
+                'Key'    => $request->input('src')
             ]);
 
-            $request = $s3->createPresignedRequest($cmd, '+20 minutes');
-            $presignedUrl = (string) $request->getUri();
+            $response = $s3->createPresignedRequest($cmd, '+20 minutes');
+            $presignedUrl = (string) $response->getUri();
 
-            $lyrics = file_get_contents('http://python:5000/get-lyrics');
+            $lyricsResponse = Http::post('http://python:5000/get-lyrics', [
+                'artist' => $request->input('artist'),
+                'song' => $request->input('song'),
+            ]);
+            
+            $lyrics = $lyricsResponse->json();
 
-            return response()->json(['url' => $presignedUrl, 'lyrics' => $lyrics]);
+            return response()->json(['url' => $presignedUrl, 'lyrics' => $lyrics['lyrics']]);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

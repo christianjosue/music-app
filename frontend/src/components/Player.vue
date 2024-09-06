@@ -31,6 +31,10 @@ const props = defineProps({
   },
   audioUrl: {
     type: String
+  },
+  lyrics: {
+    type: Object,
+    default: {}
   }
 });
 var audio;
@@ -66,6 +70,7 @@ onMounted(() => {
   audio.src = props.audioUrl;
   audio.ontimeupdate = () => {
     generateTime();
+    updateLyrics();
   };
   audio.onloadedmetadata = () => {
     generateTime();
@@ -146,6 +151,15 @@ function generateTime() {
   }
   duration.value = `${durmin}:${dursec}`;
   currentTime.value = `${curmin}:${cursec}`;
+}
+
+function updateLyrics() {
+  console.log("Audio current time: " + audio.currentTime);
+  for (const [time, text] of Object.entries(props.lyrics)) {
+    if (audio.currentTime >= time - 1 && audio.currentTime <= time + 1) {
+      console.log(text);
+    }
+  }
 }
 
 function resetPlayer() {
