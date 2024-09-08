@@ -6,6 +6,7 @@ import IconNextTrack from "./icons/IconNextTrack.vue";
 import IconPrevTrack from "./icons/IconPrevTrack.vue";
 import IconFavourite from "./icons/IconFavourite.vue";
 import IconPlaylist from "./icons/IconPlaylist.vue";
+import IconLyrics from "./icons/IconLyrics.vue";
 const props = defineProps({
   currentTrack: {
     type: Object,
@@ -35,6 +36,9 @@ const props = defineProps({
   lyrics: {
     type: Object,
     default: {}
+  },
+  updateLyrics: {
+    type: Function
   }
 });
 var audio;
@@ -48,6 +52,7 @@ const colorVolume = ref("#fff");
 const currentProgressTrack = ref(0);
 const colorProgressTrack = ref("#fff");
 const reload = ref(true);
+const activeLyricsIcon = ref(false);
 const volumeIcon = computed(() => {
   switch (true) {
     case volume.value === 0:
@@ -70,7 +75,7 @@ onMounted(() => {
   audio.src = props.audioUrl;
   audio.ontimeupdate = () => {
     generateTime();
-    updateLyrics();
+    props.updateLyrics(audio);
   };
   audio.onloadedmetadata = () => {
     generateTime();
@@ -151,15 +156,6 @@ function generateTime() {
   }
   duration.value = `${durmin}:${dursec}`;
   currentTime.value = `${curmin}:${cursec}`;
-}
-
-function updateLyrics() {
-  console.log("Audio current time: " + audio.currentTime);
-  for (const [time, text] of Object.entries(props.lyrics)) {
-    if (audio.currentTime >= time - 1 && audio.currentTime <= time + 1) {
-      console.log(text);
-    }
-  }
 }
 
 function resetPlayer() {
@@ -264,6 +260,13 @@ function updateProgressBar() {
       </div>
     </div>
     <div class="player-options">
+      <IconLyrics 
+        @click="
+          $emit('showLyrics');
+          activeLyricsIcon = !activeLyricsIcon;
+        "
+        :active-lyrics-icon="activeLyricsIcon"
+      />
       <IconPlaylist 
         @active-sound-view="$emit('activeSoundView')"
         @change-playlist-color="$emit('changePlaylistColor', $event)"

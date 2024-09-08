@@ -6,21 +6,27 @@ import Search from "./components/Search.vue";
 import Player from "./components/Player.vue";
 import Library from "./components/Library.vue";
 import LibraryMenu from "./components/LibraryMenu.vue";
+import Lyrics from "./components/Lyrics.vue";
 
-const song = ref('');
-const user = ref({});
+const HOME_VIEW = 1;
+const SEARCH_VIEW = 2;
+const LIBRARY_VIEW = 3;
+const LYRICS_VIEW = 4;
+
+const currentIndex = ref(0);
+const currentLyricsLine = ref("");
 const currentTrack = ref({});
 const currentTracklist = ref({});
-const idTracklist = ref(0);
-const currentIndex = ref(0);
+const currentView = ref(HOME_VIEW);
 const idPlayingTrack = ref(0);
 const idPlayingTracklist = ref(0);
-const soundView = ref(false);
-const isSearch = ref(false);
-const isLibrary = ref(false);
-const isHome = ref(true);
-const playTrack = ref(true);
+const idTracklist = ref(0);
 const playlistColor = ref('#838383');
+const playTrack = ref(true);
+const song = ref('');
+const soundView = ref(false);
+const user = ref({});
+
 var lyricsObject = {};
 provide('isPlaying', playTrack);
 provide('idPlayingTrack', idPlayingTrack);
@@ -105,8 +111,8 @@ const getTrack = async (track, index, idTrack, idTracklist) => {
         "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      "artist": "JC Reyes",
-      "song": "Dejavu",
+      "artist": track.artists[0].name,
+      "song": track.title,
       "src": track.src
     })
   });
@@ -133,6 +139,7 @@ function checkPlayingTracklist(idTracklist) {
 // Transforms the string where lyrics comes into an object with the desired format
 function lyricsToObject() {
   let lyrics = song.value.lyrics.split("\n");
+  lyricsObject = {};
   lyrics.forEach(line => {
     let time = line.substring(line.indexOf("[") + 1, line.indexOf("]"));
     let text = line.substring(line.indexOf("]") + 2);
@@ -143,19 +150,45 @@ function lyricsToObject() {
     lyricsObject = { ...lyricsObject, [totalTime]: text };
   });
 }
+
+// Set the current main view
+// 1: Home
+// 2: Search
+// 3: Library
+// 4: Lyrics
+function setCurrentView(view) {
+  currentView.value = view;
+}
+
+// Checks if the specified view is the current main view
+function checkCurrentView(view) {
+  return currentView.value == view;
+}
+
+// Update the current line of the lyrics while song is playing
+function updateLyrics(audio) {
+  console.log("Audio current time: " + audio.currentTime);
+  for (const [time, text] of Object.entries(lyricsObject)) {
+    if (audio.currentTime >= time - 1 && audio.currentTime <= time + 1) {
+      currentLyricsLine.value = time;
+      console.log(text);
+    }
+  }
+}
+
 </script>
 
 <template>
   <div class="container">
     <div class="menu">
       <div class="menu-top">
-        <div class="menu-item" @click="isHome = true; isLibrary = false; isSearch = false;">
-          <div :class="['menu-item-content', { active: isHome }]">
+        <div class="menu-item" @click="setCurrentView(HOME_VIEW)">
+          <div :class="['menu-item-content', { active: currentView == HOME_VIEW }]">
             <font-awesome-icon icon="fa-solid fa-house" class="icon" />Home
           </div>
         </div>
-        <div class="menu-item" @click="isHome = false; isLibrary = false; isSearch = true;">
-          <div :class="['menu-item-content', { active: isSearch }]">
+        <div class="menu-item" @click="setCurrentView(SEARCH_VIEW)">
+          <div :class="['menu-item-content', { active: currentView == SEARCH_VIEW }]">
             <font-awesome-icon
               icon="fa-solid fa-magnifying-glass"
               class="icon"
@@ -165,7 +198,7 @@ function lyricsToObject() {
       </div>
       <div class="menu-bottom">
         <div class="menu-item library">
-          <div :class="['menu-item-content', { active: isLibrary }]">
+          <div :class="['menu-item-content', { active: currentView == LIBRARY_VIEW }]">
             <font-awesome-icon icon="fa-solid fa-headphones" class="icon" />Your library
           </div>
         </div>
@@ -175,21 +208,24 @@ function lyricsToObject() {
           :tracklist="tracklist"
           :is-active="checkSelectedTracklist(tracklist.id)"
           @click="
-            isHome = false;
-            isLibrary = true; 
-            isSearch = false; 
+            setCurrentView(LIBRARY_VIEW);
             setIdTracklist(tracklist.id);
           "
         />
       </div>
     </div>
     <div class="main">
-      <Home v-if="isHome" 
+      <Home v-if="checkCurrentView(HOME_VIEW)" 
         :sound-view="soundView" 
         @close-sound-view="soundView = false; playlistColor = '#838383';" 
       />
-      <Search v-else-if="isSearch" />
-      <Library v-else :tracklist="currentTracklist" />
+      <Search v-else-if="checkCurrentView(SEARCH_VIEW)" />
+      <Library v-else-if="checkCurrentView(LIBRARY_VIEW)" :tracklist="currentTracklist" />
+      <Lyrics 
+        v-else="checkCurrentView(LYRICS_VIEW)" 
+        :lyrics="lyricsObject"
+        :current-line="currentLyricsLine"
+      />
     </div>
   </div>
   <div class="player">
@@ -203,10 +239,12 @@ function lyricsToObject() {
       :set-current-track="setCurrentTrack"
       :id-playing-track="idPlayingTrack"
       :id-playing-tracklist="idPlayingTracklist"
+      :update-lyrics="updateLyrics"
       @active-sound-view="soundView = !soundView"
       @prev-track="prevTrack"
       @next-track="nextTrack"
       @change-playlist-color="handleChangePlaylistColor"
+      @show-lyrics="setCurrentView(LYRICS_VIEW)"
     />
   </div>
 </template>
