@@ -1,61 +1,63 @@
-version: '3'
+version: '3'  # Specifies the version of Docker Compose
+
 services:
   vuejs:
-    image: node:latest
+    image: node:latest  # Uses the latest version of the Node.js image
     ports:
-      - "5173:5173"
+      - "5173:5173"  # Maps port 5173 on the host to 5173 in the container for Vite (Vue.js dev server)
     volumes:
-      - ./frontend:/app
-    working_dir: /app
+      - ./frontend:/app  # Mounts the local 'frontend' directory to '/app' in the container
+    working_dir: /app  # Sets the working directory inside the container to '/app'
     command: >
       sh -c "npm install && npm rebuild esbuild && npm run dev -- --host 0.0.0.0"
+      # Installs dependencies, rebuilds esbuild, and runs the Vue.js dev server accessible on all network interfaces
 
   laravel:
     build:
-      context: ./api
+      context: ./api  # Builds the Laravel service from the 'api' directory
     ports:
-      - "8000:8000"
+      - "8000:8000"  # Maps port 8000 on the host to 8000 in the container for the Laravel dev server
     depends_on:
-      - db
-      - python
+      - db  # Laravel depends on the MySQL database service
+      - python  # Laravel also depends on the Python service
     volumes:
-      - ./api:/api
-    working_dir: /api
+      - ./api:/api  # Mounts the local 'api' directory to '/api' inside the container
+    working_dir: /api  # Sets the working directory inside the container to '/api'
     environment:
-      DB_HOST: db
-      DB_DATABASE: dbspotify
-      DB_USERNAME: admin
-      DB_PASSWORD: admin
+      DB_HOST: db  # Sets the database host to 'db' (MySQL service)
+      DB_DATABASE: dbspotify  # Sets the database name to 'dbspotify'
+      DB_USERNAME: admin  # Sets the database username to 'admin'
+      DB_PASSWORD: admin  # Sets the database password to 'admin'
 
   db:
-    image: mysql:latest
+    image: mysql:latest  # Uses the latest version of the MySQL image
     ports:
-      - "3306:3306"
+      - "3306:3306"  # Maps port 3306 on the host to 3306 in the container for MySQL
     environment:
-      MYSQL_DATABASE: dbspotify
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: admin
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_ROOT_HOST: '%'
+      MYSQL_DATABASE: dbspotify  # Initializes the database 'dbspotify'
+      MYSQL_USER: admin  # Creates a user 'admin'
+      MYSQL_PASSWORD: admin  # Sets the password for the 'admin' user
+      MYSQL_ROOT_PASSWORD: root  # Sets the root password for MySQL
+      MYSQL_ROOT_HOST: '%'  # Allows root connections from any host
     volumes:
-      - db_data:/var/lib/mysql
+      - db_data:/var/lib/mysql  # Mounts a named volume 'db_data' to persist MySQL data
 
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin
+    image: phpmyadmin/phpmyadmin  # Uses the official phpMyAdmin image
     ports:
-      - "8081:80"  # Puerto para phpMyAdmin
+      - "8081:80"  # Exposes phpMyAdmin on port 8081 on the host (80 in the container)
     environment:
-      PMA_HOST: db
-      MYSQL_ROOT_PASSWORD: admin
+      PMA_HOST: db  # phpMyAdmin connects to the MySQL service named 'db'
+      MYSQL_ROOT_PASSWORD: admin  # Provides the root password for phpMyAdmin access
 
   python:
     build: 
-      context: ./scripts
+      context: ./scripts  # Builds the Python service from the 'scripts' directory
     ports:
-      - "6000:6000"
+      - "6000:6000"  # Maps port 6000 on the host to 6000 in the container
     volumes:
-      - ./scripts:/scripts
-    working_dir: /scripts
+      - ./scripts:/scripts  # Mounts the local 'scripts' directory to '/scripts' inside the container
+    working_dir: /scripts  # Sets the working directory inside the container to '/scripts'
 
 volumes:
-  db_data:
+  db_data:  # Defines the named volume 'db_data' used by the MySQL service to persist database files

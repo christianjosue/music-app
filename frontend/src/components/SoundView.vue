@@ -3,6 +3,7 @@ import { inject } from 'vue';
 import IconFavourite from './icons/IconFavourite.vue';
 defineEmits(['close']);
 
+// Retrieves the information of the track is currently playing for displays it
 const track = inject('currentTrack');
 </script>
 

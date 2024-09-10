@@ -22,12 +22,15 @@ const addedAt = ref('');
 const onHover = ref(false);
 
 addedAt.value = formatTime();
+
+// Formats the date and time
 function formatTime() {
     const date = props.track.created_at.split('T')[0];
     var dateObject = new Date(date);
 
     var day = dateObject.getDate();
-    var month = dateObject.getMonth() + 1; // Note: months in JavaScript are between 0 and 11
+    // Months in JavaScript are between 0 and 11
+    var month = dateObject.getMonth() + 1;
     var year = dateObject.getFullYear();
 
     var months = [

@@ -12,6 +12,7 @@ defineProps({
 
 const color = ref("#2e114f");
 
+// Changes the gradient color of the background depending on the main color of the track's thumbnail
 function changeGradientColor() {
   Vibrant.from("/img/maldives.jpg").getPalette((err, palette) => {
     color.value = `rgb(${palette.Vibrant._rgb[0]}, ${palette.Vibrant._rgb[1]}, ${palette.Vibrant._rgb[2]})`;

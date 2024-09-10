@@ -13,21 +13,22 @@ const props = defineProps({
 });
 const lyricsContainer = ref(null);
 
-// Scrolls to the is actually playing
+// Scrolls to the line is currently playing
 function scrollToActiveLine() {
   nextTick(() => {
     const container = lyricsContainer.value;
     const activeLine = container.querySelector(".active");
 
     if (activeLine) {
-      const containerHeight = container.clientHeight;
-      const lineHeight = activeLine.clientHeight;
-      const scrollPosition = activeLine.offsetTop - containerHeight / 2 + lineHeight / 2;
+        // Calculate the proper position to set the active line
+        const containerHeight = container.clientHeight;
+        const lineHeight = activeLine.clientHeight;
+        const scrollPosition = activeLine.offsetTop - containerHeight / 2 + lineHeight / 2;
 
-      container.scrollTo({
-        top: scrollPosition,
-        behavior: "smooth"
-      });
+        container.scrollTo({
+            top: scrollPosition,
+            behavior: "smooth"
+        });
     }
   });
 }

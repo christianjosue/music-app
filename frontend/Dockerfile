@@ -1,15 +1,17 @@
+# Use node official image 
 FROM node:18.15-alpine
 
-# hacer la carpeta 'app' el directorio de trabajo actual
+# Set the working directory
 WORKDIR /app
 
-# copiar 'package.json' y 'package-lock.json' (si están disponibles)
+# Copy package json
 COPY package*.json ./
 
-# instalar dependencias del proyecto
+# Install all dependencies
 RUN npm install
 
 # copiar los archivos y carpetas del proyecto al directorio de trabajo actual (es decir, la carpeta 'app')
 COPY . .
 
+# Command to run the node server
 CMD ["npm", "run", "dev"]

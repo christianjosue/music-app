@@ -71,6 +71,7 @@ const thumbnail = computed(() => {
 
 onMounted(() => {
   const { emit } = getCurrentInstance();
+  // Set track's audio
   audio = new Audio();
   audio.src = props.audioUrl;
   audio.ontimeupdate = () => {
@@ -82,6 +83,7 @@ onMounted(() => {
   };
   audio.onended = () => {
     isPlaying.value = true;
+    // When a song ends, go to the next one and reset the player
     Promise.resolve()
       .then(() => emit('nextTrack'))
       .then(() => resetPlayer());
@@ -91,6 +93,7 @@ onMounted(() => {
 watch(
   () => props.currentTrack,
   () => {
+    // Every time the current track changes, the player is reseted
     if (audio && idPlayingTrackCopy.value != props.currentTrack.id || idPlayingTracklistCopy.value != props.idPlayingTracklist) {
       isPlaying.value = true;
       resetPlayer();
@@ -112,6 +115,7 @@ watch(
 watch(
   () => props.idPlayingTrack,
   () => {
+    // Every time the current track's id changes, it's saved a copy from its id and from his tracklist's id
     if (props.idPlayingTrack != 0) {
       idPlayingTrackCopy.value = props.idPlayingTrack;
       idPlayingTracklistCopy.value = props.idPlayingTracklist;
@@ -119,6 +123,7 @@ watch(
   }
 )
 
+// Plays or pause the current track
 function playMusic() {
   if (audio.paused) {
     audio.play();
@@ -129,6 +134,7 @@ function playMusic() {
   }
 }
 
+// Generates the time to display in the track's progress bar
 function generateTime() {
   let curmin, cursec;
   let durmin = Math.floor(audio.duration / 60);
@@ -158,6 +164,7 @@ function generateTime() {
   currentTime.value = `${curmin}:${cursec}`;
 }
 
+// Resets the player to start playing a track from the beggining
 function resetPlayer() {
   if (Object.keys(props.currentTrack).length > 0) {
     audio.currentTime = 0;
@@ -172,12 +179,14 @@ function resetPlayer() {
   }
 }
 
+// Changes the volume of the current track
 function changeVolume(e) {
   const range = e.target.value;
   volume.value = (range / e.target.max) * 100;
   audio.volume = volume.value / 100;
 }
 
+// Changes the part of the song you want to listen to
 function changeProgressTrack(e) {
   if (Object.keys(props.currentTrack).length > 0) {
     isPlaying.value = true;
@@ -185,14 +194,17 @@ function changeProgressTrack(e) {
   }
 }
 
+// Handles the color of the volume input
 function changeVolumeColor() {
   colorVolume.value = colorVolume.value == "#fff" ? "#1db954" : "#fff";
 }
 
+// Handles the color of the progress bar
 function changeProgressTrackColor() {
   colorProgressTrack.value = colorProgressTrack.value === "#fff" ? "#1db954" : "#fff";
 }
 
+// Updates the progress bar depending on the transcurred time of the track
 function updateProgressBar() {
   if (Object.keys(props.currentTrack).length > 0) {
     audio.currentTime = audio.duration * currentProgressTrack.value / 100;

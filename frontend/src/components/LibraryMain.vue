@@ -1,7 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue';
 
-const test = 'https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/d9/1f/38/d91f3855-1536-3197-eb2f-95fab4038503/PCSP_05459_A.jpg/1200x1200bb.jpg';
 const props = defineProps({
     tracklist: {
         type: Object,
@@ -18,6 +17,7 @@ numberFollowers.value = props.tracklist.followers.length;
 numberTracks.value = props.tracklist.tracks.length;
 totalTime.value = getTotalTime();
 
+// Gets total time of the tracklist in hours and minutes
 function getTotalTime() {
     let totalHours = 0;
     let totalMinutes = 0;

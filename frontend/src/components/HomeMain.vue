@@ -8,6 +8,7 @@ defineProps({
   },
 });
 
+// Handles the greet message displayed on the home view depending on the current time
 function greet() {
   const time = new Date();
   const hours = time.getHours();

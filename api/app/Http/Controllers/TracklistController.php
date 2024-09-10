@@ -9,7 +9,13 @@ use App\Models\User;
 
 class TracklistController extends Controller
 {
-    public function tracklist (int $id) {
+    /**
+     * Retrieves the tracklist by his id
+     * @param int $id
+     * @return json
+     */
+    public function tracklist (int $id) 
+    {
         try {
             $tracklist = Tracklist::where('id', $id)
                 ->with(['tracks.artists', 'owners', 'followers'])
@@ -21,7 +27,13 @@ class TracklistController extends Controller
         }
     }
 
-    public function tracklists(int $id) {
+    /**
+     * Retrieves all user's tracklists
+     * @param int $id User's id
+     * @return json
+     */
+    public function tracklists(int $id) 
+    {
         try {
             $tracklists = User::where('id', $id)
                 ->with(['tracklists.owners'])

@@ -136,7 +136,7 @@ function checkPlayingTracklist(idTracklist) {
   return idPlayingTracklist.value == idTracklist;
 }
 
-// Transforms the string where lyrics comes into an object with the desired format
+// Transforms the string where lyrics comes from into an object in the desired format
 function lyricsToObject() {
   let lyrics = song.value.lyrics.split("\n");
   lyricsObject = {};
@@ -169,7 +169,7 @@ function checkCurrentView(view) {
 function updateLyrics(audio) {
   console.log("Audio current time: " + audio.currentTime);
   for (const [time, text] of Object.entries(lyricsObject)) {
-    if (audio.currentTime >= time - 1 && audio.currentTime <= time + 1) {
+    if (parseFloat(audio.currentTime) >= parseFloat(time) - 0.2 && audio.currentTime <= parseFloat(time) + 0.2) {
       currentLyricsLine.value = time;
       console.log(text);
     }
