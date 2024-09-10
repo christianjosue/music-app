@@ -23,16 +23,18 @@ const idPlayingTracklist = ref(0);
 const idTracklist = ref(0);
 const playlistColor = ref('#838383');
 const playTrack = ref(true);
+const randomMode = ref(false);
 const song = ref('');
 const soundView = ref(false);
 const user = ref({});
 
 var lyricsObject = {};
+provide('currentTrack', currentTrack);
 provide('isPlaying', playTrack);
 provide('idPlayingTrack', idPlayingTrack);
-provide('setCurrentTrack', setCurrentTrack);
+provide('randomMode', randomMode);
 provide('checkPlayingTracklist', checkPlayingTracklist);
-provide("currentTrack", currentTrack);
+provide('setCurrentTrack', setCurrentTrack);
 
 // Watch when the value of tracklist's id changes to make a request to the server side to get the correspondant tracklist
 watch(
@@ -53,7 +55,11 @@ function prevTrack(currentTime) {
   // If the current track's time is under three seconds, change to the previous track
   // Otherwise if it's over that three seconds, track will be restarted
   if (currentTime < 3 && Object.keys(currentTrack.value).length > 0) {
-    if (currentIndex.value > 0) {
+    // If the random mode is selected, sets a random track of the tracklist excepts the one is currently playing
+    // Otherwise, it goes to the previous one in the list
+    if (randomMode.value) {
+      currentIndex.value = setRandomTrack();
+    } else if (currentIndex.value > 0) {
       currentIndex.value--;
     } else {
       currentIndex.value = 0;
@@ -66,15 +72,18 @@ function prevTrack(currentTime) {
 function nextTrack() {
   // Check if there is any track loaded in the player
   if (Object.keys(currentTrack.value).length > 0) {
-    // If there is a next track, play it, otherwise start from the first track of the tracklist
-    if (currentIndex.value < currentTracklist.value.tracks.length - 1) {
+    // If the random mode is active, plays a random track from the playlist except current one
+    if (randomMode.value) {
+      currentIndex.value = setRandomTrack();
+    } else if (currentIndex.value < currentTracklist.value.tracks.length - 1) {
+      // If there is a next track play it, otherwise start from the first track of the tracklist
       currentIndex.value++;
     } else {
       currentIndex.value = 0;
     }
-    let track = currentTracklist.value.tracks[currentIndex.value];
-    getTrack(track, currentIndex.value, track.id, currentTracklist.value.id);
   }
+  let track = currentTracklist.value.tracks[currentIndex.value];
+  getTrack(track, currentIndex.value, track.id, currentTracklist.value.id);
 }
 // Handle de background color of the app depending on the tracklist's main color
 function handleChangePlaylistColor(color) {
@@ -167,15 +176,23 @@ function checkCurrentView(view) {
 
 // Update the current line of the lyrics while song is playing
 function updateLyrics(audio) {
-  console.log("Audio current time: " + audio.currentTime);
   for (const [time, text] of Object.entries(lyricsObject)) {
     if (parseFloat(audio.currentTime) >= parseFloat(time) - 0.2 && audio.currentTime <= parseFloat(time) + 0.2) {
       currentLyricsLine.value = time;
-      console.log(text);
     }
   }
 }
 
+// Set a random track from the tracklist
+function setRandomTrack() {
+  let index = Math.floor(Math.random() * currentTracklist.value.tracks.length);
+  return index == currentIndex.value ? setRandomTrack() : index;
+}
+
+// Activates or desactivates the random mode
+function handleRandomMode() {
+  randomMode.value = !randomMode.value;
+}
 </script>
 
 <template>
@@ -240,6 +257,7 @@ function updateLyrics(audio) {
       :id-playing-track="idPlayingTrack"
       :id-playing-tracklist="idPlayingTracklist"
       :update-lyrics="updateLyrics"
+      :handle-random-mode="handleRandomMode"
       @active-sound-view="soundView = !soundView"
       @prev-track="prevTrack"
       @next-track="nextTrack"

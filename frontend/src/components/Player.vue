@@ -7,6 +7,7 @@ import IconPrevTrack from "./icons/IconPrevTrack.vue";
 import IconFavourite from "./icons/IconFavourite.vue";
 import IconPlaylist from "./icons/IconPlaylist.vue";
 import IconLyrics from "./icons/IconLyrics.vue";
+import IconShuffle from "./icons/IconShuffle.vue";
 const props = defineProps({
   currentTrack: {
     type: Object,
@@ -38,6 +39,9 @@ const props = defineProps({
     default: {}
   },
   updateLyrics: {
+    type: Function
+  },
+  handleRandomMode: {
     type: Function
   }
 });
@@ -234,6 +238,7 @@ function updateProgressBar() {
     </div>
     <div class="player">
       <div class="player-buttons">
+        <IconShuffle @click="handleRandomMode" />
         <IconPrevTrack
           @click="
             $emit('prevTrack', audio.currentTime);
