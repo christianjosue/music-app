@@ -24,6 +24,7 @@ const idTracklist = ref(0);
 const playlistColor = ref('#838383');
 const playTrack = ref(true);
 const randomMode = ref(false);
+const repeatMode = ref(false);
 const song = ref('');
 const soundView = ref(false);
 const user = ref({});
@@ -193,6 +194,11 @@ function setRandomTrack() {
 function handleRandomMode() {
   randomMode.value = !randomMode.value;
 }
+
+// Activates or desactivates the repeat mode
+function handleRepeatMode() {
+  repeatMode.value = !repeatMode.value;
+}
 </script>
 
 <template>
@@ -256,8 +262,10 @@ function handleRandomMode() {
       :set-current-track="setCurrentTrack"
       :id-playing-track="idPlayingTrack"
       :id-playing-tracklist="idPlayingTracklist"
+      :repeat-mode="repeatMode"
       :update-lyrics="updateLyrics"
       :handle-random-mode="handleRandomMode"
+      :handle-repeat-mode="handleRepeatMode"
       @active-sound-view="soundView = !soundView"
       @prev-track="prevTrack"
       @next-track="nextTrack"

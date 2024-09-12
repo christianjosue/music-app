@@ -8,6 +8,8 @@ import IconFavourite from "./icons/IconFavourite.vue";
 import IconPlaylist from "./icons/IconPlaylist.vue";
 import IconLyrics from "./icons/IconLyrics.vue";
 import IconShuffle from "./icons/IconShuffle.vue";
+import IconRepeat from "./icons/IconRepeat.vue";
+
 const props = defineProps({
   currentTrack: {
     type: Object,
@@ -43,6 +45,13 @@ const props = defineProps({
   },
   handleRandomMode: {
     type: Function
+  },
+  handleRepeatMode: {
+    type: Function
+  },
+  repeatMode: {
+    type: Boolean,
+    default: false
   }
 });
 var audio;
@@ -89,7 +98,11 @@ onMounted(() => {
     isPlaying.value = true;
     // When a song ends, go to the next one and reset the player
     Promise.resolve()
-      .then(() => emit('nextTrack'))
+      .then(() => {
+        if (!props.repeatMode) {
+          emit('nextTrack');
+        }
+      })
       .then(() => resetPlayer());
   };
 });
@@ -254,6 +267,10 @@ function updateProgressBar() {
             $emit('nextTrack');
             this.$nextTick(() => resetPlayer())
           "
+        />
+        <IconRepeat 
+          @click="handleRepeatMode"
+          :repeat-mode="repeatMode"
         />
       </div>
       <div class="progress" ref="progress">
