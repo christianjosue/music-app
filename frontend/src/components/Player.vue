@@ -43,6 +43,9 @@ const props = defineProps({
   updateLyrics: {
     type: Function
   },
+  updateLyricsProgressBar: {
+    type: Function
+  },
   handleRandomMode: {
     type: Function
   },
@@ -186,6 +189,7 @@ function resetPlayer() {
   if (Object.keys(props.currentTrack).length > 0) {
     audio.currentTime = 0;
     audio.src = props.audioUrl;
+    props.updateLyricsProgressBar(audio);
     setTimeout(() => {
       if (isPlaying.value) {
         audio.play();
@@ -208,6 +212,7 @@ function changeProgressTrack(e) {
   if (Object.keys(props.currentTrack).length > 0) {
     isPlaying.value = true;
     currentProgressTrack.value = e.target.value;
+    props.updateLyricsProgressBar(audio);
   }
 }
 

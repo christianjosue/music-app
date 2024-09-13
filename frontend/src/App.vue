@@ -177,10 +177,22 @@ function checkCurrentView(view) {
 
 // Update the current line of the lyrics while song is playing
 function updateLyrics(audio) {
-  for (const [time, text] of Object.entries(lyricsObject)) {
-    if (parseFloat(audio.currentTime) >= parseFloat(time) - 0.2 && audio.currentTime <= parseFloat(time) + 0.2) {
+  for (const [time, _] of Object.entries(lyricsObject)) {
+    if (parseFloat(audio.currentTime) >= parseFloat(time) - 0.15 && audio.currentTime <= parseFloat(time) + 0.15) {
       currentLyricsLine.value = time;
     }
+  }
+}
+
+// Update lyrics when progress bar is clicked
+function updateLyricsProgressBar(audio) {
+  let times = Object.keys(lyricsObject);
+  if (times.length > 0) {
+    setTimeout(() => {
+      currentLyricsLine.value = times.reduce(function(prev, current) {
+        return (Math.abs(current - audio.currentTime) < Math.abs(prev - audio.currentTime) ? current : prev);
+      });
+    }, 1000);
   }
 }
 
@@ -264,6 +276,7 @@ function handleRepeatMode() {
       :id-playing-tracklist="idPlayingTracklist"
       :repeat-mode="repeatMode"
       :update-lyrics="updateLyrics"
+      :update-lyrics-progress-bar="updateLyricsProgressBar"
       :handle-random-mode="handleRandomMode"
       :handle-repeat-mode="handleRepeatMode"
       @active-sound-view="soundView = !soundView"
