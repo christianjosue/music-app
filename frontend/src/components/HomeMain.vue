@@ -35,7 +35,7 @@ function greet() {
           class="playlist-thumbnail"
           style="background-image: url('/img/me-gustan.PNG')"
         ></div>
-        <div class="playlist-title">Canciones que te gustan</div>
+        <div class="playlist-title">Songs you like</div>
       </div>
       <div class="main-playlist-item">
         <div

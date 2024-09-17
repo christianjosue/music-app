@@ -26,6 +26,7 @@ const playTrack = ref(true);
 const randomMode = ref(false);
 const repeatMode = ref(false);
 const song = ref('');
+const songLoading = ref(false);
 const soundView = ref(false);
 const user = ref({});
 
@@ -53,6 +54,9 @@ onMounted(async () => {
 });
 // Go to the previous track in the tracklist
 function prevTrack(currentTime) {
+  // Pause the track and display the loader icon
+  songLoading.value = true;
+  playTrack.value = false;
   // If the current track's time is under three seconds, change to the previous track
   // Otherwise if it's over that three seconds, track will be restarted
   if (currentTime < 3 && Object.keys(currentTrack.value).length > 0) {
@@ -71,6 +75,9 @@ function prevTrack(currentTime) {
 }
 // Go to the next track in the tracklist
 function nextTrack() {
+  // Pause the track and display the loader icon
+  songLoading.value = true;
+  playTrack.value = false;
   // Check if there is any track loaded in the player
   if (Object.keys(currentTrack.value).length > 0) {
     // If the random mode is active, plays a random track from the playlist except current one
@@ -103,13 +110,18 @@ function setCurrentTrack(idTrack, idTracklist, isTracklistPlayer = 0) {
   if (Object.keys(currentTrack.value).length > 0 || isTracklistPlayer) {
     if (idTrack == 0) {
       playTrack.value = false;
-    } else {
+    } else if (idPlayingTrack.value != idTrack) {
+      songLoading.value = true;
+      // If idPlayingTrack is 0, that means the player has not started yet
+      if (idPlayingTrack.value !== 0) playTrack.value = false;
       // Search the selected track in the tracklist, get it and send it to the player
       currentTracklist.value.tracks.forEach((track, index) => {
         if (track.id == idTrack) {
           getTrack(track, index, idTrack, idTracklist);
         }
       });
+    } else {
+      playTrack.value = true;
     }
   }
 }
@@ -130,11 +142,12 @@ const getTrack = async (track, index, idTrack, idTracklist) => {
     song.value = await res.json();
     currentIndex.value = index;
     currentTrack.value = track;
-    playTrack.value = true;
   }).then(() => {
     lyricsToObject();
     idPlayingTrack.value = idTrack;
     idPlayingTracklist.value = idTracklist;
+    songLoading.value = false;
+    playTrack.value = true;
   });
 }
 // Check if the given tracklist is the same that the selected one
@@ -275,6 +288,7 @@ function handleRepeatMode() {
       :id-playing-track="idPlayingTrack"
       :id-playing-tracklist="idPlayingTracklist"
       :repeat-mode="repeatMode"
+      :song-loading="songLoading"
       :update-lyrics="updateLyrics"
       :update-lyrics-progress-bar="updateLyricsProgressBar"
       :handle-random-mode="handleRandomMode"

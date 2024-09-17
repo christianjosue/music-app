@@ -9,6 +9,7 @@ import IconPlaylist from "./icons/IconPlaylist.vue";
 import IconLyrics from "./icons/IconLyrics.vue";
 import IconShuffle from "./icons/IconShuffle.vue";
 import IconRepeat from "./icons/IconRepeat.vue";
+import IconLoader from "./icons/IconLoader.vue";
 
 const props = defineProps({
   currentTrack: {
@@ -53,6 +54,10 @@ const props = defineProps({
     type: Function
   },
   repeatMode: {
+    type: Boolean,
+    default: false
+  },
+  songLoading: {
     type: Boolean,
     default: false
   }
@@ -180,7 +185,8 @@ function generateTime() {
   if (cursec < 10) {
     cursec = "0" + cursec;
   }
-  duration.value = `${durmin}:${dursec}`;
+  // If the audio isn't loaded yet, we set the default duration to 00:00, otherwhise we display the real duration of the song
+  duration.value = (isNaN(durmin) || isNaN(dursec)) ? '00:00' : `${durmin}:${dursec}`;
   currentTime.value = `${curmin}:${cursec}`;
 }
 
@@ -263,7 +269,8 @@ function updateProgressBar() {
             this.$nextTick(() => resetPlayer())
           "
         />
-        <div class="play-btn">
+        <IconLoader v-show="songLoading" />
+        <div v-show="!songLoading" class="play-btn">
           <IconPlay v-show="!isPlaying" @click="setCurrentTrack(idPlayingTrackCopy, idPlayingTracklistCopy)" />
           <IconPause v-show="isPlaying" @click="setCurrentTrack(0, idPlayingTrackCopy)" />
         </div>

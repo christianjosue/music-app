@@ -19,18 +19,18 @@ totalTime.value = getTotalTime();
 
 // Gets total time of the tracklist in hours and minutes
 function getTotalTime() {
-    let totalHours = 0;
+    let totalSeconds = 0;
     let totalMinutes = 0;
     props.tracklist.tracks.forEach(track => {
-        const [hours, minutes] = track.duration.split(':');
-        totalHours += parseInt(hours);
-        totalMinutes += parseInt(minutes); 
+        const [minutes, seconds] = track.duration.split(':');
+        totalMinutes += parseInt(minutes);
+        totalSeconds += parseInt(seconds); 
     });
-    let hoursToAdd = Math.trunc(totalMinutes / 60);
-    let realMinutes = totalMinutes % 60;
-    totalHours += hoursToAdd;
+    let minutesToAdd = Math.trunc(totalSeconds / 60);
+    let realSeconds = totalSeconds % 60;
+    totalMinutes += minutesToAdd;
 
-    return `${totalHours}h ${realMinutes}min`;
+    return `${totalMinutes}min ${realSeconds}s`;
 }
 </script>
 
