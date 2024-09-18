@@ -2,13 +2,6 @@
 import { ref } from "vue";
 import MenuOptions from "./MenuOptions.vue";
 import HomeMain from "./HomeMain.vue";
-import SoundView from "./SoundView.vue";
-defineProps({
-  soundView: {
-    type: Boolean,
-    default: false,
-  },
-});
 
 const color = ref("#2e114f");
 
@@ -26,13 +19,12 @@ function changeGradientColor() {
       <MenuOptions :color="color" />
       <HomeMain @change-background="changeGradientColor" :color="color" />
     </div>
-    <SoundView v-show="soundView" @close="$emit('closeSoundView')" />
   </div>
 </template>
 
 <style scoped>
 .home-container {
-  width: 100%;
+  flex: 7;
   height: 100%;
   display: flex;
 }

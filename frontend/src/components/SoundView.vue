@@ -1,16 +1,31 @@
 <script setup>
-import { inject } from 'vue';
-import IconFavourite from './icons/IconFavourite.vue';
+import { ref, watch } from 'vue';
 defineEmits(['close']);
 
 // Retrieves the information of the track is currently playing for displays it
-const track = inject('currentTrack');
+const props = defineProps({
+  track: {
+    type: Object,
+    default: {}
+  }
+});
+const artist = ref({});
+watch(
+  () => props.track,
+  () => {
+    // Every time the current track changes, artist is updated
+    if (Object.keys(props.track).length > 0) {
+      artist.value = props.track.artists[0];
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
   <div class="sound-view-container">
     <div class="menu">
-        <div class="menu-title">Canciones que te gustan</div>
+        <div class="menu-title">Songs you like</div>
         <div @click="$emit('close')" class="cross-container">
           <font-awesome-icon class="cross" icon="fa-solid fa-xmark" />
         </div>
@@ -19,22 +34,15 @@ const track = inject('currentTrack');
     <div class="track-info-container">
       <div class="track-info">
         <h1>{{ track.title }}</h1>
-        <h4>{{ track.artist }}</h4>
-      </div>
-      <div class="track-options">
-        <div class="track-favourite">
-          <IconFavourite :width="16" />
-        </div>
-        <div class="track-more-options">...</div>
+        <h4>{{ artist.name }}</h4>
       </div>
     </div>
     <div class="artist-container">
-      <div class="artist-thumbnail" :style="{ backgroundImage: `url(${track.artistImg2})` }"></div>
+      <div class="artist-thumbnail" :style="{ backgroundImage: `url(${artist.thumbnail})` }"></div>
       <div class="artist-info">
         <h1>{{ track.artist }}</h1>
         <div class="artist-options">
-          <div class="monthly-listeners">{{ track.monthlyListeners }} monthly listeners</div>
-          <div class="follow-btn">Follow</div>
+          <div class="monthly-listeners">{{ artist.monthlyListeners }} monthly listeners</div>
         </div>
       </div>
     </div>
@@ -47,7 +55,7 @@ const track = inject('currentTrack');
   color: white;
   border-radius: 10px;
   height: 100%;
-  flex: 1;
+  flex: 3;
   margin-left: 10px;
   box-sizing: border-box;
   padding: 15px;
@@ -155,20 +163,9 @@ const track = inject('currentTrack');
   justify-content: space-between;
   align-items: center;
 }
-.follow-btn {
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  padding: 7px 15px;
-  font-size: 14px;
-  font-weight: 400;
-  background: transparent;
-}
 .monthly-listeners {
   color: #838383;
 }
-
-
-
 
 ::-webkit-scrollbar {
   width: 12px;

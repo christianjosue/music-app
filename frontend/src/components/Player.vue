@@ -20,7 +20,6 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  playlistColor: String,
   playTrack: {
     type: Boolean,
     default: false
@@ -315,9 +314,7 @@ function updateProgressBar() {
       />
       <IconPlaylist 
         @active-sound-view="$emit('activeSoundView')"
-        @change-playlist-color="$emit('changePlaylistColor', $event)"
         :is-active="soundView"
-        :color="playlistColor"
         />
       <font-awesome-icon
         :icon="['fas', `volume-${volumeIcon}`]"

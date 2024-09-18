@@ -7,6 +7,7 @@ import Player from "./components/Player.vue";
 import Library from "./components/Library.vue";
 import LibraryMenu from "./components/LibraryMenu.vue";
 import Lyrics from "./components/Lyrics.vue";
+import SoundView from "./components/SoundView.vue";
 
 const HOME_VIEW = 1;
 const SEARCH_VIEW = 2;
@@ -21,7 +22,6 @@ const currentView = ref(HOME_VIEW);
 const idPlayingTrack = ref(0);
 const idPlayingTracklist = ref(0);
 const idTracklist = ref(0);
-const playlistColor = ref('#838383');
 const playTrack = ref(true);
 const randomMode = ref(false);
 const repeatMode = ref(false);
@@ -31,7 +31,6 @@ const soundView = ref(false);
 const user = ref({});
 
 var lyricsObject = {};
-provide('currentTrack', currentTrack);
 provide('isPlaying', playTrack);
 provide('idPlayingTrack', idPlayingTrack);
 provide('randomMode', randomMode);
@@ -54,12 +53,12 @@ onMounted(async () => {
 });
 // Go to the previous track in the tracklist
 function prevTrack(currentTime) {
-  // Pause the track and display the loader icon
-  songLoading.value = true;
-  playTrack.value = false;
   // If the current track's time is under three seconds, change to the previous track
   // Otherwise if it's over that three seconds, track will be restarted
   if (currentTime < 3 && Object.keys(currentTrack.value).length > 0) {
+    // Pause the track and display the loader icon
+    songLoading.value = true;
+    playTrack.value = false;
     // If the random mode is selected, sets a random track of the tracklist excepts the one is currently playing
     // Otherwise, it goes to the previous one in the list
     if (randomMode.value) {
@@ -75,11 +74,11 @@ function prevTrack(currentTime) {
 }
 // Go to the next track in the tracklist
 function nextTrack() {
-  // Pause the track and display the loader icon
-  songLoading.value = true;
-  playTrack.value = false;
   // Check if there is any track loaded in the player
   if (Object.keys(currentTrack.value).length > 0) {
+    // Pause the track and display the loader icon
+    songLoading.value = true;
+    playTrack.value = false;
     // If the random mode is active, plays a random track from the playlist except current one
     if (randomMode.value) {
       currentIndex.value = setRandomTrack();
@@ -89,16 +88,8 @@ function nextTrack() {
     } else {
       currentIndex.value = 0;
     }
-  }
-  let track = currentTracklist.value.tracks[currentIndex.value];
-  getTrack(track, currentIndex.value, track.id, currentTracklist.value.id);
-}
-// Handle de background color of the app depending on the tracklist's main color
-function handleChangePlaylistColor(color) {
-  if (soundView.value == true) {
-    playlistColor.value = '#1db954';
-  } else {
-    playlistColor.value = color;
+    let track = currentTracklist.value.tracks[currentIndex.value];
+    getTrack(track, currentIndex.value, track.id, currentTracklist.value.id);
   }
 }
 // Set the value of the tracklist's id
@@ -224,6 +215,13 @@ function handleRandomMode() {
 function handleRepeatMode() {
   repeatMode.value = !repeatMode.value;
 }
+
+// Show or hide the sound view
+function handleSoundView() {
+  if (Object.keys(currentTrack.value).length > 0) {
+    soundView.value = !soundView.value;
+  }
+}
 </script>
 
 <template>
@@ -263,16 +261,24 @@ function handleRepeatMode() {
       </div>
     </div>
     <div class="main">
-      <Home v-if="checkCurrentView(HOME_VIEW)" 
-        :sound-view="soundView" 
-        @close-sound-view="soundView = false; playlistColor = '#838383';" 
+      <Home 
+        v-if="checkCurrentView(HOME_VIEW)" 
+        :sound-view="soundView"
       />
       <Search v-else-if="checkCurrentView(SEARCH_VIEW)" />
-      <Library v-else-if="checkCurrentView(LIBRARY_VIEW)" :tracklist="currentTracklist" />
+      <Library 
+        v-else-if="checkCurrentView(LIBRARY_VIEW)" 
+        :tracklist="currentTracklist" 
+      />
       <Lyrics 
         v-else="checkCurrentView(LYRICS_VIEW)" 
         :lyrics="lyricsObject"
         :current-line="currentLyricsLine"
+      />
+      <SoundView 
+        v-show="soundView"
+        :track="currentTrack"
+        @close="soundView = false" 
       />
     </div>
   </div>
@@ -282,7 +288,6 @@ function handleRepeatMode() {
       :lyrics="lyricsObject"
       :current-track="currentTrack"
       :sound-view="soundView"
-      :playlist-color="playlistColor"
       :play-track="playTrack"
       :set-current-track="setCurrentTrack"
       :id-playing-track="idPlayingTrack"
@@ -293,10 +298,9 @@ function handleRepeatMode() {
       :update-lyrics-progress-bar="updateLyricsProgressBar"
       :handle-random-mode="handleRandomMode"
       :handle-repeat-mode="handleRepeatMode"
-      @active-sound-view="soundView = !soundView"
+      @active-sound-view="handleSoundView"
       @prev-track="prevTrack"
       @next-track="nextTrack"
-      @change-playlist-color="handleChangePlaylistColor"
       @show-lyrics="setCurrentView(LYRICS_VIEW)"
     />
   </div>
@@ -341,6 +345,7 @@ function handleRepeatMode() {
 .main {
   flex: 4;
   border-radius: 10px;
+  display: flex;
 }
 
 .menu-item {

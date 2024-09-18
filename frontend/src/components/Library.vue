@@ -12,19 +12,25 @@ const props = defineProps({
 </script>
 
 <template>
-<MenuOptions />
-<div v-if="Object.keys(tracklist).length > 0" class="container">
-  <LibraryMain :tracklist="tracklist" />
-  <LibraryList :tracks="tracklist.tracks" :id-tracklist="tracklist.id"/>
-</div>
-<div v-if="!Object.keys(tracklist).length" class="kabobloader">
-  <div class="bounce1"></div>
-  <div class="bounce2"></div>
-  <div class="bounce3"></div>
-</div>
+  <div class="library-container">
+    <MenuOptions />
+    <div v-if="Object.keys(tracklist).length > 0" class="container">
+      <LibraryMain :tracklist="tracklist" />
+      <LibraryList :tracks="tracklist.tracks" :id-tracklist="tracklist.id"/>
+    </div>
+    <div v-if="!Object.keys(tracklist).length" class="kabobloader">
+      <div class="bounce1"></div>
+      <div class="bounce2"></div>
+      <div class="bounce3"></div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
+.library-container {
+  flex: 7;
+}
+
 h1, h3 {
     color: white;
 }
@@ -49,7 +55,7 @@ body {
   left:0;
   position:absolute;
   width: 70px;
-  height:70px;
+  height: 70px;
 
 }
 
