@@ -8,6 +8,7 @@ import Library from "./components/Library.vue";
 import LibraryMenu from "./components/LibraryMenu.vue";
 import Lyrics from "./components/Lyrics.vue";
 import SoundView from "./components/SoundView.vue";
+import CryptoJS from 'crypto-js';
 
 const HOME_VIEW = 1;
 const SEARCH_VIEW = 2;
@@ -118,6 +119,7 @@ function setCurrentTrack(idTrack, idTracklist, isTracklistPlayer = 0) {
 }
 // Get the specified track from the AWS S3 bucket
 const getTrack = async (track, index, idTrack, idTracklist) => {
+  var lyrics = getLyricsFromLocalStorage(track.title);
   const response = fetch(`${API_URL}/api/getTrack`, {
     method: "POST",
     headers: {
@@ -126,11 +128,13 @@ const getTrack = async (track, index, idTrack, idTracklist) => {
     body: JSON.stringify({
       "artist": track.artists[0].name,
       "song": track.title,
-      "src": track.src
+      "src": track.src,
+      "lyrics": lyrics
     })
   });
   response.then(async (res) => {
     song.value = await res.json();
+    storeLyricsInLocalStorage(track.title, song.value.lyrics);
     currentIndex.value = index;
     currentTrack.value = track;
   }).then(() => {
@@ -221,6 +225,21 @@ function handleSoundView() {
   if (Object.keys(currentTrack.value).length > 0) {
     soundView.value = !soundView.value;
   }
+}
+
+// Store in localStorage a song's lyrics
+function storeLyricsInLocalStorage(songName, lyrics) {
+  if (getLyricsFromLocalStorage(songName) == "") {
+    let hash = CryptoJS.SHA256(songName).toString();
+    localStorage.setItem(hash, lyrics);
+  }
+}
+
+// Get the lyrics from localStorage in case it is stored
+function getLyricsFromLocalStorage(songName) {
+  let hash = CryptoJS.SHA256(songName).toString();
+  let lyrics = localStorage.getItem(hash);
+  return lyrics != null ? lyrics : "";
 }
 </script>
 

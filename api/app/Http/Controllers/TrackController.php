@@ -39,13 +39,18 @@ class TrackController extends Controller
             // Gets the presigned url of the audio track
             $presignedUrl = (string) $response->getUri();
 
-            // Make the request to python container to get the lyrics of the track
-            $lyricsResponse = Http::post('http://python:5000/get-lyrics', [
-                'artist' => $request->input('artist'),
-                'song' => $request->input('song'),
-            ]);
-            // Gets the response lyrics in LRC format
-            $lyrics = $lyricsResponse->json();
+            // If we don't have song's lyrics, we request it
+            if ($request->input('lyrics') == "") {
+                // Make the request to python container to get the lyrics of the track
+                $lyricsResponse = Http::post('http://python:5000/get-lyrics', [
+                    'artist' => $request->input('artist'),
+                    'song' => $request->input('song'),
+                ]);
+                // Gets the response lyrics in LRC format
+                $lyrics = $lyricsResponse->json();
+            } else {
+                $lyrics['lyrics'] = $request->input('lyrics');
+            }
 
             return response()->json(['url' => $presignedUrl, 'lyrics' => $lyrics['lyrics']]);
         } catch (Exception $e) {
