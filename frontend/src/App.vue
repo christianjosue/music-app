@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, provide, ref, watch } from "vue";
 import { API_URL } from '../config.js';
+import { useToast } from "vue-toastification";
 import Home from "./components/Home.vue";
 import Search from "./components/Search.vue";
 import Player from "./components/Player.vue";
@@ -8,6 +9,7 @@ import Library from "./components/Library.vue";
 import LibraryMenu from "./components/LibraryMenu.vue";
 import Lyrics from "./components/Lyrics.vue";
 import SoundView from "./components/SoundView.vue";
+import TracklistModal from "./components/TracklistModal.vue";
 import CryptoJS from 'crypto-js';
 
 const HOME_VIEW = 1;
@@ -29,6 +31,8 @@ const repeatMode = ref(false);
 const song = ref('');
 const songLoading = ref(false);
 const soundView = ref(false);
+const showTracklistModal = ref(false);
+const toast = useToast();
 const user = ref({});
 
 var lyricsObject = {};
@@ -48,10 +52,40 @@ watch(
   { immediate: true }
 );
 // Fetch de tracklists corresponding to the logged user
-onMounted(async () => {
+onMounted(() => {
+  getTracklists();
+});
+// Creates a new tracklist
+const createTracklist = async (tracklistData) => {
+  const formData = new FormData();
+  formData.append('name', tracklistData.tracklistName);
+  formData.append('privacy', tracklistData.privacy);
+  formData.append('thumbnail', tracklistData.thumbnail);
+  const response = await fetch(`${API_URL}/api/tracklist`, {
+    method: 'POST',
+    body: formData
+  });
+  const data = await response.json();
+  // Display the correspondant notification
+  if (data.tracklist == null) {
+    toast.error("An error occurred while creating the tracklist", {
+      timeout: 3000
+    });
+  } else {
+    toast.success("Tracklist created successfully!", {
+      timeout: 3000
+    });
+    // Close the dialog
+    showTracklistModal.value = false;
+    // Reload tracklists
+    getTracklists();
+  }
+}
+// Get user's tracklists
+const getTracklists = async () => {
   const response = await fetch(`${API_URL}/api/tracklists/1`);
   user.value = await response.json();
-});
+}
 // Go to the previous track in the tracklist
 function prevTrack(currentTime) {
   // If the current track's time is under three seconds, change to the previous track
@@ -266,6 +300,7 @@ function getLyricsFromLocalStorage(songName) {
           <div :class="['menu-item-content', { active: currentView == LIBRARY_VIEW }]">
             <font-awesome-icon icon="fa-solid fa-headphones" class="icon" />Your library
           </div>
+          <button @click="showTracklistModal = !showTracklistModal;" class="createTracklist">+</button>
         </div>
         <LibraryMenu 
           v-for="tracklist in user.tracklists"
@@ -280,6 +315,11 @@ function getLyricsFromLocalStorage(songName) {
       </div>
     </div>
     <div class="main">
+      <TracklistModal
+        @create-tracklist="createTracklist"
+        @close-dialog="showTracklistModal = !showTracklistModal"
+        :show-modal="showTracklistModal"
+      />
       <Home 
         v-if="checkCurrentView(HOME_VIEW)" 
         :sound-view="soundView"
@@ -359,6 +399,8 @@ function getLyricsFromLocalStorage(songName) {
 
 .library {
   padding: 15px 15px 30px 15px !important;
+  display: flex;
+  justify-content: space-between;
 }
 
 .main {
@@ -396,5 +438,24 @@ function getLyricsFromLocalStorage(songName) {
 
 .active {
   color: white !important;
+}
+
+.createTracklist {
+  background-color: #111;
+  border: 1px solid gray;
+  color: gray;
+  font-size: 20px;
+  padding: 2px 8px;
+  margin: 0;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all .3s ease;
+}
+
+.createTracklist:hover {
+  font-size: 22px;
+  color: black;
+  border: 1px solid white;
+  background-color: white;
 }
 </style>

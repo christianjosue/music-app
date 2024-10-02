@@ -2,7 +2,9 @@ import './assets/main.css'
 
 import { createApp } from 'vue'
 import App from './App.vue'
-
+/* import vue-toastification library and the css */
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
 /* import the fontawesome core */
 import { library } from '@fortawesome/fontawesome-svg-core'
 
@@ -37,4 +39,5 @@ library.add(faUserSecret, faHouse, faMagnifyingGlass, faCirclePlay, faVolumeXmar
 
 createApp(App)
 .component('font-awesome-icon', FontAwesomeIcon)
+.use(Toast)
 .mount('#app')
