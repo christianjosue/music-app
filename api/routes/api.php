@@ -21,4 +21,5 @@ use Illuminate\Support\Facades\Route;
 // });
 Route::get('/tracklist/{id}', [TracklistController::class, 'tracklist']);
 Route::get('/tracklists/{id}', [TracklistController::class, 'tracklists']);
+Route::post('/tracklist', [TracklistController::class, 'createTracklist']);
 Route::post('/getTrack', [TrackController::class, 'getTrack']);

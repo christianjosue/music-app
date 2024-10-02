@@ -25,7 +25,8 @@ COPY . .
 RUN composer install
 
 # Grants write permissions
-RUN chmod -R 777 storage bootstrap/cache
+RUN chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
 # Command to run laravel server
 CMD php artisan serve --host=0.0.0.0 --port=8000
