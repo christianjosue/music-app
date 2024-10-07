@@ -6,11 +6,16 @@ const props = defineProps({
         default: false
     }
 });
+const emit = defineEmits(['createTracklist', 'closeDialog']);
+
 const dialog = ref(null);
 const tracklistName = ref({});
 const privacy = ref(0);
 const thumbnailUrl = ref('');
 const thumbnailFile = ref(null);
+const nameError = ref(false);
+const thumbnailError = ref(false);
+const thumbnailInput = ref(null);
 
 watch(
   () => props.showModal,
@@ -25,13 +30,18 @@ watch(
 );
 
 // When image changes, thumbnail's preview also changes
-function onThumbnailChanges(e) {
+const onThumbnailChanges = (e) => {
 	const file = e.target.files[0];
-	thumbnailFile.value = file;
-    thumbnailUrl.value = URL.createObjectURL(file);
+	if (file != null && file != undefined && file != "") {
+		thumbnailFile.value = file;
+		thumbnailUrl.value = URL.createObjectURL(file);
+	} else {
+		thumbnailUrl.value = "";
+		thumbnailFile.value = null;
+	}
 }
 // Sends form data to parent's component to process and store it into the database
-function sendData() {
+const sendData = () => {
 	let name = tracklistName.value != null ? tracklistName.value.value : "";
 	let privacyOption = privacy.value != null ? privacy.value : 0;
 	let thumbnailImage = thumbnailFile.value != null ? thumbnailFile.value : 0;
@@ -42,6 +52,51 @@ function sendData() {
 		'thumbnail': thumbnailImage
 	};
 }
+// Validate all the fields of the form before submits
+const validateForm = () => {
+	let isValid = true;
+	if (tracklistName.value.value == "" || tracklistName.value.value == null || tracklistName.value.value == undefined) {
+		nameError.value = true;
+	} else {
+		nameError.value = false;
+	}
+
+	if (thumbnailFile.value == null || thumbnailFile.value == undefined) {
+		thumbnailError.value = true;
+	} else {
+		thumbnailError.value = false;
+	}
+
+	if (thumbnailError.value || nameError.value) {
+		isValid = false;
+	}
+
+	return isValid;
+}
+// Handle tracklist's creation
+const handleCreateTracklist = () => {
+	// If the form is valid, tracklist is created and fields are cleaned up
+	if (validateForm()) {
+		const data = sendData();
+		emit('createTracklist', data);
+		setTimeout(() => {
+			cleanFields();
+		}, 2000);
+	}
+}
+// Clean up all form fields
+const cleanFields = () => {
+	thumbnailUrl.value = "";
+	thumbnailFile.value = null;
+	thumbnailInput.value.value = "";
+	tracklistName.value.value = "";
+	privacy.value = 0;
+}
+// Handle when dialog closes
+const handleCloseDialog = () => {
+	cleanFields();
+	emit('closeDialog');
+}
 </script>
 
 <template>
@@ -50,18 +105,20 @@ function sendData() {
         <form>
             <label for="tracklistName">Tracklist's name</label>
             <input id="tracklistName" name="tracklistName" type="text" ref="tracklistName">
+			<div :class="['error-message', { 'display-error': nameError }]">Name is a required field</div>
             <div class="privacy-container">
                 <label class="privacy-label" for="privacy" ref="privacy">Privacy</label>
                 <input id="privacy" name="privacy" type="checkbox">
             </div>
             <label for="tracklistName">Thumbnail</label>
-            <input @change="onThumbnailChanges" type="file" accept=".jpeg, .jpg, .png">
+            <input @change="onThumbnailChanges" type="file" accept=".jpeg, .jpg, .png" ref="thumbnailInput">
             <div class="thumbnail-container">
-                <img v-if="thumbnailUrl != ''" :src="thumbnailUrl" alt="Thumbnail's preview" ref="thumbnail">
+				<img v-if="thumbnailUrl != ''" :src="thumbnailUrl" alt="Thumbnail's preview" ref="thumbnail">
+				<div :class="['error-message', { 'display-error': thumbnailError }]">Thumbnail is a required field</div>
             </div>
-            <div @click="$emit('createTracklist', sendData())" class="createBtn">Create</div>
+            <div @click="handleCreateTracklist" class="createBtn">Create</div>
         </form>
-        <button @click.prevent="$emit('closeDialog')" aria-label="close" class="x">❌</button>
+        <button @click.prevent="handleCloseDialog" aria-label="close" class="x">❌</button>
     </dialog>
 </template>
 
@@ -160,7 +217,7 @@ button.primary {
 input[type=text] {
     border: 1px solid gray;
     border-bottom: 2px solid #1db954;
-    margin-bottom: 25px;
+	margin-bottom: 7px;
     outline: none;
     padding: 10px;
     display: block;
@@ -170,7 +227,6 @@ input[type=text] {
 input[type=file] {
     display: block;
     width: 100%;
-    margin-bottom: 25px;
 }
 
 label {
@@ -180,7 +236,7 @@ label {
 }
 
 .privacy-container {
-    margin-bottom: 25px;
+    margin: 23px 0 25px 0;
     display: flex;
     align-items: center;
 }
@@ -214,6 +270,18 @@ label {
 img {
   max-width: 100%;
   max-height: 250px;
+  margin-top: 25px;
+}
+
+.error-message {
+	color: red;
+	font-size: 13px;
+	margin-top: 7px;
+	display: none;
+}
+
+.display-error {
+	display: block !important;
 }
 
 </style>
