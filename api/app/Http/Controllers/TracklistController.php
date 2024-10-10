@@ -6,8 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Tracklist;
-use App\Models\User;
+use App\Models\TracklistTrack;
 use App\Models\TracklistUser;
+use App\Models\User;
 
 class TracklistController extends Controller
 {
@@ -16,7 +17,7 @@ class TracklistController extends Controller
      * @param int $id
      * @return json
      */
-    public function tracklist (int $id) 
+    public function tracklist(int $id) 
     {
         try {
             $tracklist = [];
@@ -95,5 +96,26 @@ class TracklistController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    /**
+     * Deletes the specified tracklist
+     * @param $id
+     * @return json
+     */
+    public function deleteTracklist($id)
+    {
+        $success = false;
+        // Delete tracks of the tracklist
+        $result = TracklistTrack::where('idTracklist', $id)->delete();
+        if ($result > 0) {
+            // Delete the relationship between tracklist and user
+            $result = TracklistUser::where('idTracklist', $id)->delete();
+            if ($result > 0) {
+                $result = Tracklist::where('id', $id)->delete();
+                if ($result > 0) $success = true;
+            }
+        }
+        return response()->json(['success' => $success]);
     }
 }

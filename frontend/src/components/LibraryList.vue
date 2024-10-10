@@ -13,25 +13,14 @@ const props = defineProps({
     }
 });
 const setCurrentTrack = inject('setCurrentTrack');
+const openDeleteTracklistDialog = inject('openDeleteTracklistDialog');
 </script>
 
 <template>
 <div class="list-container">
     <div class="list-options">
-        <div class="options">
-            <font-awesome-icon icon="fa-solid fa-circle-play" class="play" />
-            <font-awesome-icon icon="fa-solid fa-shuffle" class="random hover-effect" />
-            <font-awesome-icon icon="fa-solid fa-plus" class="add hover-effect" />
-            <font-awesome-icon icon="fa-solid fa-circle-down" class="download hover-effect" />
-            <font-awesome-icon icon="fa-solid fa-ellipsis" class="more-options hover-effect" />
-        </div>
-        <div class="options">
-            <font-awesome-icon icon="fa-solid fa-magnifying-glass" class="search hover-effect" />
-            <div class="order">
-                <h6>Custom order</h6>
-                <font-awesome-icon icon="fa-solid fa-bars" class="bars" />
-            </div>
-        </div>
+        <font-awesome-icon :icon="['fas', 'pencil']" class="edit-icon" />
+        <font-awesome-icon @click="openDeleteTracklistDialog(idTracklist)" :icon="['fas', 'trash']" class="trash-icon"/>
     </div>
     <div class="tracklist">
         <table>
@@ -67,12 +56,11 @@ h6 {
     padding: 25px;
     width: 100%;
     height: 500px;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, .3) 0%, transparent 20%);
 }
 .list-options {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    justify-content: right;
+    gap: 20px;
 }
 .options {
     display: flex;
@@ -185,5 +173,20 @@ td {
 }
 .track:hover {
     background: rgba(255, 255, 255, .1);
+}
+.trash-icon,
+.edit-icon {
+    color: #838383;
+    font-size: 20px;
+    transition: all .3s ease;
+    cursor: pointer;
+}
+.trash-icon:hover {
+    color: red;
+    transform: scale(1.05);
+}
+.edit-icon:hover {
+    color: white;
+    transform: scale(1.05);
 }
 </style>

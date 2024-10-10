@@ -10,6 +10,7 @@ import LibraryMenu from "./components/LibraryMenu.vue";
 import Lyrics from "./components/Lyrics.vue";
 import SoundView from "./components/SoundView.vue";
 import TracklistModal from "./components/TracklistModal.vue";
+import DeleteTracklistModal from "./components/DeleteTracklistModal.vue";
 import CryptoJS from 'crypto-js';
 
 const HOME_VIEW = 1;
@@ -32,15 +33,12 @@ const song = ref('');
 const songLoading = ref(false);
 const soundView = ref(false);
 const showTracklistModal = ref(false);
+const showDeleteTracklistModal = ref(false);
+const idTracklistToDelete = ref(0);
 const toast = useToast();
 const user = ref({});
 
 var lyricsObject = {};
-provide('isPlaying', playTrack);
-provide('idPlayingTrack', idPlayingTrack);
-provide('randomMode', randomMode);
-provide('checkPlayingTracklist', checkPlayingTracklist);
-provide('setCurrentTrack', setCurrentTrack);
 
 // Watch when the value of tracklist's id changes to make a request to the server side to get the correspondant tracklist
 watch(
@@ -275,6 +273,43 @@ function getLyricsFromLocalStorage(songName) {
   let lyrics = localStorage.getItem(hash);
   return lyrics != null ? lyrics : "";
 }
+// Opens the delete tracklist modal
+const openDeleteTracklistDialog = (idTracklist) => {
+  showDeleteTracklistModal.value = true;
+  idTracklistToDelete.value = idTracklist;
+}
+// Closes delete tracklist modal
+const handleCloseDeleteDialog = () => showDeleteTracklistModal.value = false;
+// Removes the selected tracklist
+const deleteTracklist = async () => {
+  const response = await fetch(`${API_URL}/api/tracklist/${idTracklistToDelete.value}`, {
+    method: "DELETE"
+  });
+  const data = await response.json();
+  // Changes view
+  setCurrentView(HOME_VIEW);
+  // Closes the dialog
+  showDeleteTracklistModal.value = false;
+  // Display notifications
+  if (data.success) {
+    toast.success("Tracklist removed successfully", {
+      timeout: 3000
+    });
+  } else {
+    toast.error("An error ocurred removing the tracklist", {
+      timeout: 3000
+    });
+  }
+  // Reload the tracklist
+  getTracklists();
+}
+
+provide('isPlaying', playTrack);
+provide('idPlayingTrack', idPlayingTrack);
+provide('randomMode', randomMode);
+provide('checkPlayingTracklist', checkPlayingTracklist);
+provide('setCurrentTrack', setCurrentTrack);
+provide('openDeleteTracklistDialog', openDeleteTracklistDialog);
 </script>
 
 <template>
@@ -319,6 +354,11 @@ function getLyricsFromLocalStorage(songName) {
         @create-tracklist="createTracklist"
         @close-dialog="showTracklistModal = !showTracklistModal"
         :show-modal="showTracklistModal"
+      />
+      <DeleteTracklistModal 
+        :delete-tracklist="deleteTracklist"
+        :handle-close-dialog="handleCloseDeleteDialog" 
+        :show-delete-tracklist-modal="showDeleteTracklistModal"
       />
       <Home 
         v-if="checkCurrentView(HOME_VIEW)" 
