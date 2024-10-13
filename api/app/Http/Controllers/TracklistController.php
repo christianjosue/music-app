@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Storage;
 use App\Models\Tracklist;
 use App\Models\TracklistTrack;
 use App\Models\TracklistUser;
+use App\Models\Thumbnail;
 use App\Models\User;
 
 class TracklistController extends Controller
@@ -24,11 +24,8 @@ class TracklistController extends Controller
             // Check if there is an id to look for
             if ($id != 0) {
                 $tracklist = Tracklist::where('id', $id)
-                    ->with(['tracks.artists', 'owners', 'followers'])
+                    ->with(['tracks.artists', 'owners', 'followers', 'thumbnailImage'])
                     ->first();
-                // Once we got the tracklist, obtain thumbnail's url to display it on frontend
-                $tracklistUrl = url(Storage::url($tracklist->thumbnail));
-                $tracklist->thumbnail = $tracklistUrl;
             }
             
             return response()->json($tracklist);
@@ -46,13 +43,8 @@ class TracklistController extends Controller
     {
         try {
             $tracklists = User::where('id', $id)
-                ->with(['tracklists.owners'])
+                ->with(['tracklists.owners', 'tracklists.thumbnailImage'])
                 ->first();
-            // Once we got the tracklists, obtain every thumbnail's url to display them on frontend
-            foreach ($tracklists->tracklists as $tracklist) {
-                $thumbnailUrl = url(Storage::url($tracklist->thumbnail));
-                $tracklist->thumbnail = $thumbnailUrl;
-            }
 
             return response()->json($tracklists);
         } catch (\Exception $e) {
@@ -68,16 +60,10 @@ class TracklistController extends Controller
     public function createTracklist(Request $request)
     {
         try {
-            // Creates the new tracklist with the given request
-            $request->validate([
-                'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Puedes ajustar las reglas de validación según tus necesidades
-            ]);
-            // Store the thumbnail
-            $thumbnailPath = $request->file('thumbnail')->store('public/thumbnails');
             // Creates a tracklist
             $tracklist = new Tracklist();
-            $tracklist->name = $request->get('name');
-            $tracklist->thumbnail = $thumbnailPath;
+            $tracklist->name = $request->input('name');
+            $tracklist->thumbnail = $request->input('thumbnail');
             $tracklist->privacy = 0;
             $tracklist->created_by = 1;
             if ($tracklist->save()) {
@@ -92,10 +78,33 @@ class TracklistController extends Controller
             } else {
                 $tracklist = null;
             }
+
             return response()->json(['tracklist' => $tracklist]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    /**
+     * Edits the specified tracklist
+     * @param $id
+     * @return json
+     */
+    public function editTracklist(Request $request)
+    {
+        $success = false;
+        if ($request->exists('id')) {
+            $tracklist = Tracklist::where('id', $request->input('id'))->first();
+            if ($tracklist instanceof Tracklist) {
+                $tracklist->name = $request->input('name');
+                $tracklist->thumbnail = $request->input('thumbnail');
+                if ($tracklist->save()) {
+                    $success = true;
+                }
+            }
+        }
+
+        return response()->json(['success' => $success]);
     }
 
     /**
@@ -108,14 +117,13 @@ class TracklistController extends Controller
         $success = false;
         // Delete tracks of the tracklist
         $result = TracklistTrack::where('idTracklist', $id)->delete();
+        // Delete the relationship between tracklist and user
+        $result = TracklistUser::where('idTracklist', $id)->delete();
         if ($result > 0) {
-            // Delete the relationship between tracklist and user
-            $result = TracklistUser::where('idTracklist', $id)->delete();
-            if ($result > 0) {
-                $result = Tracklist::where('id', $id)->delete();
-                if ($result > 0) $success = true;
-            }
+            $result = Tracklist::where('id', $id)->delete();
+            if ($result > 0) $success = true;
         }
+
         return response()->json(['success' => $success]);
     }
 }

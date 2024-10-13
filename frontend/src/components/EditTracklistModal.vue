@@ -4,24 +4,36 @@ const props = defineProps({
     showModal: {
         type: Boolean,
         default: false
+    },
+    tracklist: {
+        type: Object,
+        default: {}
+    },
+	thumbnails: {
+		type: Object,
+		default: {}
+	},
+    closeModal: {
+        type: Function
+    },
+    editTracklist: {
+        type: Function
     }
 });
-const emit = defineEmits(['createTracklist', 'closeDialog']);
 
 const dialog = ref(null);
-const tracklistName = ref({});
-const privacy = ref(0);
-const thumbnailUrl = ref('');
-const thumbnailFile = ref(null);
+const tracklistName = ref("");
 const nameError = ref(false);
 const thumbnailError = ref(false);
-const thumbnailInput = ref(null);
+const selectedThumbnail = ref(0);
 
 watch(
   () => props.showModal,
   () => {
     if (props.showModal) {
         dialog.value.showModal();
+		selectedThumbnail.value = props.tracklist.thumbnail;
+		tracklistName.value = props.tracklist.name;
     } else if (dialog.value != null) {
 		dialog.value.close();
 	}
@@ -29,39 +41,24 @@ watch(
   { immediate: true }
 );
 
-// When image changes, thumbnail's preview also changes
-const onThumbnailChanges = (e) => {
-	const file = e.target.files[0];
-	if (file != null && file != undefined && file != "") {
-		thumbnailFile.value = file;
-		thumbnailUrl.value = URL.createObjectURL(file);
-	} else {
-		thumbnailUrl.value = "";
-		thumbnailFile.value = null;
-	}
-}
 // Sends form data to parent's component to process and store it into the database
 const sendData = () => {
-	let name = tracklistName.value != null ? tracklistName.value.value : "";
-	let privacyOption = privacy.value != null ? privacy.value : 0;
-	let thumbnailImage = thumbnailFile.value != null ? thumbnailFile.value : 0;
-
 	return {
-		'tracklistName': name,
-		'privacy': privacyOption,
-		'thumbnail': thumbnailImage
+        'id': props.tracklist.id,
+		'name': tracklistName.value,
+		'thumbnail': selectedThumbnail.value
 	};
 }
 // Validate all the fields of the form before submits
 const validateForm = () => {
 	let isValid = true;
-	if (tracklistName.value.value == "" || tracklistName.value.value == null || tracklistName.value.value == undefined) {
+	if (tracklistName.value == "" || tracklistName.value == null || tracklistName.value == undefined) {
 		nameError.value = true;
 	} else {
 		nameError.value = false;
 	}
 
-	if (thumbnailFile.value == null || thumbnailFile.value == undefined) {
+	if (selectedThumbnail.value == 0) {
 		thumbnailError.value = true;
 	} else {
 		thumbnailError.value = false;
@@ -73,12 +70,12 @@ const validateForm = () => {
 
 	return isValid;
 }
-// Handle tracklist's creation
-const handleCreateTracklist = () => {
+// Handle tracklist's edition
+const handleEditTracklist = () => {
 	// If the form is valid, tracklist is created and fields are cleaned up
 	if (validateForm()) {
 		const data = sendData();
-		emit('createTracklist', data);
+		props.editTracklist(data);
 		setTimeout(() => {
 			cleanFields();
 		}, 2000);
@@ -86,37 +83,39 @@ const handleCreateTracklist = () => {
 }
 // Clean up all form fields
 const cleanFields = () => {
-	thumbnailUrl.value = "";
-	thumbnailFile.value = null;
-	thumbnailInput.value.value = "";
-	tracklistName.value.value = "";
-	privacy.value = 0;
+	tracklistName.value = "";
+	selectedThumbnail.value = 0;
+	nameError.value = false;
+	thumbnailError.value = false;
 }
 // Handle when dialog closes
 const handleCloseDialog = () => {
 	cleanFields();
-	emit('closeDialog');
+    props.closeModal();
 }
+const checkSelectedThumbnail = (id) => selectedThumbnail.value == id;
 </script>
 
 <template>
     <dialog id="dialog" ref="dialog">
-        <h2>Create Tracklist</h2>
+        <h2>Edit Tracklist</h2>
         <form>
             <label for="tracklistName">Tracklist's name</label>
-            <input id="tracklistName" name="tracklistName" type="text" ref="tracklistName">
+            <input id="tracklistName" name="tracklistName" type="text" v-model="tracklistName">
 			<div :class="['error-message', { 'display-error': nameError }]">Name is a required field</div>
-            <div class="privacy-container">
-                <label class="privacy-label" for="privacy" ref="privacy">Privacy</label>
-                <input id="privacy" name="privacy" type="checkbox">
-            </div>
-            <label for="tracklistName">Thumbnail</label>
-            <input @change="onThumbnailChanges" type="file" accept=".jpeg, .jpg, .png" ref="thumbnailInput">
-            <div class="thumbnail-container">
-				<img v-if="thumbnailUrl != ''" :src="thumbnailUrl" alt="Thumbnail's preview" ref="thumbnail">
+            <label for="thumbnail" class="thumbnailLabel">Thumbnail</label>
+            <div class="thumbnails">
+				<div v-for="thumbnail in thumbnails" :key="thumbnail.id" class="thumbnail">
+					<img 
+						:src="thumbnail.src"
+						:class="{ active: checkSelectedThumbnail(thumbnail.id) }"
+						@click="selectedThumbnail = thumbnail.id"
+						alt="thumbnail"
+					>
+				</div>
 				<div :class="['error-message', { 'display-error': thumbnailError }]">Thumbnail is a required field</div>
-            </div>
-            <div @click="handleCreateTracklist" class="createBtn">Create</div>
+			</div>
+            <div @click="handleEditTracklist" class="edit-btn">Edit</div>
         </form>
         <button @click.prevent="handleCloseDialog" aria-label="close" class="x">❌</button>
     </dialog>
@@ -247,7 +246,7 @@ label {
     margin-bottom: 0px;
 }
 
-.createBtn {
+.edit-btn {
     display: inline-block;
     background-color: #1db954;
     padding: 10px 20px;
@@ -258,19 +257,13 @@ label {
     border-radius: 10px;
 }
 
-.createBtn:hover {
+.edit-btn:hover {
     transform: scale(1.05);
 }
 
 .thumbnail-container {
     width: 100%;
     margin-bottom: 25px;
-}
-
-img {
-  max-width: 100%;
-  max-height: 250px;
-  margin-top: 25px;
 }
 
 .error-message {
@@ -284,4 +277,31 @@ img {
 	display: block !important;
 }
 
+.thumbnails {
+	display: flex;
+	flex-wrap: wrap;
+	margin-bottom: 30px;
+}
+.thumbnail {
+	width: 150px;
+	height: 150px;
+	margin: 0 20px 20px 0;
+}
+img {
+	width: 100%;
+	height: 100%;
+	border-radius: 20px;
+	transition: all .3s ease;
+	cursor: pointer;
+}
+img:hover {
+	transform: scale(1.05);
+	border: 2px solid green;
+}
+img.active {
+	border: 2px solid green;
+}
+.thumbnailLabel {
+	margin-top: 15px;
+}
 </style>

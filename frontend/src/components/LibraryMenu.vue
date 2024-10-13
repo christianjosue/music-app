@@ -1,5 +1,4 @@
 <script setup>
-import { ref } from 'vue';
 
 const props = defineProps({
     tracklist: {
@@ -15,10 +14,10 @@ const props = defineProps({
 
 <template>
 <div :class="['menu-item', { active: isActive }]">
-    <img :src="tracklist.thumbnail" alt="thumbnail">
+    <img :src="tracklist.thumbnail_image.src" alt="thumbnail">
     <div class="menu-content">
         <h6>{{ tracklist.name }}</h6>
-        <p>Lista · {{ tracklist.owners[0].name }}</p>
+        <p>List · {{ tracklist.owners[0].name }}</p>
     </div>
 </div>
 </template>

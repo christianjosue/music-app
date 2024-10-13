@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use App\Http\Controllers\TracklistController;
 use App\Http\Controllers\TrackController;
+use App\Http\Controllers\ThumbnailController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,4 +24,6 @@ Route::get('/tracklist/{id}', [TracklistController::class, 'tracklist']);
 Route::get('/tracklists/{id}', [TracklistController::class, 'tracklists']);
 Route::delete('/tracklist/{id}', [TracklistController::class, 'deleteTracklist']);
 Route::post('/tracklist', [TracklistController::class, 'createTracklist']);
+Route::put('/tracklist', [TracklistController::class, 'editTracklist']);
 Route::post('/getTrack', [TrackController::class, 'getTrack']);
+Route::get('/thumbnails', [ThumbnailController::class, 'getThumbnails']);

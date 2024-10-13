@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, provide, ref, watch } from "vue";
+import { onMounted, provide, ref, watch, watchEffect } from "vue";
 import { API_URL } from '../config.js';
 import { useToast } from "vue-toastification";
 import Home from "./components/Home.vue";
@@ -9,7 +9,8 @@ import Library from "./components/Library.vue";
 import LibraryMenu from "./components/LibraryMenu.vue";
 import Lyrics from "./components/Lyrics.vue";
 import SoundView from "./components/SoundView.vue";
-import TracklistModal from "./components/TracklistModal.vue";
+import CreateTracklistModal from "./components/CreateTracklistModal.vue";
+import EditTracklistModal from "./components/EditTracklistModal.vue";
 import DeleteTracklistModal from "./components/DeleteTracklistModal.vue";
 import CryptoJS from 'crypto-js';
 
@@ -26,42 +27,40 @@ const currentView = ref(HOME_VIEW);
 const idPlayingTrack = ref(0);
 const idPlayingTracklist = ref(0);
 const idTracklist = ref(0);
+const idTracklistToDelete = ref(0);
 const playTrack = ref(true);
 const randomMode = ref(false);
 const repeatMode = ref(false);
+const showDeleteTracklistModal = ref(false);
+const showEditTracklistModal = ref(false);
+const showTracklistModal = ref(false);
 const song = ref('');
 const songLoading = ref(false);
 const soundView = ref(false);
-const showTracklistModal = ref(false);
-const showDeleteTracklistModal = ref(false);
-const idTracklistToDelete = ref(0);
+const thumbnails = ref([]);
 const toast = useToast();
+const tracklistToEdit = ref({});
 const user = ref({});
 
 var lyricsObject = {};
 
-// Watch when the value of tracklist's id changes to make a request to the server side to get the correspondant tracklist
-watch(
-  () => idTracklist.value,
-  async () => {
-    const response = await fetch(`${API_URL}/api/tracklist/${idTracklist.value}`);
-    currentTracklist.value = await response.json();
-  },
-  { immediate: true }
-);
-// Fetch de tracklists corresponding to the logged user
 onMounted(() => {
+  // Fetch tracklists corresponding to the logged user
   getTracklists();
+  // Fetch all the thumbnails
+  getThumbnails();
 });
 // Creates a new tracklist
 const createTracklist = async (tracklistData) => {
-  const formData = new FormData();
-  formData.append('name', tracklistData.tracklistName);
-  formData.append('privacy', tracklistData.privacy);
-  formData.append('thumbnail', tracklistData.thumbnail);
   const response = await fetch(`${API_URL}/api/tracklist`, {
     method: 'POST',
-    body: formData
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      'name': tracklistData.tracklistName,
+      'thumbnail': tracklistData.thumbnail
+    })
   });
   const data = await response.json();
   // Display the correspondant notification
@@ -164,18 +163,15 @@ const getTrack = async (track, index, idTrack, idTracklist) => {
       "lyrics": lyrics
     })
   });
-  response.then(async (res) => {
-    song.value = await res.json();
-    storeLyricsInLocalStorage(track.title, song.value.lyrics);
-    currentIndex.value = index;
-    currentTrack.value = track;
-  }).then(() => {
-    lyricsToObject();
-    idPlayingTrack.value = idTrack;
-    idPlayingTracklist.value = idTracklist;
-    songLoading.value = false;
-    playTrack.value = true;
-  });
+  song.value = await response.json();
+  storeLyricsInLocalStorage(track.title, song.value.lyrics);
+  currentIndex.value = index;
+  currentTrack.value = track;
+  lyricsToObject();
+  idPlayingTrack.value = idTrack;
+  idPlayingTracklist.value = idTracklist;
+  songLoading.value = false;
+  playTrack.value = true;
 }
 // Check if the given tracklist is the same that the selected one
 function checkSelectedTracklist(id) {
@@ -278,6 +274,12 @@ const openDeleteTracklistDialog = (idTracklist) => {
   showDeleteTracklistModal.value = true;
   idTracklistToDelete.value = idTracklist;
 }
+const openEditTracklistDialog = (tracklist) => {
+  showEditTracklistModal.value = true;
+  tracklistToEdit.value = tracklist;
+}
+// Closes Edit tracklist modal
+const closeEditModal = () => showEditTracklistModal.value = false;
 // Closes delete tracklist modal
 const handleCloseDeleteDialog = () => showDeleteTracklistModal.value = false;
 // Removes the selected tracklist
@@ -303,6 +305,50 @@ const deleteTracklist = async () => {
   // Reload the tracklist
   getTracklists();
 }
+// Edit tracklist
+const editTracklist = async (tracklist) => {
+  const response = await fetch(`${API_URL}/api/tracklist`, {
+    method: "PUT",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      "id": tracklist.id,
+      "name": tracklist.name,
+      "thumbnail": tracklist.thumbnail
+    })
+  });
+  const data = await response.json();
+  // Display the correspondant notification
+  if (data.success) {
+    toast.success("Tracklist edited successfully!", {
+      timeout: 3000
+    });
+  } else {
+    toast.error("An error occurred while editing the tracklist", {
+      timeout: 3000
+    });
+  }
+  closeEditModal();
+  // Reload lists of tracklists
+  getTracklists();
+  // Reload current tracklist view
+  reloadTracklist();
+}
+// Retrieve the data from the current tracklist
+const reloadTracklist = async () => {
+  const response = await fetch(`${API_URL}/api/tracklist/${idTracklist.value}`);
+  currentTracklist.value = await response.json();
+}
+// Retrieves all the thumbnails
+const getThumbnails = async () => {
+  const response = await fetch(`${API_URL}/api/thumbnails`);
+  thumbnails.value = await response.json();
+}
+// Watch when the value of tracklist's id changes to make a request to the server side to get the correspondant tracklist
+watchEffect(async () => {
+  reloadTracklist();
+});
 
 provide('isPlaying', playTrack);
 provide('idPlayingTrack', idPlayingTrack);
@@ -310,6 +356,7 @@ provide('randomMode', randomMode);
 provide('checkPlayingTracklist', checkPlayingTracklist);
 provide('setCurrentTrack', setCurrentTrack);
 provide('openDeleteTracklistDialog', openDeleteTracklistDialog);
+provide('openEditTracklistDialog', openEditTracklistDialog);
 </script>
 
 <template>
@@ -350,10 +397,18 @@ provide('openDeleteTracklistDialog', openDeleteTracklistDialog);
       </div>
     </div>
     <div class="main">
-      <TracklistModal
+      <CreateTracklistModal
         @create-tracklist="createTracklist"
         @close-dialog="showTracklistModal = !showTracklistModal"
         :show-modal="showTracklistModal"
+        :thumbnails="thumbnails"
+      />
+      <EditTracklistModal 
+        :show-modal="showEditTracklistModal"
+        :close-modal="closeEditModal"
+        :edit-tracklist="editTracklist"
+        :tracklist="tracklistToEdit"
+        :thumbnails="thumbnails"
       />
       <DeleteTracklistModal 
         :delete-tracklist="deleteTracklist"

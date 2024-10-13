@@ -3,24 +3,21 @@ import { inject, ref } from 'vue';
 import ListTrack from './ListTrack.vue';
 defineEmits(['playTrack', 'pauseTrack']);
 const props = defineProps({
-    tracks: {
-        type: Array,
-        default: []
-    },
-    idTracklist: {
-        type: Number,
-        default: 0
+    tracklist: {
+        type: Object,
+        default: {}
     }
 });
 const setCurrentTrack = inject('setCurrentTrack');
 const openDeleteTracklistDialog = inject('openDeleteTracklistDialog');
+const openEditTracklistDialog = inject('openEditTracklistDialog');
 </script>
 
 <template>
 <div class="list-container">
     <div class="list-options">
-        <font-awesome-icon :icon="['fas', 'pencil']" class="edit-icon" />
-        <font-awesome-icon @click="openDeleteTracklistDialog(idTracklist)" :icon="['fas', 'trash']" class="trash-icon"/>
+        <font-awesome-icon @click="openEditTracklistDialog(tracklist)" :icon="['fas', 'pencil']" class="edit-icon" />
+        <font-awesome-icon @click="openDeleteTracklistDialog(tracklist.id)" :icon="['fas', 'trash']" class="trash-icon"/>
     </div>
     <div class="tracklist">
         <table>
@@ -32,13 +29,13 @@ const openDeleteTracklistDialog = inject('openDeleteTracklistDialog');
                 <th style="width: 10%;"><font-awesome-icon icon="fa-solid fa-clock" /></th>
             </tr>
             <ListTrack 
-                v-for="(track, index) in tracks"
+                v-for="(track, index) in tracklist.tracks"
                 :key="track.id"
                 :index="index+1"
                 :track="track"
-                :id-tracklist="props.idTracklist"
-                @play-track="setCurrentTrack(track.id, idTracklist, 1)"
-                @pause-track="setCurrentTrack(0, idTracklist, 1)"
+                :id-tracklist="tracklist.id"
+                @play-track="setCurrentTrack(track.id, tracklist.id, 1)"
+                @pause-track="setCurrentTrack(0, tracklist.id, 1)"
             />
         </table>
     </div>

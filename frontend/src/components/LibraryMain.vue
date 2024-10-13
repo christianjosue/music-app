@@ -36,7 +36,7 @@ function getTotalTime() {
 
 <template>
 <div class="tracklist-container">
-    <div class="thumbnail" :style="{ backgroundImage: `url(${tracklist.thumbnail})` }"></div>
+    <div class="thumbnail" :style="{ backgroundImage: `url(${tracklist.thumbnail_image.src})` }"></div>
     <div class="tracklist-content">
         <h5>{{ privacy }} List</h5>
         <h1>{{ tracklist.name }}</h1>
