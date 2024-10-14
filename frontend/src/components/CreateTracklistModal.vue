@@ -1,5 +1,6 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
+
 const props = defineProps({
     showModal: {
         type: Boolean,
@@ -16,8 +17,16 @@ const dialog = ref(null);
 const tracklistName = ref({});
 const privacy = ref(0);
 const nameError = ref(false);
+const nameErrorMessage = ref("");
 const thumbnailError = ref(false);
 const selectedThumbnail = ref(0);
+const badWordsFilter = ref(null);
+
+onMounted(async () => {
+	// Dynamic filter import
+	const { default: Filter } = await import('bad-words-es');
+	badWordsFilter.value = new Filter({languages: ['es', 'en']});
+});
 
 watch(
   () => props.showModal,
@@ -42,8 +51,13 @@ const sendData = () => {
 const validateForm = () => {
 	let isValid = true;
 	if (tracklistName.value.value == "" || tracklistName.value.value == null || tracklistName.value.value == undefined) {
+		nameErrorMessage.value = "Name is a required field";
+		nameError.value = true;
+	} else if ((badWordsFilter.value.clean(tracklistName.value.value)).includes('*')) {
+		nameErrorMessage.value = "You can not use bad words";
 		nameError.value = true;
 	} else {
+		nameErrorMessage.value = "";
 		nameError.value = false;
 	}
 
@@ -53,7 +67,7 @@ const validateForm = () => {
 		thumbnailError.value = false;
 	}
 
-	if (thumbnailError.value || nameError.value) {
+	if (thumbnailError.value || nameErrorMessage.value != "") {
 		isValid = false;
 	}
 
@@ -75,6 +89,9 @@ const cleanFields = () => {
 	tracklistName.value.value = "";
 	selectedThumbnail.value = 0;
 	privacy.value = 0;
+	nameError.value = false;
+	nameErrorMessage.value = "";
+	thumbnailError.value = false;
 }
 // Handle when dialog closes
 const handleCloseDialog = () => {
@@ -91,7 +108,7 @@ const checkSelectedThumbnail = (id) => selectedThumbnail.value == id;
         <form>
             <label for="tracklistName">Tracklist's name</label>
             <input id="tracklistName" name="tracklistName" type="text" ref="tracklistName">
-			<div :class="['error-message', { 'display-error': nameError }]">Name is a required field</div>
+			<div :class="['error-message', { 'display-error': nameError }]">{{ nameErrorMessage }}</div>
             <label for="thumbnail" class="thumbnailLabel">Thumbnail</label>
 			<div class="thumbnails">
 				<div v-for="thumbnail in thumbnails" :key="thumbnail.id" class="thumbnail">
