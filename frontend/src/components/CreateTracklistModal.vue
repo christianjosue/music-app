@@ -21,11 +21,15 @@ const nameErrorMessage = ref("");
 const thumbnailError = ref(false);
 const selectedThumbnail = ref(0);
 const badWordsFilter = ref(null);
+// Get spanish bad words string list and transform it to an array
+const badWordsES = import.meta.env.VITE_BAD_WORDS_ES.replace(/\s/g, "").split(',');
 
 onMounted(async () => {
 	// Dynamic filter import
 	const { default: Filter } = await import('bad-words-es');
 	badWordsFilter.value = new Filter({languages: ['es', 'en']});
+	// Add custom spanish bad words to the filter
+	badWordsFilter.value.addWords(...badWordsES);
 });
 
 watch(
@@ -53,7 +57,7 @@ const validateForm = () => {
 	if (tracklistName.value.value == "" || tracklistName.value.value == null || tracklistName.value.value == undefined) {
 		nameErrorMessage.value = "Name is a required field";
 		nameError.value = true;
-	} else if ((badWordsFilter.value.clean(tracklistName.value.value)).includes('*')) {
+	} else if ((badWordsFilter.value.isProfane(tracklistName.value.value))) {
 		nameErrorMessage.value = "You can not use bad words";
 		nameError.value = true;
 	} else {
