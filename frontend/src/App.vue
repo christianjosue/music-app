@@ -151,7 +151,7 @@ function setCurrentTrack(idTrack, idTracklist, isTracklistPlayer = 0) {
 // Get the specified track from the AWS S3 bucket
 const getTrack = async (track, index, idTrack, idTracklist) => {
   var lyrics = getLyricsFromLocalStorage(track.title);
-  const response = fetch(`${API_URL}/api/getTrack`, {
+  const response = await fetch(`${API_URL}/api/getTrack`, {
     method: "POST",
     headers: {
         "Content-Type": "application/json"
