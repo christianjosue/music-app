@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 const props = defineProps({
     showModal: {
         type: Boolean,
@@ -24,8 +24,20 @@ const props = defineProps({
 const dialog = ref(null);
 const tracklistName = ref("");
 const nameError = ref(false);
+const nameErrorMessage = ref("");
 const thumbnailError = ref(false);
 const selectedThumbnail = ref(0);
+const badWordsFilter = ref(null);
+// Get spanish bad words string list and transform it to an array
+const badWordsES = import.meta.env.VITE_BAD_WORDS_ES.replace(/\s/g, "").split(',');
+
+onMounted(async () => {
+	// Dynamic filter import
+	const { default: Filter } = await import('bad-words-es');
+	badWordsFilter.value = new Filter({languages: ['es', 'en']});
+	// Add custom spanish bad words to the filter
+	badWordsFilter.value.addWords(...badWordsES);
+});
 
 watch(
   () => props.showModal,
@@ -53,8 +65,13 @@ const sendData = () => {
 const validateForm = () => {
 	let isValid = true;
 	if (tracklistName.value == "" || tracklistName.value == null || tracklistName.value == undefined) {
+		nameErrorMessage.value = "Name is a required field";
+		nameError.value = true;
+	} else if (badWordsFilter.value.isProfane(tracklistName.value)) {
+		nameErrorMessage.value = "You can not use bad words";
 		nameError.value = true;
 	} else {
+		nameErrorMessage.value = "";
 		nameError.value = false;
 	}
 
@@ -102,7 +119,7 @@ const checkSelectedThumbnail = (id) => selectedThumbnail.value == id;
         <form>
             <label for="tracklistName">Tracklist's name</label>
             <input id="tracklistName" name="tracklistName" type="text" v-model="tracklistName">
-			<div :class="['error-message', { 'display-error': nameError }]">Name is a required field</div>
+			<div :class="['error-message', { 'display-error': nameError }]">{{ nameErrorMessage }}</div>
             <label for="thumbnail" class="thumbnailLabel">Thumbnail</label>
             <div class="thumbnails">
 				<div v-for="thumbnail in thumbnails" :key="thumbnail.id" class="thumbnail">

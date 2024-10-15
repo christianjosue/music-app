@@ -57,7 +57,7 @@ const validateForm = () => {
 	if (tracklistName.value.value == "" || tracklistName.value.value == null || tracklistName.value.value == undefined) {
 		nameErrorMessage.value = "Name is a required field";
 		nameError.value = true;
-	} else if ((badWordsFilter.value.isProfane(tracklistName.value.value))) {
+	} else if (badWordsFilter.value.isProfane(tracklistName.value.value)) {
 		nameErrorMessage.value = "You can not use bad words";
 		nameError.value = true;
 	} else {
