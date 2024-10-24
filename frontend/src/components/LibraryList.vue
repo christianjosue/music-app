@@ -11,13 +11,17 @@ const props = defineProps({
 const setCurrentTrack = inject('setCurrentTrack');
 const openDeleteTracklistDialog = inject('openDeleteTracklistDialog');
 const openEditTracklistDialog = inject('openEditTracklistDialog');
+const openAddSongsModal = inject('openAddSongsModal');
 </script>
 
 <template>
 <div class="list-container">
     <div class="list-options">
-        <font-awesome-icon @click="openEditTracklistDialog(tracklist)" :icon="['fas', 'pencil']" class="edit-icon" />
-        <font-awesome-icon @click="openDeleteTracklistDialog(tracklist.id)" :icon="['fas', 'trash']" class="trash-icon"/>
+        <div @click="openAddSongsModal" class="btn-add-song">Add songs <font-awesome-icon :icon="['fas', 'music']" /></div>
+        <div class="actions">
+            <font-awesome-icon @click="openEditTracklistDialog(tracklist)" :icon="['fas', 'pencil']" class="edit-icon" />
+            <font-awesome-icon @click="openDeleteTracklistDialog(tracklist.id)" :icon="['fas', 'trash']" class="trash-icon"/>
+        </div>
     </div>
     <div class="tracklist">
         <table>
@@ -56,7 +60,10 @@ h6 {
 }
 .list-options {
     display: flex;
-    justify-content: right;
+    justify-content: space-between;
+}
+.actions {
+    display: flex;
     gap: 20px;
 }
 .options {
@@ -184,6 +191,20 @@ td {
 }
 .edit-icon:hover {
     color: white;
+    transform: scale(1.05);
+}
+.btn-add-song {
+    color: #838383;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 1px solid #838383;
+    cursor: pointer;
+    transition: all .3s ease;
+}
+.btn-add-song:hover {
+    color: black;
+    border: 1px solid white;
+    background-color: white;
     transform: scale(1.05);
 }
 </style>

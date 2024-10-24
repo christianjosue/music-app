@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use App\Models\Track;
 
 use Aws\S3\S3Client;
 
@@ -56,5 +57,21 @@ class TrackController extends Controller
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    /**
+     * Search songs for the given string and returns songs may coincide with it
+     * @param String $song
+     * @return $songs
+     */
+    public function searchSong($song)
+    {
+        $songs = Track::where('title', 'LIKE', '%' . $song . '%')
+            ->with(['artists'])
+            ->orderBy('title', 'ASC')
+            ->take(10)
+            ->get();
+        
+        return $songs;
     }
 }

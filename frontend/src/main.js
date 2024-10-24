@@ -34,10 +34,13 @@ import { faMicrophone } from '@fortawesome/free-solid-svg-icons'
 import { faRepeat } from '@fortawesome/free-solid-svg-icons'
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
+import { faMusic } from '@fortawesome/free-solid-svg-icons';
+import { faCirclePlus } from '@fortawesome/free-solid-svg-icons';
+import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import * as Vibrant from 'node-vibrant'
 
 /* add icons to the library */
-library.add(faUserSecret, faHouse, faMagnifyingGlass, faCirclePlay, faVolumeXmark, faVolumeOff, faVolumeLow, faVolumeHigh, faXmark, faHeadphones, faShuffle, faPlus, faCircleDown, faEllipsis, faBars, faClock, faPlay, faPause, faMicrophone, faRepeat, faTrash, faPencil)
+library.add(faUserSecret, faHouse, faMagnifyingGlass, faCirclePlay, faVolumeXmark, faVolumeOff, faVolumeLow, faVolumeHigh, faXmark, faHeadphones, faShuffle, faPlus, faCircleDown, faEllipsis, faBars, faClock, faPlay, faPause, faMicrophone, faRepeat, faTrash, faPencil, faMusic, faCirclePlus, faCircleXmark)
 
 createApp(App)
 .component('font-awesome-icon', FontAwesomeIcon)

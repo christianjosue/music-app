@@ -1,10 +1,10 @@
 <script setup>
-import { ref } from "vue";
+import SearchSongs from './SearchSongs.vue';
 </script>
 
 <template>
   <div class="search-view-container">
-    <input @keyup="search" type="text" />
+    <SearchSongs />
   </div>
 </template>
 

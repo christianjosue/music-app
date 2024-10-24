@@ -9,6 +9,7 @@ import Library from "./components/Library.vue";
 import LibraryMenu from "./components/LibraryMenu.vue";
 import Lyrics from "./components/Lyrics.vue";
 import SoundView from "./components/SoundView.vue";
+import AddSongsModal from "./components/AddSongsModal.vue";
 import CreateTracklistModal from "./components/CreateTracklistModal.vue";
 import EditTracklistModal from "./components/EditTracklistModal.vue";
 import DeleteTracklistModal from "./components/DeleteTracklistModal.vue";
@@ -34,6 +35,8 @@ const repeatMode = ref(false);
 const showDeleteTracklistModal = ref(false);
 const showEditTracklistModal = ref(false);
 const showTracklistModal = ref(false);
+const showAddSongsModal = ref(false);
+const searchedSongs = ref([]);
 const song = ref('');
 const songLoading = ref(false);
 const soundView = ref(false);
@@ -280,6 +283,10 @@ const openEditTracklistDialog = (tracklist) => {
 }
 // Closes Edit tracklist modal
 const closeEditModal = () => showEditTracklistModal.value = false;
+// Opens add songs modal
+const openAddSongsModal = () => showAddSongsModal.value = true;
+// Closes add songs modal
+const closeAddSongsModal = () => showAddSongsModal.value = false;
 // Closes delete tracklist modal
 const handleCloseDeleteDialog = () => showDeleteTracklistModal.value = false;
 // Removes the selected tracklist
@@ -345,6 +352,11 @@ const getThumbnails = async () => {
   const response = await fetch(`${API_URL}/api/thumbnails`);
   thumbnails.value = await response.json();
 }
+// Search for the song given from parameters in the DB
+const searchSong = async (song) => {
+  const response = await fetch(`${API_URL}/api/search/${song}`);
+  searchedSongs.value = await response.json();
+}
 // Watch when the value of tracklist's id changes to make a request to the server side to get the correspondant tracklist
 watchEffect(async () => {
   reloadTracklist();
@@ -357,6 +369,9 @@ provide('checkPlayingTracklist', checkPlayingTracklist);
 provide('setCurrentTrack', setCurrentTrack);
 provide('openDeleteTracklistDialog', openDeleteTracklistDialog);
 provide('openEditTracklistDialog', openEditTracklistDialog);
+provide('openAddSongsModal', openAddSongsModal);
+provide('searchedSongs', searchedSongs);
+provide('searchSong', searchSong);
 </script>
 
 <template>
@@ -414,6 +429,10 @@ provide('openEditTracklistDialog', openEditTracklistDialog);
         :delete-tracklist="deleteTracklist"
         :handle-close-dialog="handleCloseDeleteDialog" 
         :show-delete-tracklist-modal="showDeleteTracklistModal"
+      />
+      <AddSongsModal 
+        :close-modal="closeAddSongsModal"
+        :show-modal="showAddSongsModal"
       />
       <Home 
         v-if="checkCurrentView(HOME_VIEW)" 
