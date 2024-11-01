@@ -1,5 +1,5 @@
 <script setup>
-import { computed, inject, ref } from 'vue';
+import { inject, ref } from 'vue';
 const props = defineProps({
     track: {
         type: Object,
@@ -15,9 +15,6 @@ const props = defineProps({
     index: {}
 });
 defineEmits(['playTrack', 'pauseTrack']);
-const album = computed(() => {
-    return !props.track.idAlbum ? props.track.title : 'Test';
-});
 const addedAt = ref('');
 const onHover = ref(false);
 
@@ -52,15 +49,15 @@ const isPlaying = inject('isPlaying');
         @mouseleave="onHover = false"
     >
         <td class="container-list">
-            <font-awesome-icon v-if="onHover && idPlayingTrack == track.id && checkPlayingTracklist(idTracklist) && isPlaying"
+            <font-awesome-icon v-if="onHover && idPlayingTrack == track.idTrack && checkPlayingTracklist(idTracklist) && isPlaying"
                 @click="$emit('pauseTrack')"
                 icon="fa-solid fa-pause"
             />
-            <font-awesome-icon v-else-if="onHover && (!isPlaying || idPlayingTrack != track.id || (idPlayingTrack == track.id && !checkPlayingTracklist(idTracklist)))"
+            <font-awesome-icon v-else-if="onHover && (!isPlaying || idPlayingTrack != track.idTrack || (idPlayingTrack == track.idTrack && !checkPlayingTracklist(idTracklist)))"
                 @click="$emit('playTrack')"
                 icon="fa-solid fa-play"
             />
-            <div class="icon" v-else-if="!onHover && idPlayingTrack == track.id && checkPlayingTracklist(idTracklist) && isPlaying">
+            <div class="icon" v-else-if="!onHover && idPlayingTrack == track.idTrack && checkPlayingTracklist(idTracklist) && isPlaying">
                 <span />
                 <span />
                 <span />
@@ -80,7 +77,7 @@ const isPlaying = inject('isPlaying');
                 </div>
             </div>
         </td>
-        <td class="album">{{ album }}</td>
+        <td class="album">{{ track.album.title }}</td>
         <td class="date">{{ addedAt }}</td>
         <td class="time">{{ track.duration }}</td>
     </tr>

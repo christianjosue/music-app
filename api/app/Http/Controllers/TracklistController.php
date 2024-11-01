@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use App\Models\Tracklist;
 use App\Models\TracklistTrack;
-use App\Models\TracklistUser;
 use App\Models\Thumbnail;
 use App\Models\User;
 
@@ -23,8 +22,8 @@ class TracklistController extends Controller
             $tracklist = [];
             // Check if there is an id to look for
             if ($id != 0) {
-                $tracklist = Tracklist::where('id', $id)
-                    ->with(['tracks.artists', 'owners', 'followers', 'thumbnailImage'])
+                $tracklist = Tracklist::where('idTracklist', $id)
+                    ->with(['tracks.artists', 'tracks.album', 'thumbnailImage'])
                     ->first();
             }
             
@@ -39,12 +38,10 @@ class TracklistController extends Controller
      * @param int $id User's id
      * @return json
      */
-    public function tracklists(int $id) 
+    public function tracklists() 
     {
         try {
-            $tracklists = User::where('id', $id)
-                ->with(['tracklists.owners', 'tracklists.thumbnailImage'])
-                ->first();
+            $tracklists = Tracklist::with(['thumbnailImage'])->get();
 
             return response()->json($tracklists);
         } catch (\Exception $e) {
@@ -64,18 +61,7 @@ class TracklistController extends Controller
             $tracklist = new Tracklist();
             $tracklist->name = $request->input('name');
             $tracklist->thumbnail = $request->input('thumbnail');
-            $tracklist->privacy = 0;
-            $tracklist->created_by = 1;
-            if ($tracklist->save()) {
-                // If all goes on properly, we associated this tracklist to his user
-                $tracklistUser = new TracklistUser();
-                $tracklistUser->idUser = 1;
-                $tracklistUser->idTracklist = $tracklist->id;
-                $tracklistUser->owner = 1;
-                if (!$tracklistUser->save()) {
-                    $tracklist = null;
-                }
-            } else {
+            if (!$tracklist->save()) {
                 $tracklist = null;
             }
 
@@ -93,8 +79,8 @@ class TracklistController extends Controller
     public function editTracklist(Request $request)
     {
         $success = false;
-        if ($request->exists('id')) {
-            $tracklist = Tracklist::where('id', $request->input('id'))->first();
+        if ($request->exists('idTracklist')) {
+            $tracklist = Tracklist::where('idTracklist', $request->input('idTracklist'))->first();
             if ($tracklist instanceof Tracklist) {
                 $tracklist->name = $request->input('name');
                 $tracklist->thumbnail = $request->input('thumbnail');
@@ -116,13 +102,10 @@ class TracklistController extends Controller
     {
         $success = false;
         // Delete tracks of the tracklist
-        $result = TracklistTrack::where('idTracklist', $id)->delete();
-        // Delete the relationship between tracklist and user
-        $result = TracklistUser::where('idTracklist', $id)->delete();
-        if ($result > 0) {
-            $result = Tracklist::where('id', $id)->delete();
-            if ($result > 0) $success = true;
-        }
+        TracklistTrack::where('idTracklist', $id)->delete();
+        // Delete tracklist
+        $result = Tracklist::where('idTracklist', $id)->delete();
+        if ($result > 0) $success = true;
 
         return response()->json(['success' => $success]);
     }

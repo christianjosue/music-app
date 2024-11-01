@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tracklists', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::create('thumbnail', function (Blueprint $table) {
+            $table->id('idThumbnail');
+            $table->string('src');
         });
     }
 
@@ -22,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tracklists');
+        Schema::dropIfExists('thumbnail');
     }
 };

@@ -35,7 +35,7 @@ const handleSearchSong = () => {
             await searchSong(songInput.value.value);
         }
         handleResultsValues();
-    }, 500);
+    }, 250);
 }
 watch(
     () => searchedSongs,
@@ -60,7 +60,7 @@ watch(
         </div>
         <div class="songs">
             <h4 v-if="!emptySongs">Results for your search</h4>
-            <div v-for="song in songs.value" :key="song.id" class="song">
+            <div v-for="song in songs.value" :key="song.idTrack" class="song">
                 <div class="song-thumbnail-container">
                     <div class="song-thumbnail" :style="{ backgroundImage: `url(${song.thumbnail})`}"></div>
                 </div>
@@ -130,6 +130,7 @@ label {
     align-items: center;
     background-color: #222;
     transition: all .3s ease;
+    margin-bottom: 10px;
 }
 .song:hover {
     transform: scale(1.02);

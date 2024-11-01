@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TracklistUser extends Model
+class ArtistTrack extends Model
 {
     use HasFactory;
 
@@ -14,8 +14,12 @@ class TracklistUser extends Model
      *
      * @var string
      */
-    protected $table = 'user_tracklists';
+    protected $table = 'artist_track';
+
+    protected $fillable = [
+        'idArtist',
+        'idTrack'
+    ];
 
     public $timestamps = false;
-
 }

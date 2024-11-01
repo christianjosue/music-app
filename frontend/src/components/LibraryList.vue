@@ -20,7 +20,7 @@ const openAddSongsModal = inject('openAddSongsModal');
         <div @click="openAddSongsModal" class="btn-add-song">Add songs <font-awesome-icon :icon="['fas', 'music']" /></div>
         <div class="actions">
             <font-awesome-icon @click="openEditTracklistDialog(tracklist)" :icon="['fas', 'pencil']" class="edit-icon" />
-            <font-awesome-icon @click="openDeleteTracklistDialog(tracklist.id)" :icon="['fas', 'trash']" class="trash-icon"/>
+            <font-awesome-icon @click="openDeleteTracklistDialog(tracklist.idTracklist)" :icon="['fas', 'trash']" class="trash-icon"/>
         </div>
     </div>
     <div class="tracklist">
@@ -34,12 +34,12 @@ const openAddSongsModal = inject('openAddSongsModal');
             </tr>
             <ListTrack 
                 v-for="(track, index) in tracklist.tracks"
-                :key="track.id"
+                :key="track.idTrack"
                 :index="index+1"
                 :track="track"
-                :id-tracklist="tracklist.id"
-                @play-track="setCurrentTrack(track.id, tracklist.id, 1)"
-                @pause-track="setCurrentTrack(0, tracklist.id, 1)"
+                :id-tracklist="tracklist.idTracklist"
+                @play-track="setCurrentTrack(track.idTrack, tracklist.idTracklist, 1)"
+                @pause-track="setCurrentTrack(0, tracklist.idTracklist, 1)"
             />
         </table>
     </div>

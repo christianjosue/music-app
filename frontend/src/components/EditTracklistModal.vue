@@ -56,7 +56,7 @@ watch(
 // Sends form data to parent's component to process and store it into the database
 const sendData = () => {
 	return {
-        'id': props.tracklist.id,
+        'idTracklist': props.tracklist.idTracklist,
 		'name': tracklistName.value,
 		'thumbnail': selectedThumbnail.value
 	};
@@ -122,11 +122,11 @@ const checkSelectedThumbnail = (id) => selectedThumbnail.value == id;
 			<div :class="['error-message', { 'display-error': nameError }]">{{ nameErrorMessage }}</div>
             <label for="thumbnail" class="thumbnailLabel">Thumbnail</label>
             <div class="thumbnails">
-				<div v-for="thumbnail in thumbnails" :key="thumbnail.id" class="thumbnail">
+				<div v-for="thumbnail in thumbnails" :key="thumbnail.idThumbnail" class="thumbnail">
 					<img 
 						:src="thumbnail.src"
-						:class="{ active: checkSelectedThumbnail(thumbnail.id) }"
-						@click="selectedThumbnail = thumbnail.id"
+						:class="{ active: checkSelectedThumbnail(thumbnail.idThumbnail) }"
+						@click="selectedThumbnail = thumbnail.idThumbnail"
 						alt="thumbnail"
 					>
 				</div>
@@ -249,18 +249,6 @@ label {
     display: block;
     margin-bottom: 10px;
     width: 100%;
-}
-
-.privacy-container {
-    margin: 23px 0 25px 0;
-    display: flex;
-    align-items: center;
-}
-
-.privacy-label {
-    display: inline !important;
-    width: 60px;
-    margin-bottom: 0px;
 }
 
 .edit-btn {

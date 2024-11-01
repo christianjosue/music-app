@@ -14,7 +14,14 @@ class Tracklist extends Model
      *
      * @var string
      */
-    protected $table = 'tracklists';
+    protected $table = 'tracklist';
+
+    /**
+     * The primary key associated with the table.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'idTracklist';
 
     protected $fillable = [
         'name',
@@ -22,7 +29,7 @@ class Tracklist extends Model
     ];
 
     public function tracks() {
-        return $this->belongsToMany(Track::class, 'tracklist_tracks', 'idTracklist', 'idTrack');
+        return $this->belongsToMany(Track::class, 'tracklist_track', 'idTracklist', 'idTrack');
     }
 
     public function owners() {
@@ -34,6 +41,6 @@ class Tracklist extends Model
     }
 
     public function thumbnailImage() {
-        return $this->hasOne(Thumbnail::class, 'id', 'thumbnail');
+        return $this->hasOne(Thumbnail::class, 'idThumbnail', 'thumbnail');
     }
 }

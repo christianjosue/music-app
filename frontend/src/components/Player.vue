@@ -118,7 +118,7 @@ watch(
   () => props.currentTrack,
   () => {
     // Every time the current track changes, the player is reseted
-    if (audio && idPlayingTrackCopy.value != props.currentTrack.id || idPlayingTracklistCopy.value != props.idPlayingTracklist) {
+    if (audio && idPlayingTrackCopy.value != props.currentTrack.idTrack || idPlayingTracklistCopy.value != props.idPlayingTracklist) {
       isPlaying.value = true;
       resetPlayer();
     }

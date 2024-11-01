@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Artist extends Model
+class Album extends Model
 {
     use HasFactory;
 
@@ -14,20 +14,20 @@ class Artist extends Model
      *
      * @var string
      */
-    protected $table = 'artist';
+    protected $table = 'album';
 
     /**
      * The primary key associated with the table.
      *
      * @var string
      */
-    protected $primaryKey = 'idArtist';
-
-    public $timestamps = true;
+    protected $primaryKey = 'idAlbum';
 
     protected $fillable = [
-        'name',
-        'thumbnail',
-        'monthlyListeners'
+        'idArtist',
+        'title',
+        'cover'
     ];
+
+    public $timestamps = true;
 }

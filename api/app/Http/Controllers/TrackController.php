@@ -19,17 +19,17 @@ class TrackController extends Controller
      */
     public function getTrack(Request $request)
     {
-        // Sets the S3 client
-        $s3 = new S3Client([
-            'version' => 'latest',
-            'region'  => env('AWS_DEFAULT_REGION'),
-            'credentials' => [
-                'key'    => env('AWS_ACCESS_KEY_ID'),
-                'secret' => env('AWS_SECRET_ACCESS_KEY'),
-            ],
-        ]);
-
         try {
+            // Sets the S3 client
+            $s3 = new S3Client([
+                'version' => 'latest',
+                'region'  => env('AWS_DEFAULT_REGION'),
+                'credentials' => [
+                    'key'    => env('AWS_ACCESS_KEY_ID'),
+                    'secret' => env('AWS_SECRET_ACCESS_KEY'),
+                ],
+            ]);
+    
             // Specifies track's filename to get and the bucket where it is
             $cmd = $s3->getCommand('GetObject', [
                 'Bucket' => env('AWS_BUCKET'),

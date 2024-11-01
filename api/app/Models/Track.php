@@ -14,15 +14,21 @@ class Track extends Model
      *
      * @var string
      */
-    protected $table = 'tracks';
+    protected $table = 'track';
+
+    /**
+     * The primary key associated with the table.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'idTrack';
 
     protected $fillable = [
         'idAlbum',
         'title',
         'src',
         'thumbnail',
-        'duration',
-        'created_at'
+        'duration'
     ];
 
     public function tracklists() {
@@ -30,6 +36,10 @@ class Track extends Model
     }
 
     public function artists() {
-        return $this->belongsToMany(User::class, 'user_tracks', 'idTrack', 'idArtist');
+        return $this->belongsToMany(Artist::class, 'artist_track', 'idTrack', 'idArtist');
+    }
+
+    public function album() {
+        return $this->belongsTo(Album::class, 'idAlbum');
     }
 }

@@ -11,8 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tracks', function (Blueprint $table) {
-            $table->id();
+        Schema::create('tracklist', function (Blueprint $table) {
+            $table->id('idTracklist');
+            $table->string('name');
+            $table->foreignId('thumbnail')->constrained(
+                table: 'thumbnail',
+                column: 'idThumbnail'
+            );
             $table->timestamps();
         });
     }
@@ -22,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tracks');
+        Schema::dropIfExists('tracklist');
     }
 };

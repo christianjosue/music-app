@@ -43,12 +43,12 @@ const soundView = ref(false);
 const thumbnails = ref([]);
 const toast = useToast();
 const tracklistToEdit = ref({});
-const user = ref({});
+const tracklists = ref({});
 
 var lyricsObject = {};
 
 onMounted(() => {
-  // Fetch tracklists corresponding to the logged user
+  // Fetch all the tracklists
   getTracklists();
   // Fetch all the thumbnails
   getThumbnails();
@@ -81,10 +81,10 @@ const createTracklist = async (tracklistData) => {
     getTracklists();
   }
 }
-// Get user's tracklists
+// Get all the tracklists
 const getTracklists = async () => {
-  const response = await fetch(`${API_URL}/api/tracklists/1`);
-  user.value = await response.json();
+  const response = await fetch(`${API_URL}/api/tracklists`);
+  tracklists.value = await response.json();
 }
 // Go to the previous track in the tracklist
 function prevTrack(currentTime) {
@@ -104,7 +104,7 @@ function prevTrack(currentTime) {
       currentIndex.value = 0;
     }
     let track = currentTracklist.value.tracks[currentIndex.value];
-    getTrack(track, currentIndex.value, track.id, currentTracklist.value.id);
+    getTrack(track, currentIndex.value, track.idTrack, currentTracklist.value.idTracklist);
   }
 }
 // Go to the next track in the tracklist
@@ -124,7 +124,7 @@ function nextTrack() {
       currentIndex.value = 0;
     }
     let track = currentTracklist.value.tracks[currentIndex.value];
-    getTrack(track, currentIndex.value, track.id, currentTracklist.value.id);
+    getTrack(track, currentIndex.value, track.idTrack, currentTracklist.value.idTracklist);
   }
 }
 // Set the value of the tracklist's id
@@ -142,7 +142,7 @@ function setCurrentTrack(idTrack, idTracklist, isTracklistPlayer = 0) {
       if (idPlayingTrack.value !== 0) playTrack.value = false;
       // Search the selected track in the tracklist, get it and send it to the player
       currentTracklist.value.tracks.forEach((track, index) => {
-        if (track.id == idTrack) {
+        if (track.idTrack == idTrack) {
           getTrack(track, index, idTrack, idTracklist);
         }
       });
@@ -320,7 +320,7 @@ const editTracklist = async (tracklist) => {
         "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      "id": tracklist.id,
+      "idTracklist": tracklist.idTracklist,
       "name": tracklist.name,
       "thumbnail": tracklist.thumbnail
     })
@@ -400,13 +400,13 @@ provide('searchSong', searchSong);
           <button @click="showTracklistModal = !showTracklistModal;" class="createTracklist">+</button>
         </div>
         <LibraryMenu 
-          v-for="tracklist in user.tracklists"
-          :key="tracklist.id"
+          v-for="tracklist in tracklists"
+          :key="tracklist.idTracklist"
           :tracklist="tracklist"
-          :is-active="checkSelectedTracklist(tracklist.id)"
+          :is-active="checkSelectedTracklist(tracklist.idTracklist)"
           @click="
             setCurrentView(LIBRARY_VIEW);
-            setIdTracklist(tracklist.id);
+            setIdTracklist(tracklist.idTracklist);
           "
         />
       </div>

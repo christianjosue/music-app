@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 
 const props = defineProps({
     tracklist: {
@@ -7,13 +7,8 @@ const props = defineProps({
         default: {}
     }
 });
-const privacy = computed(() => {
-    return props.tracklist.privacy ? 'Public' : 'Private';
-});
-const numberFollowers = ref(0);
 const numberTracks = ref(0);
 const totalTime = ref('');
-numberFollowers.value = props.tracklist.followers.length;
 numberTracks.value = props.tracklist.tracks.length;
 totalTime.value = getTotalTime();
 
@@ -38,11 +33,10 @@ function getTotalTime() {
 <div class="tracklist-container">
     <div class="thumbnail" :style="{ backgroundImage: `url(${tracklist.thumbnail_image.src})` }"></div>
     <div class="tracklist-content">
-        <h5>{{ privacy }} List</h5>
+        <h5>Playlist</h5>
         <h1>{{ tracklist.name }}</h1>
         <div class="tracklist-details">
-            <div style="font-weight: bold;">{{ tracklist.owners[0].name }}&nbsp;&nbsp;·&nbsp;&nbsp;</div>
-            <div v-if="numberFollowers > 0">{{ numberFollowers }} likes&nbsp;&nbsp;·&nbsp;&nbsp;</div>
+            <div style="font-weight: bold;">Admin&nbsp;&nbsp;·&nbsp;&nbsp;</div>
             <div>{{ numberTracks }} tracks,&nbsp;&nbsp;{{ totalTime }}</div>
         </div>
     </div>

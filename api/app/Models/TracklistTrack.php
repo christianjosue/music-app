@@ -14,7 +14,12 @@ class TracklistTrack extends Model
      *
      * @var string
      */
-    protected $table = 'tracklist_tracks';
+    protected $table = 'tracklist_track';
 
-    public $timestamps = false;
+    protected $fillable = [
+        'idTracklist',
+        'idTrack'
+    ];
+
+    public $timestamps = true;
 }

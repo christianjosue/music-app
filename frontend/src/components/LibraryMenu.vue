@@ -17,7 +17,7 @@ const props = defineProps({
     <img :src="tracklist.thumbnail_image.src" alt="thumbnail">
     <div class="menu-content">
         <h6>{{ tracklist.name }}</h6>
-        <p>List · {{ tracklist.owners[0].name }}</p>
+        <p>List · Admin</p>
     </div>
 </div>
 </template>

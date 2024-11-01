@@ -14,6 +14,19 @@ class Thumbnail extends Model
      *
      * @var string
      */
-    protected $table = 'thumbnails';
+    protected $table = 'thumbnail';
+
+    /**
+     * The primary key associated with the table.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'idThumbnail';
+
+    protected $fillable = [
+        'src'
+    ];
+
+    public $timestamps = false;
 
 }

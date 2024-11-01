@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 Route::get('/tracklist/{id}', [TracklistController::class, 'tracklist']);
-Route::get('/tracklists/{id}', [TracklistController::class, 'tracklists']);
+Route::get('/tracklists', [TracklistController::class, 'tracklists']);
 Route::delete('/tracklist/{id}', [TracklistController::class, 'deleteTracklist']);
 Route::post('/tracklist', [TracklistController::class, 'createTracklist']);
 Route::put('/tracklist', [TracklistController::class, 'editTracklist']);
