@@ -1,8 +1,16 @@
 <script setup>
 import { inject, ref, watch } from 'vue';
+const props = defineProps({
+    showModal: {
+        type: Boolean,
+        default: false
+    }
+});
 const searchedSongs = inject('searchedSongs');
-const songs = ref(null);
 const searchSong = inject('searchSong');
+const currentTracklist = inject('currentTracklist');
+const addSongToTracklist = inject('addSongToTracklist');
+const songs = ref(null);
 const songInput = ref(null);
 const emptySongs = ref(true);
 const noResults = ref(false);
@@ -10,7 +18,7 @@ var timeout = setTimeout(() => {}, 0);
 
 // Handles the message to display depending on the results
 const handleResultsValues = () => {
-    if (songs.value.value.length > 0) {
+    if (songs.value.length > 0) {
         noResults.value = false;
         if (songInput.value != null && songInput.value.value != "") {
             emptySongs.value = false;
@@ -37,10 +45,45 @@ const handleSearchSong = () => {
         handleResultsValues();
     }, 250);
 }
+// Clean up search fields
+const cleanFields = () => {
+    songs.value = null;
+    noResults.value = false;
+    emptySongs.value = true;
+    if (songInput.value != null) {
+        songInput.value.value = "";
+    }
+}
+// Watch changes on opening and closing modal
+watch(
+    () => props.showModal,
+    () => {
+        if (!props.showModal) {
+            cleanFields();
+        }
+    },
+    { immediate: true }
+);
+// Watch changes on the searched songs
 watch(
     () => searchedSongs,
     () => {
-        songs.value = searchedSongs;
+        // Make a deep copy of the searched songs
+        let tracks = JSON.parse(JSON.stringify(searchedSongs.value));
+        if (tracks.length > 0) {
+            // Check for every single track if it's already in the current tracklist or not
+            tracks.forEach(track => {
+                track.trackInCurrentTracklist = false;
+                if (track.tracklists != null && track.tracklists.length != 0) {
+                    track.tracklists.forEach(tracklist => {
+                        if (tracklist.idTracklist == currentTracklist.value.idTracklist) {
+                            track.trackInCurrentTracklist = true;
+                        }
+                    });
+                }
+            });
+        }
+        songs.value = tracks;
     },
     { immediate: true, deep: true }
 );
@@ -53,14 +96,14 @@ watch(
             <input
                 @keyup="handleSearchSong()"
                 ref="songInput"
-                id="tracklistName"
+                id="trackName"
                 type="text"
                 placeholder="Search for a song"
             >
         </div>
         <div class="songs">
             <h4 v-if="!emptySongs">Results for your search</h4>
-            <div v-for="song in songs.value" :key="song.idTrack" class="song">
+            <div v-for="song in songs" :key="song.idTrack" class="song">
                 <div class="song-thumbnail-container">
                     <div class="song-thumbnail" :style="{ backgroundImage: `url(${song.thumbnail})`}"></div>
                 </div>
@@ -70,8 +113,15 @@ watch(
                 </div>
                 <div class="buttons-container">
                     <div class="play-btn"><font-awesome-icon :icon="['fas', 'play']" /></div>
-                    <div class="add-song-btn"><font-awesome-icon :icon="['fas', 'circle-plus']" /></div>
-                    <!-- <font-awesome-icon :icon="['fas', 'circle-xmark']" /> -->
+                    <div class="add-song-btn" 
+                        v-if="!song.trackInCurrentTracklist"
+                        @click="addSongToTracklist(song.idTrack)"
+                    >
+                        <font-awesome-icon :icon="['fas', 'circle-plus']" />
+                    </div>
+                    <div class="remove-song-btn" v-if="song.trackInCurrentTracklist">
+                        <font-awesome-icon :icon="['fas', 'circle-xmark']" />
+                    </div>
                 </div>
             </div>
             <div v-if="noResults">There is no songs for your search</div>
@@ -169,17 +219,20 @@ label {
     flex: 2;
     box-sizing: border-box;
 }
-.add-song-btn {
+.add-song-btn,
+.remove-song-btn {
     margin-left: 15px;
 }
 .play-btn,
-.add-song-btn {
+.add-song-btn,
+.remove-song-btn {
     cursor: pointer;
     transition: all .3s ease;
     color: #888;
 }
 .play-btn:hover,
-.add-song-btn:hover {
+.add-song-btn:hover,
+.remove-song-btn:hover {
     transform: scale(1.1);
     color: white;
 }

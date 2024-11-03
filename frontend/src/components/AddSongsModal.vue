@@ -28,7 +28,7 @@ watch(
 <template>
     <dialog id="dialog" ref="dialog">
       <h2>Add songs</h2>
-      <SearchSongs />
+      <SearchSongs :show-modal="props.showModal" />
       <button @click.prevent="closeModal" aria-label="close" class="x">❌</button>
     </dialog>
 </template>

@@ -357,6 +357,34 @@ const searchSong = async (song) => {
   const response = await fetch(`${API_URL}/api/search/${song}`);
   searchedSongs.value = await response.json();
 }
+// Adds a song to the current tracklist
+const addSongToTracklist = async (idTrack) => {
+  const response = await fetch(`${API_URL}/api/addTrack`, {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      idTrack,
+      "idTracklist": currentTracklist.value.idTracklist
+    })
+  });
+  const data = await response.json();
+  // Display the correspondant notification
+  if (data.success) {
+    toast.success("Song added to the tracklist successfully!", {
+      timeout: 3000
+    });
+  } else {
+    toast.error("An error occurred while adding song to the tracklist", {
+      timeout: 3000
+    });
+  }
+  // Closes modal
+  closeAddSongsModal();
+  // Reload current tracklist view
+  reloadTracklist();
+}
 // Watch when the value of tracklist's id changes to make a request to the server side to get the correspondant tracklist
 watchEffect(async () => {
   reloadTracklist();
@@ -371,6 +399,8 @@ provide('openDeleteTracklistDialog', openDeleteTracklistDialog);
 provide('openEditTracklistDialog', openEditTracklistDialog);
 provide('openAddSongsModal', openAddSongsModal);
 provide('searchedSongs', searchedSongs);
+provide('currentTracklist', currentTracklist);
+provide('addSongToTracklist', addSongToTracklist);
 provide('searchSong', searchSong);
 </script>
 

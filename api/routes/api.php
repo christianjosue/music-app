@@ -28,3 +28,4 @@ Route::put('/tracklist', [TracklistController::class, 'editTracklist']);
 Route::post('/getTrack', [TrackController::class, 'getTrack']);
 Route::get('/thumbnails', [ThumbnailController::class, 'getThumbnails']);
 Route::get('/search/{song}', [TrackController::class, 'searchSong']);
+Route::post('/addTrack', [TracklistController::class, 'addTrack']);

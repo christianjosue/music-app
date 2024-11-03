@@ -67,7 +67,7 @@ class TrackController extends Controller
     public function searchSong($song)
     {
         $songs = Track::where('title', 'LIKE', '%' . $song . '%')
-            ->with(['artists'])
+            ->with(['artists', 'tracklists'])
             ->orderBy('title', 'ASC')
             ->take(10)
             ->get();

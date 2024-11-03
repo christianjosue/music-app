@@ -32,7 +32,7 @@ class Track extends Model
     ];
 
     public function tracklists() {
-        return $this->belongsToMany(Tracklist::class, 'tracklist_tracks', 'idTrack', 'idTracklist');
+        return $this->belongsToMany(Tracklist::class, 'tracklist_track', 'idTrack', 'idTracklist');
     }
 
     public function artists() {

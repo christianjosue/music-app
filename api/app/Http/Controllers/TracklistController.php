@@ -109,4 +109,24 @@ class TracklistController extends Controller
 
         return response()->json(['success' => $success]);
     }
+
+    /**
+     * Adds a track to a tracklist
+     * @param Request $request
+     * @return json
+     */
+    public function addTrack(Request $request)
+    {
+        $success = false;
+        if ($request->exists('idTrack') && $request->exists('idTracklist')) {
+            $trackToAdd = TracklistTrack::firstOrCreate([
+                'idTrack' => $request->input('idTrack'),
+                'idTracklist' => $request->input('idTracklist')
+            ]);
+            if ($trackToAdd->save()) {
+                $success = true;
+            }
+        }
+        return response()->json(['success' => $success]);
+    }
 }
