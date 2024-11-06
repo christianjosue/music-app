@@ -10,6 +10,7 @@ const searchedSongs = inject('searchedSongs');
 const searchSong = inject('searchSong');
 const currentTracklist = inject('currentTracklist');
 const addSongToTracklist = inject('addSongToTracklist');
+const removeSongFromTracklist = inject('removeSongFromTracklist');
 const songs = ref(null);
 const songInput = ref(null);
 const emptySongs = ref(true);
@@ -52,6 +53,15 @@ const cleanFields = () => {
     emptySongs.value = true;
     if (songInput.value != null) {
         songInput.value.value = "";
+    }
+}
+// Handles whether the song has to be added or removed from the playlist
+const handleTrack = (song) => {
+    let success = !song.trackInCurrentTracklist ? addSongToTracklist(song.idTrack) : removeSongFromTracklist(song.idTrack);
+    // If the operation goes well, the value of the variable that handles whether the track is in the tracklist
+    // or not changes
+    if (success) {
+        song.trackInCurrentTracklist = !song.trackInCurrentTracklist;
     }
 }
 // Watch changes on opening and closing modal
@@ -113,14 +123,12 @@ watch(
                 </div>
                 <div class="buttons-container">
                     <div class="play-btn"><font-awesome-icon :icon="['fas', 'play']" /></div>
-                    <div class="add-song-btn" 
-                        v-if="!song.trackInCurrentTracklist"
-                        @click="addSongToTracklist(song.idTrack)"
+                    <div 
+                        :class="['add-remove-btn', { 'in-tracklist': song.trackInCurrentTracklist }]"
+                        @click="handleTrack(song)"
                     >
-                        <font-awesome-icon :icon="['fas', 'circle-plus']" />
-                    </div>
-                    <div class="remove-song-btn" v-if="song.trackInCurrentTracklist">
-                        <font-awesome-icon :icon="['fas', 'circle-xmark']" />
+                        <div class="line horizontal-line"></div>
+                        <div class="line vertical-line"></div>
                     </div>
                 </div>
             </div>
@@ -219,21 +227,49 @@ label {
     flex: 2;
     box-sizing: border-box;
 }
-.add-song-btn,
-.remove-song-btn {
-    margin-left: 15px;
-}
-.play-btn,
-.add-song-btn,
-.remove-song-btn {
+.play-btn {
     cursor: pointer;
     transition: all .3s ease;
     color: #888;
 }
-.play-btn:hover,
-.add-song-btn:hover,
-.remove-song-btn:hover {
+.play-btn:hover {
     transform: scale(1.1);
     color: white;
+}
+.add-remove-btn {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    margin-left: 10px;
+}
+.add-remove-btn:hover {
+    transform: scale(1.1);
+}
+.line {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 2px;
+    background-color: white;
+    transition: transform 0.3s ease;
+}
+.horizontal-line {
+    transform: translate(-50%, -50%);
+}
+.vertical-line {
+    transform: translate(-50%, -50%) rotate(90deg);
+}
+.add-remove-btn.in-tracklist .horizontal-line {
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+.add-remove-btn.in-tracklist .vertical-line {
+    transform: translate(-50%, -50%) rotate(-45deg);
+}
+.add-remove-btn.in-tracklist .line {
+    background-color: red;
 }
 </style>

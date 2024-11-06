@@ -370,20 +370,28 @@ const addSongToTracklist = async (idTrack) => {
     })
   });
   const data = await response.json();
-  // Display the correspondant notification
-  if (data.success) {
-    toast.success("Song added to the tracklist successfully!", {
-      timeout: 3000
-    });
-  } else {
-    toast.error("An error occurred while adding song to the tracklist", {
-      timeout: 3000
-    });
-  }
-  // Closes modal
-  closeAddSongsModal();
   // Reload current tracklist view
   reloadTracklist();
+  
+  return data.success;  
+}
+// Removes a song from the current tracklist
+const removeSongFromTracklist = async (idTrack) => {
+  const response = await fetch(`${API_URL}/api/removeTrack`, {
+    method: "DELETE",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      idTrack,
+      "idTracklist": currentTracklist.value.idTracklist
+    })
+  });
+  const data = await response.json();
+  // Reload current tracklist view
+  reloadTracklist();
+  
+  return data.success; 
 }
 // Watch when the value of tracklist's id changes to make a request to the server side to get the correspondant tracklist
 watchEffect(async () => {
@@ -401,6 +409,7 @@ provide('openAddSongsModal', openAddSongsModal);
 provide('searchedSongs', searchedSongs);
 provide('currentTracklist', currentTracklist);
 provide('addSongToTracklist', addSongToTracklist);
+provide('removeSongFromTracklist', removeSongFromTracklist);
 provide('searchSong', searchSong);
 </script>
 

@@ -129,4 +129,25 @@ class TracklistController extends Controller
         }
         return response()->json(['success' => $success]);
     }
+
+    /**
+     * Removes a track from the tracklist
+     * @param Request $request
+     * @return json
+     */
+    public function removeTrack(Request $request)
+    {
+        $success = false;
+        if ($request->exists('idTrack') && $request->exists('idTracklist')) {
+            $result = TracklistTrack::where('idTrack', $request->input('idTrack'))
+                ->where('idTracklist', $request->input('idTracklist'))
+                ->delete();
+
+            if ($result > 0) {
+                $success = true;
+            }
+        }
+
+        return response()->json(['success' => $success]);
+    }
 }
