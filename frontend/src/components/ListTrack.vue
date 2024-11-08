@@ -22,7 +22,8 @@ addedAt.value = formatTime();
 
 // Formats the date and time
 function formatTime() {
-    const date = props.track.created_at.split('T')[0];
+    const tracklistTrack = props.track.tracklist_track.find((tracklistTrack) => tracklistTrack.idTracklist == props.idTracklist);
+    const date = tracklistTrack.created_at.split('T')[0];
     var dateObject = new Date(date);
 
     var day = dateObject.getDate();

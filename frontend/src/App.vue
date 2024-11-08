@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, provide, ref, watch, watchEffect } from "vue";
+import { onMounted, provide, ref, watchEffect } from "vue";
 import { API_URL } from '../config.js';
 import { useToast } from "vue-toastification";
 import Home from "./components/Home.vue";

@@ -23,7 +23,7 @@ class TracklistController extends Controller
             // Check if there is an id to look for
             if ($id != 0) {
                 $tracklist = Tracklist::where('idTracklist', $id)
-                    ->with(['tracks.artists', 'tracks.album', 'thumbnailImage'])
+                    ->with(['tracks.artists', 'tracks.album', 'tracks.tracklistTrack', 'thumbnailImage'])
                     ->first();
             }
             

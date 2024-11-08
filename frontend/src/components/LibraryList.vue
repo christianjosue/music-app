@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref } from 'vue';
+import { inject, ref, computed } from 'vue';
 import ListTrack from './ListTrack.vue';
 defineEmits(['playTrack', 'pauseTrack']);
 const props = defineProps({
@@ -12,6 +12,49 @@ const setCurrentTrack = inject('setCurrentTrack');
 const openDeleteTracklistDialog = inject('openDeleteTracklistDialog');
 const openEditTracklistDialog = inject('openEditTracklistDialog');
 const openAddSongsModal = inject('openAddSongsModal');
+
+// Columnn it will be order by
+const sortColumn = ref('id');
+// 1 for ascendant, -1 for descendant
+const sortDirection = ref(1);
+
+// Sorts the songs
+const sortedTracks = computed(() => {
+    return [...props.tracklist.tracks].sort((a, b) => {
+        if (sortColumn.value === 'title') {
+            return a.title.localeCompare(b.title) * sortDirection.value;
+        } else if (sortColumn.value === 'album') {
+            return a.album.title.localeCompare(b.album.title) * sortDirection.value;
+        } else if (sortColumn.value === 'date') {
+            let tracklistTrackA = a.tracklist_track.find(tracklist_track => tracklist_track.idTracklist == props.tracklist.idTracklist);
+            let tracklistTrackB = b.tracklist_track.find(tracklist_track => tracklist_track.idTracklist == props.tracklist.idTracklist);
+            let dateA = tracklistTrackA.created_at;
+            let dateB = tracklistTrackB.created_at;
+            return (new Date(dateA) - new Date(dateB)) * sortDirection.value;
+        } else if (sortColumn.value === 'time') {
+            let valueA = convertDurationToSeconds(a.duration);
+            let valueB = convertDurationToSeconds(b.duration);
+            return (valueA - valueB) * sortDirection.value;
+        }
+        return 0;
+    });
+});
+
+// Changes the direction and order of a column
+const setSort = (column) => {
+    if (sortColumn.value === column) {
+        sortDirection.value *= -1;
+    } else {
+        sortColumn.value = column;
+        sortDirection.value = 1;
+    }
+}
+
+// Transform duration from 'm:ss' format to seconds
+const convertDurationToSeconds = (duration) => {
+    const [minutes, seconds] = duration.split(':').map(Number);
+    return minutes * 60 + seconds;
+}
 </script>
 
 <template>
@@ -27,13 +70,22 @@ const openAddSongsModal = inject('openAddSongsModal');
         <table>
             <tr>
                 <th style="width: 5%;">#</th>
-                <th style="width: 40%;">Title</th>
-                <th style="width: 30%;">Álbum</th>
-                <th style="width: 15%;">Added's</th>
-                <th style="width: 10%;"><font-awesome-icon icon="fa-solid fa-clock" /></th>
+                <th style="width: 40%;" @click="setSort('title')">
+                    Title <font-awesome-icon v-if="sortColumn === 'title'" :icon="['fas', sortDirection > 0 ? 'arrow-up' : 'arrow-down']" />
+                </th>
+                <th style="width: 30%;" @click="setSort('album')">
+                    Álbum <font-awesome-icon v-if="sortColumn === 'album'" :icon="['fas', sortDirection > 0 ? 'arrow-up' : 'arrow-down']" />
+                </th>
+                <th style="width: 15%;" @click="setSort('date')">
+                    Added's <font-awesome-icon v-if="sortColumn === 'date'" :icon="['fas', sortDirection > 0 ? 'arrow-up' : 'arrow-down']" />
+                </th>
+                <th style="width: 10%;" @click="setSort('time')">
+                    <font-awesome-icon icon="fa-solid fa-clock" style="margin-right: 5px;" /> 
+                    <font-awesome-icon v-if="sortColumn === 'time'" :icon="['fas', sortDirection > 0 ? 'arrow-up' : 'arrow-down']" />
+                </th>
             </tr>
             <ListTrack 
-                v-for="(track, index) in tracklist.tracks"
+                v-for="(track, index) in sortedTracks"
                 :key="track.idTrack"
                 :index="index+1"
                 :track="track"
@@ -136,6 +188,7 @@ th {
     color: #838383;
     font-weight: 400;
     text-align: left;
+    cursor: pointer;
 }
 th:first-child,
 td:first-child,

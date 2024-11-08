@@ -42,4 +42,8 @@ class Track extends Model
     public function album() {
         return $this->belongsTo(Album::class, 'idAlbum');
     }
+
+    public function tracklistTrack() {
+        return $this->hasMany(TracklistTrack::class, 'idTrack', 'idTrack');
+    }
 }

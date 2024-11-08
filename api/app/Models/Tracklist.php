@@ -32,14 +32,6 @@ class Tracklist extends Model
         return $this->belongsToMany(Track::class, 'tracklist_track', 'idTracklist', 'idTrack');
     }
 
-    public function owners() {
-        return $this->belongsToMany(User::class, 'user_tracklists', 'idTracklist', 'idUser')->wherePivot('owner', 1);
-    }
-
-    public function followers() {
-        return $this->belongsToMany(User::class, 'user_tracklists', 'idTracklist', 'idUser')->wherePivot('owner', 0);
-    }
-
     public function thumbnailImage() {
         return $this->hasOne(Thumbnail::class, 'idThumbnail', 'thumbnail');
     }
