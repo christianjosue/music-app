@@ -15,6 +15,7 @@ const props = defineProps({
     index: {}
 });
 defineEmits(['playTrack', 'pauseTrack']);
+const removeSongFromTracklist = inject('removeSongFromTracklist');
 const addedAt = ref('');
 const onHover = ref(false);
 
@@ -81,10 +82,21 @@ const isPlaying = inject('isPlaying');
         <td class="album">{{ track.album.title }}</td>
         <td class="date">{{ addedAt }}</td>
         <td class="time">{{ track.duration }}</td>
+        <td>
+            <font-awesome-icon 
+                :icon="['fas', 'trash']"
+                class="remove"
+                @click="removeSongFromTracklist(track.idTrack)"
+            />
+        </td>
     </tr>
 </template>
 
 <style scoped>
+::selection {
+    background-color: transparent;
+    color: inherit;
+}
 tr:first-child {
   border-bottom: 1px solid rgba(255, 255, 255, .2);
 }
@@ -188,5 +200,14 @@ span {
   100% {
     transform: scaleY(0.6); /* scale down to 60% */
   }
+}
+.remove {
+    color: #838383;
+    cursor: pointer;
+    transition: all .3s ease;
+}
+.remove:hover {
+    color: red;
+    transform: scale(1.05);
 }
 </style>

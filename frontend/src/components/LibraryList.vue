@@ -12,11 +12,13 @@ const setCurrentTrack = inject('setCurrentTrack');
 const openDeleteTracklistDialog = inject('openDeleteTracklistDialog');
 const openEditTracklistDialog = inject('openEditTracklistDialog');
 const openAddSongsModal = inject('openAddSongsModal');
+const displaySearchInput = ref(false);
+const searchQuery = ref('');
 
 // Columnn it will be order by
-const sortColumn = ref('id');
+const sortColumn = ref('date');
 // 1 for ascendant, -1 for descendant
-const sortDirection = ref(1);
+const sortDirection = ref(-1);
 
 // Sorts the songs
 const sortedTracks = computed(() => {
@@ -38,6 +40,17 @@ const sortedTracks = computed(() => {
         }
         return 0;
     });
+});
+
+// Filtered tracks based on search query
+const filteredTracks = computed(() => {
+    if (!searchQuery.value) return sortedTracks.value;
+    const query = searchQuery.value.toLowerCase();
+    return sortedTracks.value.filter(track =>
+        track.title.toLowerCase().includes(query) ||
+        track.artists[0].name.toLowerCase().includes(query) ||
+        track.album.title.toLowerCase().includes(query)
+    );
 });
 
 // Changes the direction and order of a column
@@ -62,6 +75,19 @@ const convertDurationToSeconds = (duration) => {
     <div class="list-options">
         <div @click="openAddSongsModal" class="btn-add-song">Add songs <font-awesome-icon :icon="['fas', 'music']" /></div>
         <div class="actions">
+            <div class="search-container">
+                <font-awesome-icon 
+                    :icon="['fas', 'magnifying-glass']"
+                    :class="['search-icon', { active: displaySearchInput }]"
+                    @click="displaySearchInput = !displaySearchInput"
+                />
+                <input
+                    type="text"
+                    :class="['search-input', { 'search-input-active': displaySearchInput }]"
+                    v-model="searchQuery"
+                    placeholder="Search for song, artist or album"
+                >
+            </div>
             <font-awesome-icon @click="openEditTracklistDialog(tracklist)" :icon="['fas', 'pencil']" class="edit-icon" />
             <font-awesome-icon @click="openDeleteTracklistDialog(tracklist.idTracklist)" :icon="['fas', 'trash']" class="trash-icon"/>
         </div>
@@ -70,7 +96,7 @@ const convertDurationToSeconds = (duration) => {
         <table>
             <tr>
                 <th style="width: 5%;">#</th>
-                <th style="width: 40%;" @click="setSort('title')">
+                <th style="width: 35%;" @click="setSort('title')">
                     Title <font-awesome-icon v-if="sortColumn === 'title'" :icon="['fas', sortDirection > 0 ? 'arrow-up' : 'arrow-down']" />
                 </th>
                 <th style="width: 30%;" @click="setSort('album')">
@@ -83,9 +109,10 @@ const convertDurationToSeconds = (duration) => {
                     <font-awesome-icon icon="fa-solid fa-clock" style="margin-right: 5px;" /> 
                     <font-awesome-icon v-if="sortColumn === 'time'" :icon="['fas', sortDirection > 0 ? 'arrow-up' : 'arrow-down']" />
                 </th>
+                <th style="width: 5%;"></th>
             </tr>
             <ListTrack 
-                v-for="(track, index) in sortedTracks"
+                v-for="(track, index) in filteredTracks"
                 :key="track.idTrack"
                 :index="index+1"
                 :track="track"
@@ -99,6 +126,10 @@ const convertDurationToSeconds = (duration) => {
 </template>
 
 <style scoped>
+::selection {
+    background-color: transparent;
+    color: inherit;
+}
 h6 {
     font-size: 15px;
     font-weight: 500;
@@ -116,6 +147,7 @@ h6 {
 }
 .actions {
     display: flex;
+    align-items: center;
     gap: 20px;
 }
 .options {
@@ -152,16 +184,6 @@ h6 {
 }
 .more-options {
     font-size: 35px;
-}
-.search {
-    font-size: 20px;
-    padding: 7px;
-    margin: 0 18px 0 18px;
-    transition: background .3s ease;
-    border-radius: 50%;
-}
-.search:hover {
-    background: rgba(255, 255, 255, .1);
 }
 .bars {
     font-size: 20px;
@@ -232,7 +254,8 @@ td {
     background: rgba(255, 255, 255, .1);
 }
 .trash-icon,
-.edit-icon {
+.edit-icon,
+.search-icon {
     color: #838383;
     font-size: 20px;
     transition: all .3s ease;
@@ -242,7 +265,8 @@ td {
     color: red;
     transform: scale(1.05);
 }
-.edit-icon:hover {
+.edit-icon:hover,
+.search-icon:hover {
     color: white;
     transform: scale(1.05);
 }
@@ -259,5 +283,33 @@ td {
     border: 1px solid white;
     background-color: white;
     transform: scale(1.05);
+}
+.search-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+.search-input {
+    width: 0;
+    opacity: 0;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    outline: none;
+    transition: all .3s ease;
+    position: absolute;
+    right: 30px;
+    background-color: rgba(10, 10, 10, .1);
+    color: white;
+}
+.search-input-active {
+    width: 200px;
+    opacity: 1;
+    position: relative;
+    right: 0;
+    margin-left: 10px;
+}
+.search-icon.active {
+    color: white !important;
 }
 </style>
