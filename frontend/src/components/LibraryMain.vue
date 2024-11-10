@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps({
     tracklist: {
@@ -19,7 +19,7 @@ function getTotalTime() {
     props.tracklist.tracks.forEach(track => {
         const [minutes, seconds] = track.duration.split(':');
         totalMinutes += parseInt(minutes);
-        totalSeconds += parseInt(seconds); 
+        totalSeconds += parseInt(seconds);
     });
     let minutesToAdd = Math.trunc(totalSeconds / 60);
     let realSeconds = totalSeconds % 60;
@@ -27,6 +27,15 @@ function getTotalTime() {
 
     return `${totalMinutes}min ${realSeconds}s`;
 }
+// Updates the number of tracks and the total time of the sum of it every time that the playlist changes
+watch(
+    () => props.tracklist,
+    () => {
+        numberTracks.value = props.tracklist.tracks.length;
+        totalTime.value = getTotalTime();
+    },
+    { immediate: true }
+)
 </script>
 
 <template>
