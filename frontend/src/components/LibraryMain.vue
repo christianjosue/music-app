@@ -9,8 +9,6 @@ const props = defineProps({
 });
 const numberTracks = ref(0);
 const totalTime = ref('');
-numberTracks.value = props.tracklist.tracks.length;
-totalTime.value = getTotalTime();
 
 // Gets total time of the tracklist in hours and minutes
 function getTotalTime() {

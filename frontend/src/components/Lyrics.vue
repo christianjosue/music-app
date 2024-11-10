@@ -68,15 +68,15 @@ onMounted(() => {
 
 <style scoped>
 .main-container {
-    width: 100%;
-    height: 100%;
-    border-radius: 10px;
-    background-color: #111;
-    display: flex;
-    justify-content: center;
+  flex: 7;
+  height: 100%;
+  border-radius: 10px;
+  background-color: #111;
+  display: flex;
+  justify-content: center;
 
-    mask-image: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 1) 25%, rgba(255, 255, 255, 1) 75%, transparent);
-    -webkit-mask-image: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 1) 25%, rgba(255, 255, 255, 1) 75%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 1) 25%, rgba(255, 255, 255, 1) 75%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 1) 25%, rgba(255, 255, 255, 1) 75%, transparent);
 }
 
 .lyrics-container {
