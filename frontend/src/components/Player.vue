@@ -52,6 +52,9 @@ const props = defineProps({
   handleRepeatMode: {
     type: Function
   },
+  handleActiveLyrics: {
+    type: Function
+  },
   repeatMode: {
     type: Boolean,
     default: false
@@ -72,7 +75,6 @@ const colorVolume = ref("#fff");
 const currentProgressTrack = ref(0);
 const colorProgressTrack = ref("#fff");
 const reload = ref(true);
-const activeLyricsIcon = ref(false);
 const volumeIcon = computed(() => {
   switch (true) {
     case volume.value === 0:
@@ -305,13 +307,7 @@ function updateProgressBar() {
       </div>
     </div>
     <div class="player-options">
-      <IconLyrics 
-        @click="
-          $emit('showLyrics');
-          activeLyricsIcon = !activeLyricsIcon;
-        "
-        :active-lyrics-icon="activeLyricsIcon"
-      />
+      <IconLyrics @click="handleActiveLyrics" />
       <IconPlaylist 
         @active-sound-view="$emit('activeSoundView')"
         :is-active="soundView"

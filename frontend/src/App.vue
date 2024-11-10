@@ -20,6 +20,7 @@ const SEARCH_VIEW = 2;
 const LIBRARY_VIEW = 3;
 const LYRICS_VIEW = 4;
 
+const activeLyricsIcon = ref(false);
 const currentIndex = ref(0);
 const currentLyricsLine = ref("");
 const currentTrack = ref({});
@@ -207,6 +208,10 @@ function lyricsToObject() {
 // 4: Lyrics
 function setCurrentView(view) {
   currentView.value = view;
+  // Deactive lyrics button when the view is not lyrics one
+  if (currentView.value != LYRICS_VIEW) {
+    activeLyricsIcon.value = false;
+  }
 }
 
 // Checks if the specified view is the current main view
@@ -393,11 +398,21 @@ const removeSongFromTracklist = async (idTrack) => {
   
   return data.success; 
 }
+// Handles whether the lyrics view is displayed or not and change icon lyrics button color
+const handleActiveLyrics = () => {
+  if (Object.keys(currentTrack.value).length > 0) {
+    activeLyricsIcon.value = true;
+    setCurrentView(LYRICS_VIEW);
+  } else {
+    activeLyricsIcon.value = false;
+  }
+}
 // Watch when the value of tracklist's id changes to make a request to the server side to get the correspondant tracklist
 watchEffect(async () => {
   reloadTracklist();
 });
 
+provide('activeLyricsIcon', activeLyricsIcon);
 provide('isPlaying', playTrack);
 provide('idPlayingTrack', idPlayingTrack);
 provide('randomMode', randomMode);
@@ -510,10 +525,10 @@ provide('searchSong', searchSong);
       :update-lyrics-progress-bar="updateLyricsProgressBar"
       :handle-random-mode="handleRandomMode"
       :handle-repeat-mode="handleRepeatMode"
+      :handle-active-lyrics="handleActiveLyrics"
       @active-sound-view="handleSoundView"
       @prev-track="prevTrack"
       @next-track="nextTrack"
-      @show-lyrics="setCurrentView(LYRICS_VIEW)"
     />
   </div>
 </template>

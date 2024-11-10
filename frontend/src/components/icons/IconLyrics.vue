@@ -1,10 +1,7 @@
 <script setup>
-defineProps({
-    activeLyricsIcon: {
-        type: Boolean,
-        default: false
-    }
-});
+import { inject } from 'vue';
+
+const activeLyricsIcon = inject('activeLyricsIcon');
 </script>
 
 <template>
@@ -35,6 +32,6 @@ defineProps({
 }
 
 .active {
-    color: white !important;
+    color: #1db954 !important;
 }
 </style>
