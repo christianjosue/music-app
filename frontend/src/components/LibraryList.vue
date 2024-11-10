@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref, computed } from 'vue';
+import { inject, ref, computed, watch } from 'vue';
 import ListTrack from './ListTrack.vue';
 defineEmits(['playTrack', 'pauseTrack']);
 const props = defineProps({
@@ -68,6 +68,25 @@ const convertDurationToSeconds = (duration) => {
     const [minutes, seconds] = duration.split(':').map(Number);
     return minutes * 60 + seconds;
 }
+// Cleans up the input for search songs
+watch(
+    () => displaySearchInput.value,
+    () => {
+        if (!displaySearchInput.value && searchQuery.value != "") {
+            searchQuery.value = "";
+        }
+    },
+    { immediate: true }
+);
+// Cleans up the input for search songs and hide it
+watch(
+    () => props.tracklist,
+    () => { 
+        searchQuery.value = "";
+        displaySearchInput.value = false;
+    },
+    { immediate: true }
+);
 </script>
 
 <template>
