@@ -177,6 +177,12 @@ const getTrack = async (track, index, idTrack, idTracklist) => {
   songLoading.value = false;
   playTrack.value = true;
 }
+// Get the only the audio of a song
+const getAudioTrack = async (src) => {
+  const response = await fetch(`${API_URL}/api/getAudioTrack/${src}`);
+  const data = await response.json();
+  return data.audioUrl;
+}
 // Check if the given tracklist is the same that the selected one
 function checkSelectedTracklist(id) {
   return idTracklist.value == id;
@@ -413,19 +419,20 @@ watchEffect(async () => {
 });
 
 provide('activeLyricsIcon', activeLyricsIcon);
-provide('isPlaying', playTrack);
-provide('idPlayingTrack', idPlayingTrack);
-provide('randomMode', randomMode);
+provide('addSongToTracklist', addSongToTracklist);
 provide('checkPlayingTracklist', checkPlayingTracklist);
-provide('setCurrentTrack', setCurrentTrack);
+provide('currentTracklist', currentTracklist);
+provide('getAudioTrack', getAudioTrack);
+provide('idPlayingTrack', idPlayingTrack);
+provide('isPlaying', playTrack);
+provide('openAddSongsModal', openAddSongsModal);
 provide('openDeleteTracklistDialog', openDeleteTracklistDialog);
 provide('openEditTracklistDialog', openEditTracklistDialog);
-provide('openAddSongsModal', openAddSongsModal);
-provide('searchedSongs', searchedSongs);
-provide('currentTracklist', currentTracklist);
-provide('addSongToTracklist', addSongToTracklist);
+provide('randomMode', randomMode);
 provide('removeSongFromTracklist', removeSongFromTracklist);
+provide('searchedSongs', searchedSongs);
 provide('searchSong', searchSong);
+provide('setCurrentTrack', setCurrentTrack);
 </script>
 
 <template>

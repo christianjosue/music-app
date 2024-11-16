@@ -20,13 +20,17 @@ use Illuminate\Support\Facades\Route;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
+Route::delete('/removeTrack', [TracklistController::class, 'removeTrack']);
+Route::delete('/tracklist/{id}', [TracklistController::class, 'deleteTracklist']);
+
+Route::get('/getAudioTrack/{src}', [TrackController::class, 'getAudioTrack']);
+Route::get('/search/{song}', [TrackController::class, 'searchSong']);
+Route::get('/thumbnails', [ThumbnailController::class, 'getThumbnails']);
 Route::get('/tracklist/{id}', [TracklistController::class, 'tracklist']);
 Route::get('/tracklists', [TracklistController::class, 'tracklists']);
-Route::delete('/tracklist/{id}', [TracklistController::class, 'deleteTracklist']);
-Route::post('/tracklist', [TracklistController::class, 'createTracklist']);
-Route::put('/tracklist', [TracklistController::class, 'editTracklist']);
-Route::post('/getTrack', [TrackController::class, 'getTrack']);
-Route::get('/thumbnails', [ThumbnailController::class, 'getThumbnails']);
-Route::get('/search/{song}', [TrackController::class, 'searchSong']);
+
 Route::post('/addTrack', [TracklistController::class, 'addTrack']);
-Route::delete('/removeTrack', [TracklistController::class, 'removeTrack']);
+Route::post('/getTrack', [TrackController::class, 'getTrack']);
+Route::post('/tracklist', [TracklistController::class, 'createTracklist']);
+
+Route::put('/tracklist', [TracklistController::class, 'editTracklist']);

@@ -1,22 +1,36 @@
 <script setup>
-import { inject, ref, watch } from 'vue';
+import { inject, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 const props = defineProps({
     showModal: {
         type: Boolean,
         default: false
     }
 });
+const addSongToTracklist = inject('addSongToTracklist');
+const currentTracklist = inject('currentTracklist');
+const getAudioTrack = inject('getAudioTrack');
+const removeSongFromTracklist = inject('removeSongFromTracklist');
 const searchedSongs = inject('searchedSongs');
 const searchSong = inject('searchSong');
-const currentTracklist = inject('currentTracklist');
-const addSongToTracklist = inject('addSongToTracklist');
-const removeSongFromTracklist = inject('removeSongFromTracklist');
+const setCurrentTrack = inject('setCurrentTrack');
 const songs = ref(null);
 const songInput = ref(null);
 const emptySongs = ref(true);
 const noResults = ref(false);
+const playSong = ref(false);
+const progressCircle = ref(null);
+const idPlayingTrack = ref(0);
+const duration = 15;
+const radius = 15;
+const circumference = 2 * Math.PI * radius;
+var audio = new Audio();
 var timeout = setTimeout(() => {}, 0);
 
+// Pauses the audio song
+const pauseSong = () => {
+    audio.pause();
+    playSong.value = false;
+}
 // Handles the message to display depending on the results
 const handleResultsValues = () => {
     if (songs.value.length > 0) {
@@ -44,6 +58,10 @@ const handleSearchSong = () => {
             await searchSong(songInput.value.value);
         }
         handleResultsValues();
+        // Every time the input for searching songs changes, the audio song is paused
+        pauseSong();
+        audio.currentTime = 0;
+        idPlayingTrack.value = 0;
     }, 250);
 }
 // Clean up search fields
@@ -64,12 +82,63 @@ const handleTrack = (song) => {
         song.trackInCurrentTracklist = !song.trackInCurrentTracklist;
     }
 }
+// Set circle progress
+const setProgress = (percent) => {
+    if (progressCircle.value) {
+        if (progressCircle.value.length > 0) {
+            if (!progressCircle.value[0].style.strokeDasharray) {
+                progressCircle.value[0].style.strokeDasharray = circumference;
+            }
+            const offset = circumference - (percent / 100) * circumference;
+            progressCircle.value[0].style.strokeDashoffset = offset;
+        }
+    }
+}
+// Handles the extract of the song that is going to be played or paused
+const handleTrackPreview = async (song) => {
+    if (idPlayingTrack.value == 0 || (idPlayingTrack.value > 0 && idPlayingTrack.value != song.idTrack)) {
+        audio.src = await getAudioTrack(song.src);
+        idPlayingTrack.value = song.idTrack;
+    }
+
+    if (audio.paused) {
+        // Stop the main player in order to avoid having multiple songs playing at the same time
+        setCurrentTrack(0, 0);
+        // Plays the preview of the selected song
+        playSong.value = true;
+        audio.play();
+    } else {
+        // Pauses the preview of the selected song
+        pauseSong();
+    }
+}
+// Update the progress of the circle which indicates how many time of the playing song has past
+const updateProgress = () => {
+    const progress = (audio.currentTime / duration) * 100;
+    setProgress(progress);
+
+    if (audio.currentTime >= duration) {
+        pauseSong();
+        audio.currentTime = 0;
+        setProgress(0);
+    }
+}
+onMounted(() => {
+    audio.addEventListener('timeupdate', updateProgress);
+    setProgress(0);
+});
+onBeforeUnmount(() => {
+    audio.removeEventListener('timeupdate', updateProgress);
+});
 // Watch changes on opening and closing modal
 watch(
     () => props.showModal,
     () => {
         if (!props.showModal) {
             cleanFields();
+            pauseSong();
+            setProgress(0);
+            idPlayingTrack.value = 0;
         }
     },
     { immediate: true }
@@ -122,7 +191,18 @@ watch(
                     <div class="song-artist">{{ song.artists[0].name }}</div>
                 </div>
                 <div class="buttons-container">
-                    <div class="play-btn"><font-awesome-icon :icon="['fas', 'play']" /></div>
+                    <div class="player-container">
+                        <div 
+                            class="play-pause-btn"
+                            @click="handleTrackPreview(song)"
+                        >
+                            <font-awesome-icon :icon="['fas', playSong && idPlayingTrack == song.idTrack ? 'pause' : 'play']" />
+                        </div>
+                        <svg v-if="idPlayingTrack == song.idTrack" class="progress-ring" width="35" height="35">
+                            <circle class="progress-ring-background" cx="17.5" cy="17.5" r="15" />
+                            <circle ref="progressCircle" class="progress-ring-progress" cx="17.5" cy="17.5" r="15" />
+                        </svg>
+                    </div>
                     <div 
                         :class="['add-remove-btn', { 'in-tracklist': song.trackInCurrentTracklist }]"
                         @click="handleTrack(song)"
@@ -224,17 +304,51 @@ label {
 .buttons-container {
     display: flex;
     justify-content: center;
+    align-items: center;
     flex: 2;
     box-sizing: border-box;
+    margin-right: 10px;
 }
-.play-btn {
+.player-container {
+    position: relative;
+    width: 35px;
+    height: 35px;
+}
+.play-pause-btn {
     cursor: pointer;
     transition: all .3s ease;
     color: #888;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: none;
+    border: none;
+    z-index: 1;
 }
-.play-btn:hover {
-    transform: scale(1.1);
+.play-pause-btn:hover {
     color: white;
+}
+.progress-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: rotate(-90deg);
+}
+.progress-ring-background,
+.progress-ring-progress {
+    fill: transparent;
+    stroke-width: 2;
+}
+.progress-ring-background {
+    stroke: transparent;
+}
+.progress-ring-progress {
+    stroke: #1db954;
+    stroke-linecap: round;
+    stroke-dasharray: 94.2;
+    stroke-dashoffset: 94.2;
+    transition: stroke-dashoffset 0.1s linear;
 }
 .add-remove-btn {
     display: inline-block;
