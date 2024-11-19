@@ -4,8 +4,6 @@ This project is a music application that combines a Laravel backend, a Vue.js fr
 
 This app is inspired by Spotify, just for development purposes.
 
-<br/>
-
 ## 🗂️ Project Structure
 
 Description of Each Part:
@@ -20,8 +18,6 @@ Frontend application built with Vue.js that interacts with the backend to displa
 Contains an auxiliary Python Flask server used for specific tasks, such as data processing or integration with external services.
 
 It is also used an AWS S3 in order to store songs audio files.
-
-<br/>
 
 ## 🔐 Database 
 The project uses MySQL as its database management system. It serves as the backend database for storing and managing application data.
@@ -39,15 +35,11 @@ You can take a look the DB structure diagram through this URL:
 
 https://drive.google.com/file/d/1Rh5LN8v86jOz7EGyfIYVJ-HAUTizAOXK/view?usp=sharing
 
-<br/>
-
 ## 🚀 Requirements
 To run the project, make sure you have the following installed:
 
 - Windows/MacOS: Docker Desktop
 - Linux: Docker and Docker Compose
-
-<br/>
 
 ## 🔧 Setup and Execution
 1. Clone the repository:
@@ -86,22 +78,16 @@ php artisan migrate:refresh --seed
 - Backend: http://localhost:8000 (API)
 - Python Server: http://localhost:5000 (API)
 
-<br/>
-
 ## ✨ Features
 - Modern Frontend: Interactive and user-friendly interface built with Vue.js.
 - REST API: Scalable and efficient backend built with Laravel.
 - Specific Tasks: Python server for additional processing and AWS S3 for storing songs audio files
 - Dockerized: Simple and portable setup with Docker Compose.
 
-<br/>
-
 ## 📞 Contact
 If you have any questions or suggestions, feel free to contact me:
 
 📩 Email: christianjosuefuentes@gmail.com
-
-<br/>
 
 ## 📝 License
 This project is licensed under the MIT License.
