@@ -8,132 +8,98 @@ This app is inspired by Spotify, just for development purposes.
 
 ## 🗂️ Project Structure
 
-/server           # Backend built with Laravel (API REST)
-/client           # Frontend built with Vue.js
-/tasks            # Auxiliary Python server for specific tasks
-docker-compose.yml # Docker orchestration file
-Description of Each Part
-/server:
+Description of Each Part:
 
-Contains the REST API built with Laravel. Handles backend logic, database access, and user authentication.
-/client:
+**/server:**
+Contains the REST API built with Laravel. Handles backend logic and database access.
 
+**/client:**
 Frontend application built with Vue.js that interacts with the backend to display the user interface.
-/tasks:
 
+**/tasks:**
 Contains an auxiliary Python server used for specific tasks, such as data processing or integration with external services.
+
+It is also used an AWS S3 in order to store songs audio files.
+
+<br/>
+
+## 🔐 Database 
+The project uses MySQL as its database management system. It serves as the backend database for storing and managing application data.
+
+Additionally, phpMyAdmin is included in the project setup to provide a user-friendly web interface for interacting with the MySQL database. With phpMyAdmin, you can:
+
+- Browse and manage database tables.
+- Execute SQL queries.
+- Import and export data.
+- Perform database operations like backups and optimizations.
+
+Both the MySQL database and phpMyAdmin are configured and accessible via Docker, making it easy to set up and manage the database environment.
+
 
 <br/>
 
 ## 🚀 Requirements
 To run the project, make sure you have the following installed:
 
-Docker
-Docker Compose
+- Windows/MacOS: Docker Desktop
+- Linux: Docker and Docker Compose
 
 <br/>
 
 ## 🔧 Setup and Execution
-Clone the repository:
+1. Clone the repository:
 
-bash
-Copiar código
-git clone https://github.com/your-username/music-app.git
+```bash
+git clone https://github.com/christianjosue/music-app.git
 cd music-app
-Set up environment variables:
+```
 
-Copy and customize the example configuration files if available.
-For example:
-bash
-Copiar código
+2. Set up environment variables:
+
+Copy and customize the example configuration files.
+```bash
 cp server/.env.example server/.env
 cp client/.env.example client/.env
-cp tasks/.env.example tasks/.env
-Make sure to configure database credentials and other parameters according to your environment.
-Start services with Docker Compose:
+```
+Make sure to configure database and other parameters according to your environment.
+In order to get AWS credentials, ask to the project owner for it.
 
-bash
-Copiar código
+3. Start services with Docker Compose:
+
+```bash
 docker-compose up --build
-Access the application:
+```
 
-Frontend: http://localhost:8080
-Backend: http://localhost:8000 (API)
-Python Server: http://localhost:5000
+4. Run database migrations
 
-<br/>
+```bash
+php artisan migrate:refresh --seed
+```
 
-## 🛠️ Useful Commands
-Restart services:
+5. Access the application:
 
-bash
-Copiar código
-docker-compose restart
-Stop services:
-
-bash
-Copiar código
-docker-compose down
-Access a container (e.g., the backend):
-
-bash
-Copiar código
-docker exec -it music-app-server bash
-
-<br/>
-
-## 🧪 Testing
-Backend
-Access the server container:
-bash
-Copiar código
-docker exec -it music-app-server bash
-Run the tests:
-bash
-Copiar código
-php artisan test
-Frontend
-Make sure you're inside the client container or your local environment:
-bash
-Copiar código
-npm run test
-Python Tasks
-Run the tests directly from the container or locally:
-bash
-Copiar código
-python -m unittest discover
+- Frontend: http://localhost:5173
+- phpMyAdmin: http://localhost:8081
+- Backend: http://localhost:8000 (API)
+- Python Server: http://localhost:5000 (API)
 
 <br/>
 
 ## ✨ Features
-Modern Frontend: Interactive and user-friendly interface built with Vue.js.
-REST API: Scalable and efficient backend built with Laravel.
-Specific Tasks: Python server for additional processing.
-Dockerized: Simple and portable setup with Docker Compose.
-
-<br/>
-
-## 📝 License
-This project is licensed under the MIT License.
-
-<br/>
-
-## 📬 Contributions
-Contributions are welcome! Please follow the steps in CONTRIBUTING.md for more details.
+- Modern Frontend: Interactive and user-friendly interface built with Vue.js.
+- REST API: Scalable and efficient backend built with Laravel.
+- Specific Tasks: Python server for additional processing and AWS S3 for storing songs audio files
+- Dockerized: Simple and portable setup with Docker Compose.
 
 <br/>
 
 ## 📞 Contact
 If you have any questions or suggestions, feel free to contact me:
 
-Email: your-email@example.com
-GitHub: your-username
-less
-Copiar código
+Email: christianjosuefuentes@gmail.com
+GitHub: christianjosue
 
-### Key Points:
-1. **Syntax highlighting**: Each code block specifies the language (e.g., `bash`, `plaintext`, `yaml`).
-2. **Inline commands**: Used single backticks (`) for inline code snippets, like `docker-compose restart`.
-3. **Customizable**: Replace placeholders like `your-username` and `your-email@example.com` with your actual details.
+<br/>
 
-This version will render nicely on GitHub! 🚀
+## 📝 License
+This project is licensed under the MIT License.
