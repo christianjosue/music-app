@@ -1,6 +1,6 @@
 # 🎵 Music App
 
-This project is a music application that combines a Laravel backend, a Vue.js frontend client, and a Python auxiliary server for specific tasks. The entire project is dockerized and can be easily started with `docker-compose up`.
+This project is a music application that combines a Laravel backend, a Vue.js frontend client, and a Python auxiliary Flask server for specific tasks. The entire project is dockerized and can be easily started with `docker-compose up`.
 
 This app is inspired by Spotify, just for development purposes.
 
@@ -17,7 +17,7 @@ Contains the REST API built with Laravel. Handles backend logic and database acc
 Frontend application built with Vue.js that interacts with the backend to display the user interface.
 
 **/tasks:**
-Contains an auxiliary Python server used for specific tasks, such as data processing or integration with external services.
+Contains an auxiliary Python Flask server used for specific tasks, such as data processing or integration with external services.
 
 It is also used an AWS S3 in order to store songs audio files.
 
@@ -35,6 +35,9 @@ Additionally, phpMyAdmin is included in the project setup to provide a user-frie
 
 Both the MySQL database and phpMyAdmin are configured and accessible via Docker, making it easy to set up and manage the database environment.
 
+You can take a look the DB structure diagram through this URL:
+
+https://drive.google.com/file/d/1Rh5LN8v86jOz7EGyfIYVJ-HAUTizAOXK/view?usp=sharing
 
 <br/>
 
@@ -96,8 +99,7 @@ php artisan migrate:refresh --seed
 ## 📞 Contact
 If you have any questions or suggestions, feel free to contact me:
 
-Email: christianjosuefuentes@gmail.com
-GitHub: christianjosue
+📩 Email: christianjosuefuentes@gmail.com
 
 <br/>
 
