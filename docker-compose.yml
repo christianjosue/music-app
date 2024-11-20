@@ -6,7 +6,7 @@ services:
     ports:
       - "5173:5173"  # Maps port 5173 on the host to 5173 in the container for Vite (Vue.js dev server)
     volumes:
-      - ./frontend:/app  # Mounts the local 'frontend' directory to '/app' in the container
+      - ./client:/app  # Mounts the local 'frontend' directory to '/app' in the container
     working_dir: /app  # Sets the working directory inside the container to '/app'
     command: >
       sh -c "npm install && npm rebuild esbuild && npm i crypto-js && npm run dev -- --host 0.0.0.0"
@@ -14,15 +14,15 @@ services:
 
   laravel:
     build:
-      context: ./api  # Builds the Laravel service from the 'api' directory
+      context: ./server  # Builds the Laravel service from the 'api' directory
     ports:
       - "8000:8000"  # Maps port 8000 on the host to 8000 in the container for the Laravel dev server
     depends_on:
       - db  # Laravel depends on the MySQL database service
       - python  # Laravel also depends on the Python service
     volumes:
-      - ./api:/api  # Mounts the local 'api' directory to '/api' inside the container
-    working_dir: /api  # Sets the working directory inside the container to '/api'
+      - ./server:/server  # Mounts the local 'api' directory to '/api' inside the container
+    working_dir: /server  # Sets the working directory inside the container to '/api'
     environment:
       DB_HOST: db  # Sets the database host to 'db' (MySQL service)
       DB_DATABASE: dbspotify  # Sets the database name to 'dbspotify'
@@ -52,12 +52,12 @@ services:
 
   python:
     build: 
-      context: ./scripts  # Builds the Python service from the 'scripts' directory
+      context: ./tasks  # Builds the Python service from the 'scripts' directory
     ports:
       - "6000:6000"  # Maps port 6000 on the host to 6000 in the container
     volumes:
-      - ./scripts:/scripts  # Mounts the local 'scripts' directory to '/scripts' inside the container
-    working_dir: /scripts  # Sets the working directory inside the container to '/scripts'
+      - ./tasks:/tasks  # Mounts the local 'scripts' directory to '/scripts' inside the container
+    working_dir: /tasks  # Sets the working directory inside the container to '/scripts'
 
 volumes:
   db_data:  # Defines the named volume 'db_data' used by the MySQL service to persist database files
