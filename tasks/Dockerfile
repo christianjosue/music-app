@@ -6,8 +6,8 @@ RUN apt-get update && apt-get install -y ffmpeg flac
 RUN pip install flask syncedlyrics
 
 # Set the working directory and copy all files on it
-WORKDIR /scripts
-COPY . /scripts
+WORKDIR /tasks
+COPY . /tasks
 
 # Command to runs python server
 CMD ["python", "server.py"]
