@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Album;
+use App\Models\Artist;
 use App\Models\Track;
 use App\Services\TrackService;
 use Illuminate\Http\Request;
@@ -62,5 +64,37 @@ class TrackController extends Controller
             ->get();
         
         return $songs;
+    }
+
+    /**
+     * Search songs, artists and albums by the given text
+     * @param String $text
+     * @return json
+     */
+    public function search($text)
+    {
+        // Retrieve the first 5 songs that match with the written text
+        $songs = Track::where('title', 'LIKE', '%' . $text . '%')
+            ->with(['artists', 'tracklists'])
+            ->orderBy('title', 'ASC')
+            ->take(5)
+            ->get();
+        // Retrieve the first 4 albums that match with the written text
+        $albums = Album::where('title', 'LIKE', '%' . $text . '%')
+            ->with(['artist'])
+            ->orderBy('title', 'ASC')
+            ->take(4)
+            ->get();
+        // Retrieve the first 4 artists that match with the written text
+        $artists = Artist::where('name', 'LIKE', '%' . $text . '%')
+            ->orderBy('name', 'ASC')
+            ->take(4)
+            ->get();
+
+        return response()->json([
+            'songs' => $songs,
+            'albums' => $albums,
+            'artists' => $artists
+        ]);
     }
 }

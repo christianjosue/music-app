@@ -30,4 +30,9 @@ class Album extends Model
     ];
 
     public $timestamps = true;
+
+    public function artist()
+    {
+        return $this->belongsTo(Artist::class, 'idArtist');
+    }
 }

@@ -368,6 +368,11 @@ const searchSong = async (song) => {
   const response = await fetch(`${API_URL}/api/search/${song}`);
   searchedSongs.value = await response.json();
 }
+// Search by song artist and albums
+const search = async (text) => {
+  const response = await fetch(`${API_URL}/api/search/all/${text}`);
+  return await response.json();
+}
 // Adds a song to the current tracklist
 const addSongToTracklist = async (idTrack) => {
   const response = await fetch(`${API_URL}/api/addTrack`, {
@@ -499,7 +504,10 @@ provide('setCurrentTrack', setCurrentTrack);
         v-if="checkCurrentView(HOME_VIEW)" 
         :sound-view="soundView"
       />
-      <Search v-else-if="checkCurrentView(SEARCH_VIEW)" />
+      <Search 
+        v-else-if="checkCurrentView(SEARCH_VIEW)" 
+        :search="search"
+      />
       <Library 
         v-else-if="checkCurrentView(LIBRARY_VIEW)" 
         :tracklist="currentTracklist" 
