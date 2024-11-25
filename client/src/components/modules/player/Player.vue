@@ -1,15 +1,15 @@
 <script setup>
 import { computed, getCurrentInstance, onMounted, ref, watch } from "vue";
-import IconPlay from "./icons/IconPlay.vue";
-import IconPause from "./icons/IconPause.vue";
-import IconNextTrack from "./icons/IconNextTrack.vue";
-import IconPrevTrack from "./icons/IconPrevTrack.vue";
-import IconFavourite from "./icons/IconFavourite.vue";
-import IconPlaylist from "./icons/IconPlaylist.vue";
-import IconLyrics from "./icons/IconLyrics.vue";
-import IconShuffle from "./icons/IconShuffle.vue";
-import IconRepeat from "./icons/IconRepeat.vue";
-import IconLoader from "./icons/IconLoader.vue";
+import IconPlay from "../../icons/IconPlay.vue";
+import IconPause from "../../icons/IconPause.vue";
+import IconNextTrack from "../../icons/IconNextTrack.vue";
+import IconPrevTrack from "../../icons/IconPrevTrack.vue";
+import IconFavourite from "../../icons/IconFavourite.vue";
+import IconPlaylist from "../../icons/IconPlaylist.vue";
+import IconLyrics from "../../icons/IconLyrics.vue";
+import IconShuffle from "../../icons/IconShuffle.vue";
+import IconRepeat from "../../icons/IconRepeat.vue";
+import IconLoader from "../../icons/IconLoader.vue";
 
 const props = defineProps({
   currentTrack: {

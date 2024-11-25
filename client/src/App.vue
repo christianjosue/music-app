@@ -2,17 +2,17 @@
 import { onMounted, provide, ref, watchEffect } from "vue";
 import { API_URL } from '../config.js';
 import { useToast } from "vue-toastification";
-import Home from "./components/Home.vue";
-import Search from "./components/Search.vue";
-import Player from "./components/Player.vue";
-import Library from "./components/Library.vue";
-import LibraryMenu from "./components/LibraryMenu.vue";
-import Lyrics from "./components/Lyrics.vue";
-import SoundView from "./components/SoundView.vue";
-import AddSongsModal from "./components/AddSongsModal.vue";
-import CreateTracklistModal from "./components/CreateTracklistModal.vue";
-import EditTracklistModal from "./components/EditTracklistModal.vue";
-import DeleteTracklistModal from "./components/DeleteTracklistModal.vue";
+import Home from "./components/modules/home/Home.vue";
+import Search from "./components/modules/search/Search.vue";
+import Player from "./components/modules/player/Player.vue";
+import Library from "./components/modules/tracklist/views/Library.vue";
+import LibraryMenu from "./components/modules/tracklist/views/LibraryMenu.vue";
+import Lyrics from "./components/modules/player/Lyrics.vue";
+import SoundView from "./components/modules/player/SoundView.vue";
+import AddSongsModal from "./components/modules/tracklist/services/AddSongsModal.vue";
+import CreateTracklistModal from "./components/modules/tracklist/services/CreateTracklistModal.vue";
+import EditTracklistModal from "./components/modules/tracklist/services/EditTracklistModal.vue";
+import DeleteTracklistModal from "./components/modules/tracklist/services/DeleteTracklistModal.vue";
 import CryptoJS from 'crypto-js';
 
 const HOME_VIEW = 1;

@@ -1,5 +1,5 @@
 <script setup>
-import MenuOptions from './MenuOptions.vue';
+import MenuOptions from '../../header/MenuOptions.vue';
 import LibraryMain from './LibraryMain.vue';
 import LibraryList from './LibraryList.vue';
 defineEmits(['playTrack', 'pauseTrack']);

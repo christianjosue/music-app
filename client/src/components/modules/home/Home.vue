@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from "vue";
-import MenuOptions from "./MenuOptions.vue";
-import HomeMain from "./HomeMain.vue";
+import MenuOptions from "../header/MenuOptions.vue";
+import HomeMain from "../home/HomeMain.vue";
 
 const color = ref("#2e114f");
 
