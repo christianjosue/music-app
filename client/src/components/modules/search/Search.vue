@@ -1,5 +1,9 @@
 <script setup>
 import { ref } from 'vue';
+import ArtistCard from '../artist/ArtistCard.vue';
+import SongCard from '../song/SongCard.vue';
+import AlbumCard from '../album/AlbumCard.vue';
+
 const props = defineProps({
   'search': {
     type: Function,
@@ -45,37 +49,29 @@ const handleSearch = () => {
       >
     </div>
     <div class="search-results-container">
-      <h3>Songs</h3>
+      <h3 v-if="searchResults?.songs.length > 0">Songs</h3>
       <div class="songs-container">
-        <div v-for="song in searchResults?.songs" :key="song.idTrack" class="song-card">
-          <div class="song-thumbnail">
-            <img :src="song.thumbnail" alt="thumbnail">
-          </div>
-          <div class="song-info">
-            <div class="song-title">{{ song.title }}</div>
-            <div class="song-artist">{{ song.artists[0]?.name }}</div>
-          </div>
-          <div class="song-duration">{{ song.duration }}</div>
-          <div class="song-actions">...</div>
-        </div>
+        <SongCard 
+          v-for="song in searchResults?.songs"
+          :key="song.idTrack"
+          :song="song"
+        />
       </div>
-      <h3>Artists</h3>
+      <h3 v-if="searchResults?.artists.length > 0">Artists</h3>
       <div class="artists-container">
-        <div v-for="artist in searchResults?.artists" :key="artist.idArtist" class="artist-card">
-          <div class="artist-thumbnail-container">
-            <div class="artist-thumbnail" :style="{ backgroundImage: `url(${artist.thumbnail})`}"></div>
-          </div>
-          <div class="artist-name">{{ artist.name }}</div>
-          <div class="artist-footer">Artist</div>
-        </div>
+          <ArtistCard 
+            v-for="artist in searchResults?.artists"
+            :key="artist.idArtist"
+            :artist="artist"
+          />
       </div>
-      <h3>Albums</h3>
+      <h3 v-if="searchResults?.albums.length > 0">Albums</h3>
       <div class="albums-container">
-        <div v-for="album in searchResults?.albums" :key="album.idAlbum" class="album-card">
-          <div class="album-cover" :style="{ backgroundImage: `url(${album.cover})` }"></div>
-          <div class="album-title">{{ album.title }}</div>
-          <div class="album-artist">{{ album.artist?.name }}</div>
-        </div>
+        <AlbumCard 
+          v-for="album in searchResults?.albums" 
+          :key="album.idAlbum"
+          :album="album"
+        />
       </div>
     </div>
   </div>
@@ -123,102 +119,17 @@ const handleSearch = () => {
 .search-icon.focused {
   color: white !important;
 }
-
 .search-results-container {
   width: 80%;
   margin: auto;
 }
-
-/* Songs container styles */
-.song-card {
-  display: flex;
-  align-items: center;
-  transition: all .3s ease;
-  padding: 10px;
-  border-radius: 10px;
-}
-.song-card:hover {
-  background: #333;
-}
-.song-thumbnail img {
-  width: 60px;
-  height: 60px;
-  border-radius: 10px;
-}
-.song-info {
-  flex: 7;
-  margin-left: 20px;
-}
-.song-artist {
-  font-size: 14px;
-  color: #888;
-  margin-top: 5px;
-}
-.song-duration,
-.song-actions {
-  color: #888;
-  display: flex;
-  justify-content: center;
-  flex: 1;
-}
-
 /* Artists container styles */
 .artists-container {
   display: flex;
   justify-content: left;
 }
-.artist-card {
-  margin-right: 10px;
-  transition: all .3s ease;
-  padding: 15px;
-  border-radius: 10px;
-  cursor: pointer;
-}
-.artist-card:hover {
-  background-color: #333;
-}
-.artist-thumbnail {
-  width: 130px;
-  height: 130px;
-  background-size: cover;
-  background-position: center center;
-  border-radius: 50%;
-}
-.artist-name {
-  margin: 7px 0;
-}
-.artist-footer {
-  font-size: 14px;
-  color: #888;
-}
-
 /* Albums container styles */
 .albums-container {
   display: flex;
-}
-.album-card {
-  margin-right: 10px;
-  padding: 15px;
-  transition: all .3s ease;
-  width: 130px;
-  border-radius: 10px;
-  cursor: pointer;
-}
-.album-card:hover {
-  background-color: #333;
-}
-.album-cover {
-  width: 130px;
-  height: 130px;
-  background-size: cover;
-  background-position: center center;
-  border-radius: 10px;
-}
-.album-title {
-  margin: 7px 0;
-}
-.album-artist {
-  color: #888;
-  font-size: 14px;
 }
 </style>
