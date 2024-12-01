@@ -30,4 +30,14 @@ class Artist extends Model
         'thumbnail',
         'monthlyListeners'
     ];
+
+    public function songs()
+    {
+        return $this->belongsToMany(Track::class, 'artist_track', 'idArtist', 'idTrack');
+    }
+
+    public function albums()
+    {
+        return $this->hasMany(Album::class, 'idArtist', 'idArtist');
+    }
 }

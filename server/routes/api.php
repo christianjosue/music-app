@@ -25,6 +25,7 @@ Route::delete('/tracklist/{id}', [TracklistController::class, 'deleteTracklist']
 
 Route::get('/getAudioTrack/{src}', [TrackController::class, 'getAudioTrack']);
 Route::get('/search/all/{text}', [TrackController::class, 'search']);
+Route::get('/search/initial', [TrackController::class, 'getInitialDataSearch']);
 Route::get('/search/{song}', [TrackController::class, 'searchSong']);
 Route::get('/thumbnails', [ThumbnailController::class, 'getThumbnails']);
 Route::get('/tracklist/{id}', [TracklistController::class, 'tracklist']);

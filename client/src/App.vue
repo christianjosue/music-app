@@ -373,6 +373,11 @@ const search = async (text) => {
   const response = await fetch(`${API_URL}/api/search/all/${text}`);
   return await response.json();
 }
+// Retrieves songs, artists and albums to show in the Search view when no search has been made
+const getInitialDataSearch = async () => {
+  const response = await fetch(`${API_URL}/api/search/initial`);
+  return await response.json();
+}
 // Adds a song to the current tracklist
 const addSongToTracklist = async (idTrack) => {
   const response = await fetch(`${API_URL}/api/addTrack`, {
@@ -507,6 +512,7 @@ provide('setCurrentTrack', setCurrentTrack);
       <Search 
         v-else-if="checkCurrentView(SEARCH_VIEW)" 
         :search="search"
+        :get-initial-data-search="getInitialDataSearch"
       />
       <Library 
         v-else-if="checkCurrentView(LIBRARY_VIEW)" 

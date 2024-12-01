@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import ArtistCard from '../artist/ArtistCard.vue';
 import SongCard from '../song/SongCard.vue';
 import AlbumCard from '../album/AlbumCard.vue';
@@ -8,12 +8,17 @@ const props = defineProps({
   'search': {
     type: Function,
     default: {}
+  },
+  'getInitialDataSearch': {
+    type: Function,
+    default: {}
   }
 });
 
 const isFocused = ref(false);
 const searchInput = ref(null);
 const searchResults = ref(null);
+const searchInitialResults = ref(null);
 var timeout = setTimeout(() => {}, 0);
 
 const handleFocus = () => {
@@ -22,14 +27,26 @@ const handleFocus = () => {
 const handleBlur = () => {
   isFocused.value = false;
 }
+// Handles whether search by the input's text or show initial default data
 const handleSearch = () => {
   clearTimeout(timeout);
   timeout = setTimeout(async () => {
-    if (searchInput.value != null && searchInput.value.value != "") {
+    if (searchInput.value?.value != "") {
       searchResults.value = await props.search(searchInput.value.value);
+    } else {
+      searchResults.value = searchInitialResults.value;
     }
   }, 250);
 }
+// Manages whether shows a message indicating there is no results or not
+const noResults = computed(() => {
+  return searchResults.value?.songs.length == 0 && searchResults.value?.artists.length == 0 && searchResults.value?.albums.length == 0 && searchInput.value?.value != "";
+});
+// Retrieves initial values to show in the view and make a copy of them
+onMounted(async () => {
+  searchInitialResults.value = await props.getInitialDataSearch();
+  searchResults.value = searchInitialResults.value;
+});
 </script>
 
 <template>
@@ -49,6 +66,7 @@ const handleSearch = () => {
       >
     </div>
     <div class="search-results-container">
+      <h3 v-if="noResults">There are no results for your search</h3>
       <h3 v-if="searchResults?.songs.length > 0">Songs</h3>
       <div class="songs-container">
         <SongCard 
