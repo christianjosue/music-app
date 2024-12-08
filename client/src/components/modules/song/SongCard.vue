@@ -1,10 +1,25 @@
 <script setup>
+import { inject } from 'vue';
+import IconMusicPlayingAnimation from '../../icons/IconMusicPlayingAnimation.vue';
+
 defineProps({
-    song: {
-        type: Object,
-        default: {}
-    }
-})
+  song: {
+    type: Object,
+    default: {}
+  },
+  handlePlayTrack: {
+    type: Function,
+    default: {}
+  },
+  idTracklist: {
+    type: Number,
+    default: 0
+  }
+});
+
+const playTrack = inject('isPlaying');
+const idPlayingTrack = inject('idPlayingTrack');
+const checkPlayingTracklist = inject('checkPlayingTracklist');
 </script>
 
 <template>
@@ -15,6 +30,19 @@ defineProps({
         <div class="song-info">
             <div class="song-title">{{ song.title }}</div>
             <div class="song-artist">{{ song.artists[0]?.name }}</div>
+          </div>
+        <IconMusicPlayingAnimation  v-if="playTrack && idPlayingTrack == song.idTrack && checkPlayingTracklist(idTracklist)" />
+        <div class="play-pause-btn">
+            <font-awesome-icon 
+              v-if="!playTrack || idPlayingTrack != song.idTrack || (idPlayingTrack == song.idTrack && !checkPlayingTracklist(idTracklist))" 
+              :icon="['fas', 'play']" 
+              @click="handlePlayTrack(song.idTrack)"
+            />
+            <font-awesome-icon 
+              v-else 
+              :icon="['fas', 'pause']" 
+              @click="handlePlayTrack(0)"
+            />
         </div>
         <div class="song-duration">{{ song.duration }}</div>
         <div class="song-actions">...</div>
@@ -38,7 +66,7 @@ defineProps({
   border-radius: 10px;
 }
 .song-info {
-  flex: 7;
+  flex: 6;
   margin-left: 20px;
 }
 .song-artist {
@@ -52,5 +80,8 @@ defineProps({
   display: flex;
   justify-content: center;
   flex: 1;
+}
+.play-pause-btn {
+  padding-left: 15px;
 }
 </style>

@@ -25,6 +25,7 @@ const currentIndex = ref(0);
 const currentLyricsLine = ref("");
 const currentTrack = ref({});
 const currentTracklist = ref({});
+const playingTracklist = ref({});
 const currentView = ref(HOME_VIEW);
 const idPlayingTrack = ref(0);
 const idPlayingTracklist = ref(0);
@@ -104,8 +105,8 @@ function prevTrack(currentTime) {
     } else {
       currentIndex.value = 0;
     }
-    let track = currentTracklist.value.tracks[currentIndex.value];
-    getTrack(track, currentIndex.value, track.idTrack, currentTracklist.value.idTracklist);
+    let track = playingTracklist.value.tracks[currentIndex.value];
+    getTrack(track, currentIndex.value, track.idTrack, playingTracklist.value.idTracklist);
   }
 }
 // Go to the next track in the tracklist
@@ -118,14 +119,14 @@ function nextTrack() {
     // If the random mode is active, plays a random track from the playlist except current one
     if (randomMode.value) {
       currentIndex.value = setRandomTrack();
-    } else if (currentIndex.value < currentTracklist.value.tracks.length - 1) {
+    } else if (currentIndex.value < playingTracklist.value.tracks.length - 1) {
       // If there is a next track play it, otherwise start from the first track of the tracklist
       currentIndex.value++;
     } else {
       currentIndex.value = 0;
     }
-    let track = currentTracklist.value.tracks[currentIndex.value];
-    getTrack(track, currentIndex.value, track.idTrack, currentTracklist.value.idTracklist);
+    let track = playingTracklist.value.tracks[currentIndex.value];
+    getTrack(track, currentIndex.value, track.idTrack, playingTracklist.value.idTracklist);
   }
 }
 // Set the value of the tracklist's id
@@ -138,11 +139,17 @@ function setCurrentTrack(idTrack, idTracklist, isTracklistPlayer = 0) {
     if (idTrack == 0) {
       playTrack.value = false;
     } else if (idPlayingTrack.value != idTrack) {
+      // || (idPlayingTrack.value == idTrack && idPlayingTrack.value != idTracklist)
+      // If there is no playlist playing currently, we assign it data from the current tracklist (which is the displayed
+      // tracklist)
+      if (Object.keys(playingTracklist.value).length === 0) {
+        playingTracklist.value = currentTracklist.value;
+      }
       songLoading.value = true;
       // If idPlayingTrack is 0, that means the player has not started yet
       if (idPlayingTrack.value !== 0) playTrack.value = false;
       // Search the selected track in the tracklist, get it and send it to the player
-      currentTracklist.value.tracks.forEach((track, index) => {
+      playingTracklist.value.tracks.forEach((track, index) => {
         if (track.idTrack == idTrack) {
           getTrack(track, index, idTrack, idTracklist);
         }
@@ -151,6 +158,10 @@ function setCurrentTrack(idTrack, idTracklist, isTracklistPlayer = 0) {
       playTrack.value = true;
     }
   }
+}
+// Sets as the current tracklist the temporal one. It could be the songs of an album, artist or the list of searched songs
+const setPlayingTracklist = (tracklist) => {
+  playingTracklist.value = tracklist;
 }
 // Get the specified track from the AWS S3 bucket
 const getTrack = async (track, index, idTrack, idTracklist) => {
@@ -248,7 +259,7 @@ function updateLyricsProgressBar(audio) {
 
 // Set a random track from the tracklist
 function setRandomTrack() {
-  let index = Math.floor(Math.random() * currentTracklist.value.tracks.length);
+  let index = Math.floor(Math.random() * playingTracklist.value.tracks.length);
   return index == currentIndex.value ? setRandomTrack() : index;
 }
 
@@ -513,6 +524,9 @@ provide('setCurrentTrack', setCurrentTrack);
         v-else-if="checkCurrentView(SEARCH_VIEW)" 
         :search="search"
         :get-initial-data-search="getInitialDataSearch"
+        :set-playing-tracklist="setPlayingTracklist"
+        :set-current-track="setCurrentTrack"
+        :play-track="playTrack"
       />
       <Library 
         v-else-if="checkCurrentView(LIBRARY_VIEW)" 

@@ -4,7 +4,6 @@ import IconPlay from "../../icons/IconPlay.vue";
 import IconPause from "../../icons/IconPause.vue";
 import IconNextTrack from "../../icons/IconNextTrack.vue";
 import IconPrevTrack from "../../icons/IconPrevTrack.vue";
-import IconFavourite from "../../icons/IconFavourite.vue";
 import IconPlaylist from "../../icons/IconPlaylist.vue";
 import IconLyrics from "../../icons/IconLyrics.vue";
 import IconShuffle from "../../icons/IconShuffle.vue";
@@ -256,9 +255,6 @@ function updateProgressBar() {
             {{ artist.name }}
           </div>
         </div>
-      </div>
-      <div class="track-favourite">
-        <IconFavourite :width="15" />
       </div>
     </div>
     <div class="player">

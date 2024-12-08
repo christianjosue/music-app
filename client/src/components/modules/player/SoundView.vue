@@ -127,10 +127,6 @@ watch(
   letter-spacing: 3px;
   font-size: 20px;
 }
-.track-favourite {
-  margin-top: 5px;
-  margin-right: 15px;
-}
 .artist-container {
   border-radius: 10px;
 }

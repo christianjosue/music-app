@@ -1,17 +1,31 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import ArtistCard from '../artist/ArtistCard.vue';
 import SongCard from '../song/SongCard.vue';
 import AlbumCard from '../album/AlbumCard.vue';
+import IconPreloaderAnimation from '../../icons/IconPreloaderAnimation.vue';
+import { SEARCH_ID_TRACKLIST } from '../../../../config';
 
 const props = defineProps({
-  'search': {
+  search: {
     type: Function,
     default: {}
   },
-  'getInitialDataSearch': {
+  getInitialDataSearch: {
     type: Function,
     default: {}
+  },
+  setPlayingTracklist: {
+    type: Function,
+    default: {}
+  },
+  setCurrentTrack: {
+    type: Function,
+    default: {}
+  },
+  playTrack: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -19,6 +33,7 @@ const isFocused = ref(false);
 const searchInput = ref(null);
 const searchResults = ref(null);
 const searchInitialResults = ref(null);
+const searchTracklist = ref({});
 const preloader = ref(false);
 var timeout = setTimeout(() => {}, 0);
 
@@ -43,6 +58,13 @@ const handleSearch = () => {
 const noResults = computed(() => {
   return searchResults.value?.songs.length == 0 && searchResults.value?.artists.length == 0 && searchResults.value?.albums.length == 0 && searchInput.value?.value != "";
 });
+// Handles the play of the track
+const handlePlayTrack = (idTrack) => {
+  // Set the current playing tracklist
+  props.setPlayingTracklist(searchTracklist.value);
+  // Sets the current track, send track's id for playing it and 0 for pause it
+  props.setCurrentTrack(idTrack, SEARCH_ID_TRACKLIST, 1);
+}
 // Retrieves initial values to show in the view and make a copy of them
 onMounted(async () => {
   preloader.value = true;
@@ -50,6 +72,17 @@ onMounted(async () => {
   searchResults.value = searchInitialResults.value;
   preloader.value = false;
 });
+
+watch(
+  () => searchResults.value,
+  () => {
+    // Tracklists with id -1 are temporary tracklists. In this case, the temporary tracklist would be formed by 
+    // the searched tracks
+    searchTracklist.value.idTracklist = -1;
+    searchTracklist.value.tracks = searchResults.value?.songs;
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
@@ -69,11 +102,7 @@ onMounted(async () => {
       >
     </div>
     <div class="search-results-container">
-      <div v-if="preloader" class="kabobloader">
-        <div class="bounce1"></div>
-        <div class="bounce2"></div>
-        <div class="bounce3"></div>
-      </div>
+      <IconPreloaderAnimation v-if="preloader" />
       <h3 v-if="noResults">There are no results for your search</h3>
       <h3 v-if="searchResults?.songs.length > 0">Songs</h3>
       <div class="songs-container">
@@ -81,6 +110,9 @@ onMounted(async () => {
           v-for="song in searchResults?.songs"
           :key="song.idTrack"
           :song="song"
+          :handle-play-track="handlePlayTrack"
+          :play-track="playTrack"
+          :id-tracklist="SEARCH_ID_TRACKLIST"
         />
       </div>
       <h3 v-if="searchResults?.artists.length > 0">Artists</h3>
@@ -157,46 +189,5 @@ onMounted(async () => {
 /* Albums container styles */
 .albums-container {
   display: flex;
-}
-/* Preloader animation */
-.kabobloader {
-  margin: auto;
-  top:0;
-  right:0;
-  bottom:0;
-  left:0;
-  position:absolute;
-  width: 70px;
-  height: 70px;
-}
-.kabobloader > div {
-  width: 18px;
-  height: 18px;
-  background-color: #2EBD59;
-  border-radius: 100%;
-  display: inline-block;
-  -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
-  animation: sk-bouncedelay 1.4s infinite ease-in-out both;
-}
-.kabobloader .bounce1 {
-  -webkit-animation-delay: -0.32s;
-  animation-delay: -0.32s;
-}
-.kabobloader .bounce2 {
-  -webkit-animation-delay: -0.16s;
-  animation-delay: -0.16s;
-}
-@-webkit-keyframes sk-bouncedelay {
-  0%, 80%, 100% { -webkit-transform: scale(0) }
-  40% { -webkit-transform: scale(1.0) }
-}
-@keyframes sk-bouncedelay {
-  0%, 80%, 100% { 
-    -webkit-transform: scale(0);
-    transform: scale(0);
-  } 40% { 
-    -webkit-transform: scale(1.0);
-    transform: scale(1.0);
-  }
 }
 </style>
