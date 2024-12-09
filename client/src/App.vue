@@ -8,6 +8,7 @@ import Player from "./components/modules/player/Player.vue";
 import Library from "./components/modules/tracklist/views/Library.vue";
 import LibraryMenu from "./components/modules/tracklist/views/LibraryMenu.vue";
 import Lyrics from "./components/modules/player/Lyrics.vue";
+import Artist from "./components/modules/artist/Artist.vue";
 import SoundView from "./components/modules/player/SoundView.vue";
 import AddSongsModal from "./components/modules/tracklist/services/AddSongsModal.vue";
 import CreateTracklistModal from "./components/modules/tracklist/services/CreateTracklistModal.vue";
@@ -19,8 +20,10 @@ const HOME_VIEW = 1;
 const SEARCH_VIEW = 2;
 const LIBRARY_VIEW = 3;
 const LYRICS_VIEW = 4;
+const ARTIST_VIEW = 5;
 
 const activeLyricsIcon = ref(false);
+const artist = ref({});
 const currentIndex = ref(0);
 const currentLyricsLine = ref("");
 const currentTrack = ref({});
@@ -433,6 +436,20 @@ const handleActiveLyrics = () => {
     activeLyricsIcon.value = false;
   }
 }
+// Handles all the data to display on the artist view
+const handleArtistView = async (idArtist) => {
+  const response = await fetch(`${API_URL}/api/artist/${idArtist}`);
+  const data = await response.json();
+  if (data.success) {
+    artist.value = data.artist;
+    // After retrieve all the information of the artist, render the artist view
+    setCurrentView(ARTIST_VIEW);
+  } else {
+    toast.error("The artist you are trying to watch does not exist", {
+      timeout: 3000
+    });
+  }
+}
 // Watch when the value of tracklist's id changes to make a request to the server side to get the correspondant tracklist
 watchEffect(async () => {
   reloadTracklist();
@@ -443,6 +460,7 @@ provide('addSongToTracklist', addSongToTracklist);
 provide('checkPlayingTracklist', checkPlayingTracklist);
 provide('currentTracklist', currentTracklist);
 provide('getAudioTrack', getAudioTrack);
+provide('handleArtistView', handleArtistView);
 provide('idPlayingTrack', idPlayingTrack);
 provide('isPlaying', playTrack);
 provide('openAddSongsModal', openAddSongsModal);
@@ -530,6 +548,10 @@ provide('setCurrentTrack', setCurrentTrack);
       <Library 
         v-else-if="checkCurrentView(LIBRARY_VIEW)" 
         :tracklist="currentTracklist" 
+      />
+      <Artist 
+        v-else-if="checkCurrentView(ARTIST_VIEW)" 
+        :artist="artist"
       />
       <Lyrics 
         v-else="checkCurrentView(LYRICS_VIEW)" 

@@ -1,9 +1,10 @@
 <?php
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\TracklistController;
-use App\Http\Controllers\TrackController;
+use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\ThumbnailController;
+use App\Http\Controllers\TrackController;
+use App\Http\Controllers\TracklistController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,9 +18,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
 Route::delete('/removeTrack', [TracklistController::class, 'removeTrack']);
 Route::delete('/tracklist/{id}', [TracklistController::class, 'deleteTracklist']);
 
@@ -30,6 +28,7 @@ Route::get('/search/{song}', [TrackController::class, 'searchSong']);
 Route::get('/thumbnails', [ThumbnailController::class, 'getThumbnails']);
 Route::get('/tracklist/{id}', [TracklistController::class, 'tracklist']);
 Route::get('/tracklists', [TracklistController::class, 'tracklists']);
+Route::get('/artist/{id}', [ArtistController::class, 'artist']);
 
 Route::post('/addTrack', [TracklistController::class, 'addTrack']);
 Route::post('/getTrack', [TrackController::class, 'getTrack']);

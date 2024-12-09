@@ -1,14 +1,18 @@
 <script setup>
+import { inject } from 'vue';
+
 defineProps({
     artist: {
         type: Object,
         default: {}
     }
 });
+
+const handleArtistView = inject('handleArtistView');
 </script>
 
 <template>
-    <div class="artist-card">
+    <div class="artist-card" @click="handleArtistView(artist.idArtist)">
         <div class="artist-thumbnail-container">
             <div class="artist-thumbnail" :style="{ backgroundImage: `url(${artist.thumbnail})`}"></div>
         </div>
