@@ -138,8 +138,7 @@ function setCurrentTrack(idTrack, idTracklist, isTracklistPlayer = 0) {
   if (Object.keys(currentTrack.value).length > 0 || isTracklistPlayer) {
     if (idTrack == 0) {
       playTrack.value = false;
-    } else if (idPlayingTrack.value != idTrack) {
-      // || (idPlayingTrack.value == idTrack && idPlayingTrack.value != idTracklist)
+    } else if (idPlayingTrack.value != idTrack || (idPlayingTrack.value == idTrack && idPlayingTracklist.value != idTracklist)) {
       // If there is no playlist playing currently, we assign it data from the current tracklist (which is the displayed
       // tracklist)
       if (Object.keys(playingTracklist.value).length === 0) {

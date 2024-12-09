@@ -116,12 +116,17 @@ onMounted(() => {
 });
 
 watch(
-  () => props.currentTrack,
+  () => [props.currentTrack, props.idPlayingTracklist],
   () => {
     // Every time the current track changes, the player is reseted
     if (audio && idPlayingTrackCopy.value != props.currentTrack.idTrack || idPlayingTracklistCopy.value != props.idPlayingTracklist) {
       isPlaying.value = true;
       resetPlayer();
+    }
+    // Every time the current track's id changes, it's saved a copy from its id and from his tracklist's id
+    if (props.idPlayingTrack != 0) {
+      idPlayingTrackCopy.value = props.idPlayingTrack;
+      idPlayingTracklistCopy.value = props.idPlayingTracklist;
     }
   },
   { immediate: true }
@@ -135,17 +140,6 @@ watch(
     }
   },
   { immediate: true }
-)
-
-watch(
-  () => props.idPlayingTrack,
-  () => {
-    // Every time the current track's id changes, it's saved a copy from its id and from his tracklist's id
-    if (props.idPlayingTrack != 0) {
-      idPlayingTrackCopy.value = props.idPlayingTrack;
-      idPlayingTracklistCopy.value = props.idPlayingTracklist;
-    }
-  }
 )
 
 // Plays or pause the current track
