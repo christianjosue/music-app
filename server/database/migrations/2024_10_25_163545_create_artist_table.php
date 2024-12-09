@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('idArtist');
             $table->string('name');
             $table->string('thumbnail');
+            $table->string('cover');
             $table->integer('monthlyListeners');
             $table->timestamps();
         });

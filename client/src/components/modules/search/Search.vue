@@ -76,7 +76,7 @@ onMounted(async () => {
 watch(
   () => searchResults.value,
   () => {
-    // Tracklists with id -1 are temporary tracklists. In this case, the temporary tracklist would be formed by 
+    // Tracklists with negative ids are temporary tracklists. In this case, the temporary tracklist would be formed by 
     // the searched tracks
     searchTracklist.value.idTracklist = -1;
     searchTracklist.value.tracks = searchResults.value?.songs;

@@ -17,7 +17,7 @@ class ArtistController extends Controller
         $success = false;
         // Retrieve the artist
         $artist = Artist::where('idArtist', $idArtist)
-            ->with(['songs', 'albums'])    
+            ->with(['songs', 'albums', 'songs.artists', 'albums.artist'])    
             ->first();
         // If the artist exists, returns a success, otherwhise returns an error
         if ($artist instanceof Artist) {

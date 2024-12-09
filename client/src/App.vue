@@ -552,6 +552,9 @@ provide('setCurrentTrack', setCurrentTrack);
       <Artist 
         v-else-if="checkCurrentView(ARTIST_VIEW)" 
         :artist="artist"
+        :set-current-track="setCurrentTrack"
+        :set-playing-tracklist="setPlayingTracklist"
+        :play-track="playTrack"
       />
       <Lyrics 
         v-else="checkCurrentView(LYRICS_VIEW)" 
