@@ -1,14 +1,18 @@
 <script setup>
+
+import { inject } from 'vue';
 defineProps({
     album: {
         type: Object,
         default: {}
     }
-})
+});
+
+const handleAlbumView = inject('handleAlbumView');
 </script>
 
 <template>
-    <div class="album-card">
+    <div class="album-card" @click="handleAlbumView(album.idAlbum)">
         <div class="album-cover" :style="{ backgroundImage: `url(${album.cover})` }"></div>
         <div class="album-title">{{ album.title }}</div>
         <div class="album-artist">{{ album.artist?.name }}</div>

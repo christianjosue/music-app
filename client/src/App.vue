@@ -9,6 +9,7 @@ import Library from "./components/modules/tracklist/views/Library.vue";
 import LibraryMenu from "./components/modules/tracklist/views/LibraryMenu.vue";
 import Lyrics from "./components/modules/player/Lyrics.vue";
 import Artist from "./components/modules/artist/Artist.vue";
+import Album from "./components/modules/album/Album.vue";
 import SoundView from "./components/modules/player/SoundView.vue";
 import AddSongsModal from "./components/modules/tracklist/services/AddSongsModal.vue";
 import CreateTracklistModal from "./components/modules/tracklist/services/CreateTracklistModal.vue";
@@ -21,9 +22,11 @@ const SEARCH_VIEW = 2;
 const LIBRARY_VIEW = 3;
 const LYRICS_VIEW = 4;
 const ARTIST_VIEW = 5;
+const ALBUM_VIEW = 6;
 
 const activeLyricsIcon = ref(false);
 const artist = ref({});
+const album = ref({});
 const currentIndex = ref(0);
 const currentLyricsLine = ref("");
 const currentTrack = ref({});
@@ -221,10 +224,6 @@ function lyricsToObject() {
 }
 
 // Set the current main view
-// 1: Home
-// 2: Search
-// 3: Library
-// 4: Lyrics
 function setCurrentView(view) {
   currentView.value = view;
   // Deactive lyrics button when the view is not lyrics one
@@ -445,7 +444,21 @@ const handleArtistView = async (idArtist) => {
     // After retrieve all the information of the artist, render the artist view
     setCurrentView(ARTIST_VIEW);
   } else {
-    toast.error("The artist you are trying to watch does not exist", {
+    toast.error("The artist you are looking for does not exist", {
+      timeout: 3000
+    });
+  }
+}
+// Handles all the data to display on the album view
+const handleAlbumView = async (idAlbum) => {
+  const response = await fetch(`${API_URL}/api/album/${idAlbum}`);
+  const data = await response.json();
+  if (data.success) {
+    album.value = data.album;
+    // After retrieve all the information of the album, render the album view
+    setCurrentView(ALBUM_VIEW);
+  } else {
+    toast.error("The album you are looking for does not exist", {
       timeout: 3000
     });
   }
@@ -461,6 +474,7 @@ provide('checkPlayingTracklist', checkPlayingTracklist);
 provide('currentTracklist', currentTracklist);
 provide('getAudioTrack', getAudioTrack);
 provide('handleArtistView', handleArtistView);
+provide('handleAlbumView', handleAlbumView);
 provide('idPlayingTrack', idPlayingTrack);
 provide('isPlaying', playTrack);
 provide('openAddSongsModal', openAddSongsModal);
@@ -552,6 +566,13 @@ provide('setCurrentTrack', setCurrentTrack);
       <Artist 
         v-else-if="checkCurrentView(ARTIST_VIEW)" 
         :artist="artist"
+        :set-current-track="setCurrentTrack"
+        :set-playing-tracklist="setPlayingTracklist"
+        :play-track="playTrack"
+      />
+      <Album 
+        v-else-if="checkCurrentView(ALBUM_VIEW)"
+        :album="album"
         :set-current-track="setCurrentTrack"
         :set-playing-tracklist="setPlayingTracklist"
         :play-track="playTrack"

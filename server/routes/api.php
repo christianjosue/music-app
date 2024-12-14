@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\ArtistController;
+use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\ThumbnailController;
 use App\Http\Controllers\TrackController;
 use App\Http\Controllers\TracklistController;
@@ -29,6 +30,7 @@ Route::get('/thumbnails', [ThumbnailController::class, 'getThumbnails']);
 Route::get('/tracklist/{id}', [TracklistController::class, 'tracklist']);
 Route::get('/tracklists', [TracklistController::class, 'tracklists']);
 Route::get('/artist/{id}', [ArtistController::class, 'artist']);
+Route::get('/album/{id}', [AlbumController::class, 'album']);
 
 Route::post('/addTrack', [TracklistController::class, 'addTrack']);
 Route::post('/getTrack', [TrackController::class, 'getTrack']);
