@@ -501,6 +501,7 @@ provide('addSongToTracklist', addSongToTracklist);
 provide('checkPlayingTracklist', checkPlayingTracklist);
 provide('currentTracklist', currentTracklist);
 provide('getAudioTrack', getAudioTrack);
+provide('getInitialDataSearch', getInitialDataSearch);
 provide('handleAlbumView', handleAlbumView);
 provide('handleArtistView', handleArtistView);
 provide('idPlayingTrack', idPlayingTrack);
