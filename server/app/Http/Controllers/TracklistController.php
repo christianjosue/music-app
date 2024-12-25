@@ -41,7 +41,7 @@ class TracklistController extends Controller
     public function tracklists() 
     {
         try {
-            $tracklists = Tracklist::with(['thumbnailImage'])->get();
+            $tracklists = Tracklist::with(['thumbnailImage', 'tracks'])->get();
 
             return response()->json($tracklists);
         } catch (\Exception $e) {

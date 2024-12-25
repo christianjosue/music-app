@@ -22,4 +22,14 @@ class TracklistTrack extends Model
     ];
 
     public $timestamps = true;
+
+    public function track()
+    {
+        return $this->belongsTo(Track::class, 'idTrack', 'idTrack');
+    }
+
+    public function tracklist()
+    {
+        return $this->belongsTo(Tracklist::class, 'idTracklist', 'idTracklist');
+    }
 }

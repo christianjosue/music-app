@@ -391,7 +391,7 @@ const getInitialDataSearch = async () => {
   return await response.json();
 }
 // Adds a song to the current tracklist
-const addSongToTracklist = async (idTrack) => {
+const addSongToTracklist = async (idTrack, idTracklist = 0) => {
   const response = await fetch(`${API_URL}/api/addTrack`, {
     method: "POST",
     headers: {
@@ -399,14 +399,26 @@ const addSongToTracklist = async (idTrack) => {
     },
     body: JSON.stringify({
       idTrack,
-      "idTracklist": currentTracklist.value.idTracklist
+      "idTracklist": idTracklist > 0 ? idTracklist : currentTracklist.value.idTracklist
     })
   });
   const data = await response.json();
+  // Display the correspondant notification
+  if (data.success) {
+    toast.success("Song added to playlist successfully!", {
+      timeout: 3000
+    });
+  } else {
+    toast.error("An error occurred while adding song to the playlist", {
+      timeout: 3000
+    });
+  }
+  // Reload lists of tracklists
+  getTracklists();
   // Reload current tracklist view
   reloadTracklist();
   
-  return data.success;  
+  return data.success;
 }
 // Removes a song from the current tracklist
 const removeSongFromTracklist = async (idTrack) => {
@@ -421,6 +433,18 @@ const removeSongFromTracklist = async (idTrack) => {
     })
   });
   const data = await response.json();
+  // Display the correspondant notification
+  if (data.success) {
+    toast.success("Song removed from playlist successfully!", {
+      timeout: 3000
+    });
+  } else {
+    toast.error("An error occurred while removing song from the playlist", {
+      timeout: 3000
+    });
+  }
+  // Reload lists of tracklists
+  getTracklists();
   // Reload current tracklist view
   reloadTracklist();
   
@@ -463,6 +487,10 @@ const handleAlbumView = async (idAlbum) => {
     });
   }
 }
+// Open the modal to create a playlist
+const openCreatePlaylistModal = () => {
+  showTracklistModal.value = true;
+}
 // Watch when the value of tracklist's id changes to make a request to the server side to get the correspondant tracklist
 watchEffect(async () => {
   reloadTracklist();
@@ -473,11 +501,12 @@ provide('addSongToTracklist', addSongToTracklist);
 provide('checkPlayingTracklist', checkPlayingTracklist);
 provide('currentTracklist', currentTracklist);
 provide('getAudioTrack', getAudioTrack);
-provide('handleArtistView', handleArtistView);
 provide('handleAlbumView', handleAlbumView);
+provide('handleArtistView', handleArtistView);
 provide('idPlayingTrack', idPlayingTrack);
 provide('isPlaying', playTrack);
 provide('openAddSongsModal', openAddSongsModal);
+provide('openCreatePlaylistModal', openCreatePlaylistModal);
 provide('openDeleteTracklistDialog', openDeleteTracklistDialog);
 provide('openEditTracklistDialog', openEditTracklistDialog);
 provide('randomMode', randomMode);
@@ -485,6 +514,7 @@ provide('removeSongFromTracklist', removeSongFromTracklist);
 provide('searchedSongs', searchedSongs);
 provide('searchSong', searchSong);
 provide('setCurrentTrack', setCurrentTrack);
+provide('tracklists', tracklists);
 </script>
 
 <template>
