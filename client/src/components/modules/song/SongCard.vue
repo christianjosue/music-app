@@ -19,16 +19,18 @@ const props = defineProps({
 
 const addSongToTracklist = inject('addSongToTracklist');
 const checkPlayingTracklist = inject('checkPlayingTracklist');
-const idPlayingTrack = inject('idPlayingTrack');
-const openCreatePlaylistModal = inject('openCreatePlaylistModal');
+const currentActionsSongId = inject('currentActionsSongId');
 const handleAlbumView = inject('handleAlbumView');
 const handleArtistView = inject('handleArtistView');
+const idPlayingTrack = inject('idPlayingTrack');
+const openCreatePlaylistModal = inject('openCreatePlaylistModal');
 const playlists = ref({});
 const playlistsObtained = ref(false);
 const playTrack = inject('isPlaying');
 const showActionsContent = ref(false);
 const showPlaylistsContainer = ref(false);
 const tracklists = inject('tracklists');
+const updateCurrentActionsSongId = inject('updateCurrentActionsSongId');
 
 // Handles actions to execute when put the mouse hover the add playlist button
 const handleAddToPlaylistHover = () => {
@@ -40,12 +42,30 @@ const handleAddToPlaylistHover = () => {
   }
   showPlaylistsContainer.value = true;
 }
+// Handle actions content
+const handleActionsContent = () => {
+  showActionsContent.value = !showActionsContent.value;
+  // If actions content is going to be showed, we update the current actions song id
+  if (showActionsContent.value) {
+    updateCurrentActionsSongId(props.song.idTrack);
+  }
+}
 
 // Every time tracklists change, we have to reload the playlists available to add the current song
 watch(
   () => tracklists.value,
   () => {
     playlistsObtained.value = false;
+  },
+  { immediate: true }
+);
+// Every time one song action display, hide all the others songs actions modals
+watch(
+  () => currentActionsSongId.value,
+  () => {
+    if (currentActionsSongId.value != props.song.idTrack) {
+      showActionsContent.value = false;
+    }
   },
   { immediate: true }
 );
@@ -75,7 +95,7 @@ watch(
         </div>
         <div class="song-duration">{{ song.duration }}</div>
         <div class="song-actions">
-          <div @click="showActionsContent = !showActionsContent" class="song-actions-btn">...</div>
+          <div @click="handleActionsContent" class="song-actions-btn">...</div>
           <div v-if="showActionsContent" class="song-actions-content">
             <div 
               @mouseover="handleAddToPlaylistHover"

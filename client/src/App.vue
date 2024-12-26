@@ -34,6 +34,7 @@ const currentIndex = ref(0);
 const currentLyricsLine = ref("");
 const currentTrack = ref({});
 const currentTracklist = ref({});
+const currentActionsSongId = ref(0);
 const playingTracklist = ref({});
 const currentView = ref(HOME_VIEW);
 const idPlayingTrack = ref(0);
@@ -519,6 +520,10 @@ const handleBreadcrumbAction = (actionCode) => {
   // Set current view based on current breadcrumb
   setCurrentView(breadcrumbs.value[currentBreadcrumb.value]);
 }
+// Handles song actions
+const updateCurrentActionsSongId = (idTrack) => {
+  currentActionsSongId.value = idTrack;
+}
 // Watch when the value of tracklist's id changes to make a request to the server side to get the correspondant tracklist
 watchEffect(async () => {
   reloadTracklist();
@@ -527,6 +532,7 @@ watchEffect(async () => {
 provide('activeLyricsIcon', activeLyricsIcon);
 provide('addSongToTracklist', addSongToTracklist);
 provide('checkPlayingTracklist', checkPlayingTracklist);
+provide('currentActionsSongId', currentActionsSongId);
 provide('currentTracklist', currentTracklist);
 provide('getAudioTrack', getAudioTrack);
 provide('getInitialDataSearch', getInitialDataSearch);
@@ -544,6 +550,7 @@ provide('searchedSongs', searchedSongs);
 provide('searchSong', searchSong);
 provide('setCurrentTrack', setCurrentTrack);
 provide('tracklists', tracklists);
+provide('updateCurrentActionsSongId', updateCurrentActionsSongId);
 </script>
 
 <template>
