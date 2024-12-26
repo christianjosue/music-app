@@ -550,12 +550,20 @@ provide('tracklists', tracklists);
   <div class="container">
     <div class="menu">
       <div class="menu-top">
-        <div class="menu-item" @click="setCurrentView(HOME_VIEW)">
+        <div class="menu-item" 
+          @click="
+            setCurrentView(HOME_VIEW);
+            addViewToBreadcrumbs(HOME_VIEW);
+          ">
           <div :class="['menu-item-content', { active: currentView == HOME_VIEW }]">
             <font-awesome-icon icon="fa-solid fa-house" class="icon" />Home
           </div>
         </div>
-        <div class="menu-item" @click="setCurrentView(SEARCH_VIEW)">
+        <div class="menu-item" 
+          @click="
+            setCurrentView(SEARCH_VIEW);
+            addViewToBreadcrumbs(SEARCH_VIEW);
+          ">
           <div :class="['menu-item-content', { active: currentView == SEARCH_VIEW }]">
             <font-awesome-icon
               icon="fa-solid fa-magnifying-glass"
@@ -580,6 +588,7 @@ provide('tracklists', tracklists);
               :is-active="checkSelectedTracklist(tracklist.idTracklist)"
               @click="
                 setCurrentView(LIBRARY_VIEW);
+                addViewToBreadcrumbs(LIBRARY_VIEW);
                 setIdTracklist(tracklist.idTracklist);
               "
             />
