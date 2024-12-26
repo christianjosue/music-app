@@ -42,6 +42,8 @@ import {
     faArrowDown,
     faArrowLeft,
     faUser,
+    faAngleLeft,
+    faAngleRight
 } from '@fortawesome/free-solid-svg-icons';
 
 import * as Vibrant from 'node-vibrant';
@@ -77,6 +79,8 @@ const icons = [
     faArrowDown,
     faArrowLeft,
     faUser,
+    faAngleLeft,
+    faAngleRight
 ];
 
 /* Add icons to the library */

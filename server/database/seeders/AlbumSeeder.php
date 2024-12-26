@@ -21,7 +21,7 @@ class AlbumSeeder extends Seeder
         Album::create([
             'idArtist' => 2,
             'title' => 'Nadie sabe',
-            'cover' => 'https://e00-elmundo.uecdn.es/assets/multimedia/imagenes/2023/10/12/16971477116771.jpg'
+            'cover' => 'https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/13/21/22/132122a1-2ef2-381b-94b6-7b9449dcaa4a/197190137897.jpg/1200x1200bf-60.jpg'
         ]);
         Album::create([
             'idArtist' => 3,

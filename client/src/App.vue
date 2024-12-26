@@ -15,6 +15,7 @@ import AddSongsModal from "./components/modules/tracklist/services/AddSongsModal
 import CreateTracklistModal from "./components/modules/tracklist/services/CreateTracklistModal.vue";
 import EditTracklistModal from "./components/modules/tracklist/services/EditTracklistModal.vue";
 import DeleteTracklistModal from "./components/modules/tracklist/services/DeleteTracklistModal.vue";
+import Breadcrumbs from "./components/utils/Breadcrumbs.vue";
 import CryptoJS from 'crypto-js';
 
 const HOME_VIEW = 1;
@@ -27,6 +28,8 @@ const ALBUM_VIEW = 6;
 const activeLyricsIcon = ref(false);
 const artist = ref({});
 const album = ref({});
+const breadcrumbs = ref([HOME_VIEW]);
+const currentBreadcrumb = ref(0);
 const currentIndex = ref(0);
 const currentLyricsLine = ref("");
 const currentTrack = ref({});
@@ -320,6 +323,8 @@ const deleteTracklist = async () => {
   const data = await response.json();
   // Changes view
   setCurrentView(HOME_VIEW);
+  // Add the current view to breadcrumbs
+  addViewToBreadcrumbs(HOME_VIEW);
   // Closes the dialog
   showDeleteTracklistModal.value = false;
   // Display notifications
@@ -455,6 +460,8 @@ const handleActiveLyrics = () => {
   if (Object.keys(currentTrack.value).length > 0) {
     activeLyricsIcon.value = true;
     setCurrentView(LYRICS_VIEW);
+    // Add the current view to breadcrumbs
+    addViewToBreadcrumbs(LYRICS_VIEW);
   } else {
     activeLyricsIcon.value = false;
   }
@@ -467,6 +474,8 @@ const handleArtistView = async (idArtist) => {
     artist.value = data.artist;
     // After retrieve all the information of the artist, render the artist view
     setCurrentView(ARTIST_VIEW);
+    // Add the current view to breadcrumbs
+    addViewToBreadcrumbs(ARTIST_VIEW);
   } else {
     toast.error("The artist you are looking for does not exist", {
       timeout: 3000
@@ -481,6 +490,8 @@ const handleAlbumView = async (idAlbum) => {
     album.value = data.album;
     // After retrieve all the information of the album, render the album view
     setCurrentView(ALBUM_VIEW);
+    // Add the current view to breadcrumbs
+    addViewToBreadcrumbs(ALBUM_VIEW);
   } else {
     toast.error("The album you are looking for does not exist", {
       timeout: 3000
@@ -490,6 +501,23 @@ const handleAlbumView = async (idAlbum) => {
 // Open the modal to create a playlist
 const openCreatePlaylistModal = () => {
   showTracklistModal.value = true;
+}
+// Add the given view to breadcrumbs
+const addViewToBreadcrumbs = (view) => {
+  breadcrumbs.value.push(view);
+  currentBreadcrumb.value = breadcrumbs.value.length - 1;
+}
+// Handles whether go to previous or next breadcrumb
+// 1: Previous | 2: Next
+const handleBreadcrumbAction = (actionCode) => {
+  // Update the current breadcrumb value
+  if (actionCode == 1) {
+    currentBreadcrumb.value = ((currentBreadcrumb.value - 1) >= 0) ? currentBreadcrumb.value - 1 : currentBreadcrumb.value;
+  } else if (actionCode == 2) {
+    currentBreadcrumb.value = ((currentBreadcrumb.value + 1) < breadcrumbs.value.length) ? currentBreadcrumb.value + 1 : currentBreadcrumb.value;
+  }
+  // Set current view based on current breadcrumb
+  setCurrentView(breadcrumbs.value[currentBreadcrumb.value]);
 }
 // Watch when the value of tracklist's id changes to make a request to the server side to get the correspondant tracklist
 watchEffect(async () => {
@@ -543,16 +571,21 @@ provide('tracklists', tracklists);
           </div>
           <button @click="showTracklistModal = !showTracklistModal;" class="createTracklist">+</button>
         </div>
-        <LibraryMenu 
-          v-for="tracklist in tracklists"
-          :key="tracklist.idTracklist"
-          :tracklist="tracklist"
-          :is-active="checkSelectedTracklist(tracklist.idTracklist)"
-          @click="
-            setCurrentView(LIBRARY_VIEW);
-            setIdTracklist(tracklist.idTracklist);
-          "
-        />
+        <div class="library-content">
+          <div class="library-tracklists">
+            <LibraryMenu 
+              v-for="tracklist in tracklists"
+              :key="tracklist.idTracklist"
+              :tracklist="tracklist"
+              :is-active="checkSelectedTracklist(tracklist.idTracklist)"
+              @click="
+                setCurrentView(LIBRARY_VIEW);
+                setIdTracklist(tracklist.idTracklist);
+              "
+            />
+          </div>
+          <Breadcrumbs :handle-breadcrumb-action="handleBreadcrumbAction" />
+        </div>
       </div>
     </div>
     <div class="main">
@@ -650,7 +683,6 @@ provide('tracklists', tracklists);
   width: 100%;
   height: 90%;
 }
-
 .menu {
   flex: 1;
   margin-right: 10px;
@@ -658,7 +690,6 @@ provide('tracklists', tracklists);
   display: flex;
   flex-direction: column;
 }
-
 .menu-top {
   background-color: #111;
   border-radius: 10px;
@@ -666,8 +697,10 @@ provide('tracklists', tracklists);
   padding: 25px 25px 0 25px;
   height: fit-content;
 }
-
 .menu-bottom {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   flex: 1;
   margin-top: 10px;
   padding: 10px;
@@ -675,19 +708,16 @@ provide('tracklists', tracklists);
   border-radius: 10px;
   box-sizing: border-box;
 }
-
 .library {
   padding: 15px 15px 30px 15px !important;
   display: flex;
   justify-content: space-between;
 }
-
 .main {
   flex: 4;
   border-radius: 10px;
   display: flex;
 }
-
 .menu-item {
   font-size: 17px;
   font-weight: 400;
@@ -696,29 +726,24 @@ provide('tracklists', tracklists);
   display: flex;
   align-items: center;
 }
-
 .menu-item-content {
   display: flex;
   align-items: center;
   text-decoration: none;
   color: rgb(175, 175, 175);
 }
-
 .menu-item-content:hover {
   color: white;
   transition: all 0.3s ease;
   cursor: pointer;
 }
-
 .icon {
   margin-right: 18px;
   height: 22px;
 }
-
 .active {
   color: white !important;
 }
-
 .createTracklist {
   background-color: #111;
   border: 1px solid gray;
@@ -730,11 +755,17 @@ provide('tracklists', tracklists);
   cursor: pointer;
   transition: all .3s ease;
 }
-
 .createTracklist:hover {
-  font-size: 22px;
   color: black;
   border: 1px solid white;
   background-color: white;
+}
+.library-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.library-tracklists {
+  overflow-y: auto;
 }
 </style>
