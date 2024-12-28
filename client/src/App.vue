@@ -600,7 +600,6 @@ provide('updateCurrentActionsSongId', updateCurrentActionsSongId);
               "
             />
           </div>
-          <Breadcrumbs :handle-breadcrumb-action="handleBreadcrumbAction" />
         </div>
       </div>
     </div>

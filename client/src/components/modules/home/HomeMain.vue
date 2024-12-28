@@ -92,10 +92,12 @@ h1 {
 .artists-container {
   display: flex;
   justify-content: left;
+  flex-wrap: wrap
 }
 /* Albums container styles */
 .albums-container {
   display: flex;
+  flex-wrap: wrap;
 }
 ::-webkit-scrollbar {
   width: 12px;

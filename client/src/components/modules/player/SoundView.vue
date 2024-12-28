@@ -25,7 +25,7 @@ watch(
 <template>
   <div class="sound-view-container">
     <div class="menu">
-        <div class="menu-title">Songs you like</div>
+        <div class="menu-title">It's playing</div>
         <div @click="$emit('close')" class="cross-container">
           <font-awesome-icon class="cross" icon="fa-solid fa-xmark" />
         </div>
