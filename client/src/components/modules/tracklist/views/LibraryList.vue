@@ -8,39 +8,16 @@ const props = defineProps({
         default: {}
     }
 });
-const setCurrentTrack = inject('setCurrentTrack');
+const openAddSongsModal = inject('openAddSongsModal');
 const openDeleteTracklistDialog = inject('openDeleteTracklistDialog');
 const openEditTracklistDialog = inject('openEditTracklistDialog');
-const openAddSongsModal = inject('openAddSongsModal');
+const setCurrentTrack = inject('setCurrentTrack');
+const setSort = inject('setSort');
+const sortColumn = inject('sortColumn');
+const sortDirection = inject('sortDirection');
+const sortedTracks = inject('sortedTracks');
 const displaySearchInput = ref(false);
 const searchQuery = ref('');
-
-// Columnn it will be order by
-const sortColumn = ref('date');
-// 1 for ascendant, -1 for descendant
-const sortDirection = ref(-1);
-
-// Sorts the songs
-const sortedTracks = computed(() => {
-    return [...props.tracklist.tracks].sort((a, b) => {
-        if (sortColumn.value === 'title') {
-            return a.title.localeCompare(b.title) * sortDirection.value;
-        } else if (sortColumn.value === 'album') {
-            return a.album.title.localeCompare(b.album.title) * sortDirection.value;
-        } else if (sortColumn.value === 'date') {
-            let tracklistTrackA = a.tracklist_track.find(tracklist_track => tracklist_track.idTracklist == props.tracklist.idTracklist);
-            let tracklistTrackB = b.tracklist_track.find(tracklist_track => tracklist_track.idTracklist == props.tracklist.idTracklist);
-            let dateA = tracklistTrackA.created_at;
-            let dateB = tracklistTrackB.created_at;
-            return (new Date(dateA) - new Date(dateB)) * sortDirection.value;
-        } else if (sortColumn.value === 'time') {
-            let valueA = convertDurationToSeconds(a.duration);
-            let valueB = convertDurationToSeconds(b.duration);
-            return (valueA - valueB) * sortDirection.value;
-        }
-        return 0;
-    });
-});
 
 // Filtered tracks based on search query
 const filteredTracks = computed(() => {
@@ -52,22 +29,6 @@ const filteredTracks = computed(() => {
         track.album.title.toLowerCase().includes(query)
     );
 });
-
-// Changes the direction and order of a column
-const setSort = (column) => {
-    if (sortColumn.value === column) {
-        sortDirection.value *= -1;
-    } else {
-        sortColumn.value = column;
-        sortDirection.value = 1;
-    }
-}
-
-// Transform duration from 'm:ss' format to seconds
-const convertDurationToSeconds = (duration) => {
-    const [minutes, seconds] = duration.split(':').map(Number);
-    return minutes * 60 + seconds;
-}
 // Cleans up the input for search songs
 watch(
     () => displaySearchInput.value,

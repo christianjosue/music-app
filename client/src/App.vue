@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, provide, ref, watchEffect } from "vue";
+import { computed, onMounted, provide, ref, watchEffect } from "vue";
 import { API_URL } from '../config.js';
 import { useToast } from "vue-toastification";
 import Home from "./components/modules/home/Home.vue";
@@ -26,36 +26,40 @@ const ARTIST_VIEW = 5;
 const ALBUM_VIEW = 6;
 
 const activeLyricsIcon = ref(false);
-const artist = ref({});
 const album = ref({});
+const artist = ref({});
 const breadcrumbs = ref([HOME_VIEW]);
+const currentActionsSongId = ref(0);
 const currentBreadcrumb = ref(0);
 const currentIndex = ref(0);
 const currentLyricsLine = ref("");
 const currentTrack = ref({});
 const currentTracklist = ref({});
-const currentActionsSongId = ref(0);
-const playingTracklist = ref({});
 const currentView = ref(HOME_VIEW);
 const idPlayingTrack = ref(0);
 const idPlayingTracklist = ref(0);
 const idTracklist = ref(0);
 const idTracklistToDelete = ref(0);
+const playingTracklist = ref({});
 const playTrack = ref(true);
 const randomMode = ref(false);
 const repeatMode = ref(false);
+const searchedSongs = ref([]);
+const showAddSongsModal = ref(false);
 const showDeleteTracklistModal = ref(false);
 const showEditTracklistModal = ref(false);
 const showTracklistModal = ref(false);
-const showAddSongsModal = ref(false);
-const searchedSongs = ref([]);
 const song = ref('');
 const songLoading = ref(false);
+// Default columnn it will be order by
+const sortColumn = ref('date');
+// 1 for ascendant, -1 for descendant
+const sortDirection = ref(-1);
 const soundView = ref(false);
 const thumbnails = ref([]);
-const toast = useToast();
-const tracklistToEdit = ref({});
 const tracklists = ref({});
+const tracklistToEdit = ref({});
+const toast = useToast();
 
 var lyricsObject = {};
 
@@ -524,6 +528,54 @@ const handleBreadcrumbAction = (actionCode) => {
 const updateCurrentActionsSongId = (idTrack) => {
   currentActionsSongId.value = idTrack;
 }
+// Changes the direction and order of a column of a tracklist
+const setSort = (column) => {
+  if (sortColumn.value === column) {
+    sortDirection.value *= -1;
+  } else {
+    sortColumn.value = column;
+    sortDirection.value = 1;
+  }
+}
+// Transform duration from 'm:ss' format to seconds
+const convertDurationToSeconds = (duration) => {
+  const [minutes, seconds] = duration.split(':').map(Number);
+  return minutes * 60 + seconds;
+}
+// Sorts the current tracklist's songs
+const sortedTracks = computed(() => {
+  const sorted = [...currentTracklist.value.tracks].sort((a, b) => {
+    if (sortColumn.value === 'title') {
+      return a.title.localeCompare(b.title) * sortDirection.value;
+    } else if (sortColumn.value === 'album') {
+      return a.album.title.localeCompare(b.album.title) * sortDirection.value;
+    } else if (sortColumn.value === 'date') {
+      let tracklistTrackA = a.tracklist_track.find(tracklist_track => tracklist_track.idTracklist == currentTracklist.value.idTracklist);
+      let tracklistTrackB = b.tracklist_track.find(tracklist_track => tracklist_track.idTracklist == currentTracklist.value.idTracklist);
+      let dateA = tracklistTrackA.created_at;
+      let dateB = tracklistTrackB.created_at;
+      return (new Date(dateA) - new Date(dateB)) * sortDirection.value;
+    } else if (sortColumn.value === 'time') {
+      let valueA = convertDurationToSeconds(a.duration);
+      let valueB = convertDurationToSeconds(b.duration);
+      return (valueA - valueB) * sortDirection.value;
+    }
+    return 0;
+  });
+
+  // Updates the current index of the tracklist's song
+  if (Object.keys(currentTrack.value).length > 0) {
+    sorted.forEach((track, index) => {
+      if (track.idTrack == currentTrack.value.idTrack) {
+        currentIndex.value = index;
+      }
+    });
+  }
+  // Updates the tracks of the current tracklist
+  currentTracklist.value.tracks = sorted;
+
+  return sorted;
+});
 // Watch when the value of tracklist's id changes to make a request to the server side to get the correspondant tracklist
 watchEffect(async () => {
   reloadTracklist();
@@ -549,6 +601,10 @@ provide('removeSongFromTracklist', removeSongFromTracklist);
 provide('searchedSongs', searchedSongs);
 provide('searchSong', searchSong);
 provide('setCurrentTrack', setCurrentTrack);
+provide('setSort', setSort);
+provide('sortColumn', sortColumn);
+provide('sortDirection', sortDirection);
+provide('sortedTracks', sortedTracks);
 provide('tracklists', tracklists);
 provide('updateCurrentActionsSongId', updateCurrentActionsSongId);
 </script>
