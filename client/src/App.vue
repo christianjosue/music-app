@@ -570,7 +570,7 @@ const sortedTracks = computed(() => {
   });
 
   // Updates the current index of the tracklist's song
-  if (Object.keys(currentTrack.value).length > 0) {
+  if (Object.keys(currentTrack.value).length > 0 && currentTracklist.value.idTracklist == playingTracklist.value.idTracklist) {
     sorted.forEach((track, index) => {
       if (track.idTrack == currentTrack.value.idTrack) {
         currentIndex.value = index;
