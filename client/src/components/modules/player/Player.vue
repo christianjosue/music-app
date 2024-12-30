@@ -263,7 +263,7 @@ function updateProgressBar() {
         <IconLoader v-show="songLoading" />
         <div v-show="!songLoading" class="play-btn">
           <IconPlay v-show="!isPlaying" @click="setCurrentTrack(idPlayingTrackCopy, idPlayingTracklistCopy)" />
-          <IconPause v-show="isPlaying" @click="setCurrentTrack(0, idPlayingTrackCopy)" />
+          <IconPause v-show="isPlaying" @click="setCurrentTrack(0, idPlayingTracklistCopy)" />
         </div>
         <IconNextTrack
           @click="

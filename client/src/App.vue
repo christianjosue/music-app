@@ -32,6 +32,7 @@ const breadcrumbs = ref([HOME_VIEW]);
 const currentActionsSongId = ref(0);
 const currentBreadcrumb = ref(0);
 const currentIndex = ref(0);
+const playingIndex = ref(0);
 const currentLyricsLine = ref("");
 const currentTrack = ref({});
 const currentTracklist = ref({});
@@ -147,15 +148,20 @@ function nextTrack() {
 function setIdTracklist(id) {
   idTracklist.value = id;
 }
-// Load the track is going to be played
+/**
+ * Load the track is going to be played
+ * @param idTrack 
+ * @param idTracklist 
+ * @param isTracklistPlayer 
+ */
 function setCurrentTrack(idTrack, idTracklist, isTracklistPlayer = 0) {
   if (Object.keys(currentTrack.value).length > 0 || isTracklistPlayer) {
     if (idTrack == 0) {
       playTrack.value = false;
     } else if (idPlayingTrack.value != idTrack || (idPlayingTrack.value == idTrack && idPlayingTracklist.value != idTracklist)) {
-      // If there is no playlist playing currently, we assign it data from the current tracklist (which is the displayed
-      // tracklist)
-      if (Object.keys(playingTracklist.value).length === 0) {
+      // If there is no playlist playing currently or we change from a playlist to another, we assign it data 
+      // from the current tracklist (which is the playlist is currently displayed in the screen)
+      if (Object.keys(playingTracklist.value).length === 0 || (idPlayingTracklist.value !== idTracklist && idTracklist !== 0)) {
         playingTracklist.value = currentTracklist.value;
       }
       songLoading.value = true;

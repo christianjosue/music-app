@@ -80,7 +80,7 @@ watch(
                     Title <font-awesome-icon v-if="sortColumn === 'title'" :icon="['fas', sortDirection > 0 ? 'arrow-up' : 'arrow-down']" />
                 </th>
                 <th style="width: 30%;" @click="setSort('album')">
-                    Álbum <font-awesome-icon v-if="sortColumn === 'album'" :icon="['fas', sortDirection > 0 ? 'arrow-up' : 'arrow-down']" />
+                    Album <font-awesome-icon v-if="sortColumn === 'album'" :icon="['fas', sortDirection > 0 ? 'arrow-up' : 'arrow-down']" />
                 </th>
                 <th style="width: 15%;" @click="setSort('date')">
                     Added's <font-awesome-icon v-if="sortColumn === 'date'" :icon="['fas', sortDirection > 0 ? 'arrow-up' : 'arrow-down']" />
