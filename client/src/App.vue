@@ -385,6 +385,12 @@ const editTracklist = async (tracklist) => {
 const reloadTracklist = async () => {
   const response = await fetch(`${API_URL}/api/tracklist/${idTracklist.value}`);
   currentTracklist.value = await response.json();
+  // Check if there is a tracklist playing at the moment
+  if (Object.keys(playingTracklist.value).length > 0) {
+    // If the tracklist is been watching at the moment is the same that the one is playing, we update the last one
+    if (currentTracklist.value.idTracklist == playingTracklist.value.idTracklist)
+    playingTracklist.value = currentTracklist.value;
+  }
 }
 // Retrieves all the thumbnails
 const getThumbnails = async () => {
