@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, provide, ref, watch, watchEffect } from "vue";
+import { HOME_VIEW, SEARCH_VIEW, LIBRARY_VIEW, LYRICS_VIEW, ARTIST_VIEW, ALBUM_VIEW } from "../config.js";
 import { API_URL } from '../config.js';
 import { useToast } from "vue-toastification";
 import Home from "./components/modules/home/Home.vue";
@@ -17,13 +18,7 @@ import EditTracklistModal from "./components/modules/tracklist/services/EditTrac
 import DeleteTracklistModal from "./components/modules/tracklist/services/DeleteTracklistModal.vue";
 import Breadcrumbs from "./components/utils/Breadcrumbs.vue";
 import CryptoJS from 'crypto-js';
-
-const HOME_VIEW = 1;
-const SEARCH_VIEW = 2;
-const LIBRARY_VIEW = 3;
-const LYRICS_VIEW = 4;
-const ARTIST_VIEW = 5;
-const ALBUM_VIEW = 6;
+import MenuMobile from "./components/modules/menu/MenuMobile.vue";
 
 const activeLyricsIcon = ref(false);
 const album = ref({});
@@ -647,7 +642,7 @@ provide('updateCurrentActionsSongId', updateCurrentActionsSongId);
 
 <template>
   <div class="container">
-    <div class="menu">
+    <div class="menu" v-if="!isMobileView">
       <div class="menu-top">
         <div class="menu-item" 
           @click="
@@ -783,6 +778,11 @@ provide('updateCurrentActionsSongId', updateCurrentActionsSongId);
       @next-track="nextTrack"
     />
   </div>
+  <MenuMobile 
+    v-if="isMobileView" 
+    :current-view="currentView"
+    :set-current-view="setCurrentView"
+  />
 </template>
 
 <style scoped>
@@ -790,6 +790,9 @@ provide('updateCurrentActionsSongId', updateCurrentActionsSongId);
   display: flex;
   width: 100%;
   height: 90%;
+}
+.player {
+  height: 10%;
 }
 .menu {
   flex: 1;
@@ -875,5 +878,11 @@ provide('updateCurrentActionsSongId', updateCurrentActionsSongId);
 }
 .library-tracklists {
   overflow-y: auto;
+}
+
+@media screen and (max-width: 800px) {
+  .container {
+    height: 80%;
+  }
 }
 </style>
