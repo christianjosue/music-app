@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, provide, ref, watch, watchEffect } from "vue";
-import { HOME_VIEW, SEARCH_VIEW, LIBRARY_VIEW, LYRICS_VIEW, ARTIST_VIEW, ALBUM_VIEW } from "../config.js";
+import { HOME_VIEW, SEARCH_VIEW, LIBRARY_VIEW, LYRICS_VIEW, ARTIST_VIEW, ALBUM_VIEW, LIBRARY_LIST_VIEW } from "../config.js";
 import { API_URL } from '../config.js';
 import { useToast } from "vue-toastification";
 import Home from "./components/modules/home/Home.vue";
@@ -19,6 +19,7 @@ import DeleteTracklistModal from "./components/modules/tracklist/services/Delete
 import Breadcrumbs from "./components/utils/Breadcrumbs.vue";
 import CryptoJS from 'crypto-js';
 import MenuMobile from "./components/modules/menu/MenuMobile.vue";
+import LibraryListMobile from "./components/modules/tracklist/views/LibraryListMobile.vue";
 
 const activeLyricsIcon = ref(false);
 const album = ref({});
@@ -608,6 +609,10 @@ watch(
     if (isMobileView.value) {
       soundView.value = false;
     }
+    // Set the home view as the current one if we are not in the mobile view and the library list view was displayed
+    if (!isMobileView.value && checkCurrentView(LIBRARY_LIST_VIEW)) {
+      setCurrentView(HOME_VIEW);
+    }
   },
   { immediate: true }
 )
@@ -742,6 +747,14 @@ provide('updateCurrentActionsSongId', updateCurrentActionsSongId);
         :set-current-track="setCurrentTrack"
         :set-playing-tracklist="setPlayingTracklist"
         :play-track="playTrack"
+      />
+      <LibraryListMobile 
+        v-else-if="checkCurrentView(LIBRARY_LIST_VIEW)"
+        :tracklists="tracklists"
+        :set-current-view="setCurrentView"
+        :set-id-tracklist="setIdTracklist"
+        :check-selected-tracklist="checkSelectedTracklist"
+        :open-create-playlist-modal="openCreatePlaylistModal"
       />
       <Lyrics 
         v-else="checkCurrentView(LYRICS_VIEW)" 

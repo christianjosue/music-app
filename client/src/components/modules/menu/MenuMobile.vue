@@ -1,5 +1,5 @@
 <script setup>
-import { HOME_VIEW, SEARCH_VIEW, LIBRARY_VIEW } from '../../../../config';
+import { HOME_VIEW, SEARCH_VIEW, LIBRARY_LIST_VIEW } from '../../../../config';
 
 const props = defineProps({
     currentView: {
@@ -25,8 +25,8 @@ const props = defineProps({
             <font-awesome-icon icon="fa-solid fa-magnifying-glass" class="icon" />
         </div>
     </div>
-    <div class="menu-item-mobile" @click="setCurrentView(LIBRARY_VIEW)">
-        <div :class="['menu-item-content-mobile', { active: currentView == LIBRARY_VIEW }]">
+    <div class="menu-item-mobile" @click="setCurrentView(LIBRARY_LIST_VIEW)">
+        <div :class="['menu-item-content-mobile', { active: currentView == LIBRARY_LIST_VIEW }]">
             <font-awesome-icon icon="fa-solid fa-headphones" class="icon" />
         </div>
     </div>
