@@ -20,6 +20,7 @@ import Breadcrumbs from "./components/utils/Breadcrumbs.vue";
 import CryptoJS from 'crypto-js';
 import MenuMobile from "./components/modules/menu/MenuMobile.vue";
 import LibraryListMobile from "./components/modules/tracklist/views/LibraryListMobile.vue";
+import FloatingSongPlaying from "./components/modules/song/FloatingSongPlaying.vue";
 
 const activeLyricsIcon = ref(false);
 const album = ref({});
@@ -766,6 +767,10 @@ provide('updateCurrentActionsSongId', updateCurrentActionsSongId);
         :track="currentTrack"
         @close="soundView = false" 
       />
+      <FloatingSongPlaying
+        v-if="isMobileView && Object.keys(currentTrack).length > 0"
+        :current-track="currentTrack" 
+      />
     </div>
   </div>
   <div class="player">
@@ -841,6 +846,7 @@ provide('updateCurrentActionsSongId', updateCurrentActionsSongId);
   flex: 4;
   border-radius: 10px;
   display: flex;
+  position: relative;
 }
 .menu-item {
   font-size: 17px;
