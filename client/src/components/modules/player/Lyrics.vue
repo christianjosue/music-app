@@ -109,4 +109,18 @@ onMounted(() => {
   filter: blur(0);
   transform: scale(1.1);
 }
+
+@media screen and (max-width: 750px) {
+  .lyrics-container {
+    width: 80%;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .lyrics-container {
+    width: 95%;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
 </style>
