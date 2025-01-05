@@ -194,6 +194,7 @@ function setCurrentTrack(idTrack, idTracklist, isTracklistPlayer = 0) {
 // Sets as the current tracklist the temporal one. It could be the songs of an album, artist or the list of searched songs
 const setPlayingTracklist = (tracklist) => {
   playingTracklist.value = tracklist;
+  idPlayingTracklist.value = tracklist.idTracklist;
 }
 // Get the specified track from the AWS S3 bucket
 const getTrack = async (track, index, idTrack, idTracklist) => {
