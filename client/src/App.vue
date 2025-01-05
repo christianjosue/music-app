@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, provide, ref, watchEffect } from "vue";
+import { computed, onBeforeUnmount, onMounted, provide, ref, watch, watchEffect } from "vue";
 import { API_URL } from '../config.js';
 import { useToast } from "vue-toastification";
 import Home from "./components/modules/home/Home.vue";
@@ -32,7 +32,6 @@ const breadcrumbs = ref([HOME_VIEW]);
 const currentActionsSongId = ref(0);
 const currentBreadcrumb = ref(0);
 const currentIndex = ref(0);
-const playingIndex = ref(0);
 const currentLyricsLine = ref("");
 const currentTrack = ref({});
 const currentTracklist = ref({});
@@ -41,6 +40,7 @@ const idPlayingTrack = ref(0);
 const idPlayingTracklist = ref(0);
 const idTracklist = ref(0);
 const idTracklistToDelete = ref(0);
+const isMobileView = ref(false);
 const playingTracklist = ref({});
 const playTrack = ref(true);
 const randomMode = ref(false);
@@ -69,7 +69,20 @@ onMounted(() => {
   getTracklists();
   // Fetch all the thumbnails
   getThumbnails();
+  // Update screen size
+  updateScreenSize();
+  // Update screen size every time this resizes
+  window.addEventListener('resize', updateScreenSize);
 });
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', updateScreenSize);
+});
+
+// Check if the screen size is under 800px (mobile view)
+const updateScreenSize = () => {
+  isMobileView.value = window.innerWidth <= 800;
+};
 // Creates a new tracklist
 const createTracklist = async (tracklistData) => {
   const response = await fetch(`${API_URL}/api/tracklist`, {
@@ -592,6 +605,16 @@ const sortedTracks = computed(() => {
 watchEffect(async () => {
   reloadTracklist();
 });
+// Hide sound view when screen size is under 800px
+watch(
+  () => isMobileView.value,
+  () => {
+    if (isMobileView.value) {
+      soundView.value = false;
+    }
+  },
+  { immediate: true }
+)
 
 provide('activeLyricsIcon', activeLyricsIcon);
 provide('addSongToTracklist', addSongToTracklist);
@@ -746,6 +769,7 @@ provide('updateCurrentActionsSongId', updateCurrentActionsSongId);
       :set-current-track="setCurrentTrack"
       :id-playing-track="idPlayingTrack"
       :id-playing-tracklist="idPlayingTracklist"
+      :is-mobile-view="isMobileView"
       :repeat-mode="repeatMode"
       :song-loading="songLoading"
       :update-lyrics="updateLyrics"

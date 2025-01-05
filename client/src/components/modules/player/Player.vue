@@ -61,6 +61,10 @@ const props = defineProps({
   songLoading: {
     type: Boolean,
     default: false
+  },
+  isMobileView: {
+    type: Boolean,
+    default: false
   }
 });
 var audio;
@@ -137,6 +141,18 @@ watch(
   () => {
     if (audio) {
       playMusic();
+    }
+  },
+  { immediate: true }
+)
+
+// If we are in mobile view, we set audio volume to the maximum
+watch(
+  () => props.isMobileView,
+  () => {
+    if (props.isMobileView) {
+      volume.value = 100;
+      audio.volume = volume.value / 100;
     }
   },
   { immediate: true }
@@ -471,5 +487,11 @@ function updateProgressBar() {
   display: flex;
   align-items: center;
   margin-left: 10px;
+}
+
+@media screen and (max-width: 800px) {
+  .track-container, .player-options {
+    display: none;
+  }
 }
 </style>
