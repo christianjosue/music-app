@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, provide, ref, watch, watchEffect } from "vue";
-import { HOME_VIEW, SEARCH_VIEW, LIBRARY_VIEW, LYRICS_VIEW, ARTIST_VIEW, ALBUM_VIEW, LIBRARY_LIST_VIEW } from "../config.js";
+import { HOME_VIEW, SEARCH_VIEW, LIBRARY_VIEW, LYRICS_VIEW, ARTIST_VIEW, ALBUM_VIEW, LIBRARY_LIST_VIEW, SONG_PLAYING_MOBILE_VIEW } from "../config.js";
 import { API_URL } from '../config.js';
 import { useToast } from "vue-toastification";
 import Home from "./components/modules/home/Home.vue";
@@ -21,6 +21,7 @@ import CryptoJS from 'crypto-js';
 import MenuMobile from "./components/modules/menu/MenuMobile.vue";
 import LibraryListMobile from "./components/modules/tracklist/views/LibraryListMobile.vue";
 import FloatingSongPlaying from "./components/modules/song/FloatingSongPlaying.vue";
+import SongPlayingMobile from "./components/modules/song/SongPlayingMobile.vue";
 
 const activeLyricsIcon = ref(false);
 const album = ref({});
@@ -610,8 +611,8 @@ watch(
     if (isMobileView.value) {
       soundView.value = false;
     }
-    // Set the home view as the current one if we are not in the mobile view and the library list view was displayed
-    if (!isMobileView.value && checkCurrentView(LIBRARY_LIST_VIEW)) {
+    // Set the home view as the current one if we are not in the mobile view and it is displayed a view only for mobiles
+    if (!isMobileView.value && (checkCurrentView(LIBRARY_LIST_VIEW) || checkCurrentView(SONG_PLAYING_MOBILE_VIEW))) {
       setCurrentView(HOME_VIEW);
     }
   },
@@ -757,6 +758,11 @@ provide('updateCurrentActionsSongId', updateCurrentActionsSongId);
         :check-selected-tracklist="checkSelectedTracklist"
         :open-create-playlist-modal="openCreatePlaylistModal"
       />
+      <SongPlayingMobile 
+        v-else-if="checkCurrentView(SONG_PLAYING_MOBILE_VIEW)"
+        :current-track="currentTrack"
+        :set-current-view="setCurrentView"
+      />
       <Lyrics 
         v-else="checkCurrentView(LYRICS_VIEW)" 
         :lyrics="lyricsObject"
@@ -768,8 +774,9 @@ provide('updateCurrentActionsSongId', updateCurrentActionsSongId);
         @close="soundView = false" 
       />
       <FloatingSongPlaying
-        v-if="isMobileView && Object.keys(currentTrack).length > 0"
+        v-if="isMobileView && Object.keys(currentTrack).length > 0 && !checkCurrentView(SONG_PLAYING_MOBILE_VIEW)"
         :current-track="currentTrack" 
+        @click="setCurrentView(SONG_PLAYING_MOBILE_VIEW)"
       />
     </div>
   </div>
