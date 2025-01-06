@@ -185,9 +185,17 @@ watch(
 .artists-container {
   display: flex;
   justify-content: left;
+  flex-wrap: wrap;
 }
 /* Albums container styles */
 .albums-container {
   display: flex;
+  flex-wrap: wrap;
+}
+
+@media screen and (max-width: 800px) {
+  .search-container {
+    width: 80%;
+  }
 }
 </style>

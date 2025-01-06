@@ -24,6 +24,7 @@ const handleAlbumView = inject('handleAlbumView');
 const handleArtistView = inject('handleArtistView');
 const idPlayingTrack = inject('idPlayingTrack');
 const openCreatePlaylistModal = inject('openCreatePlaylistModal');
+const isMobileView = inject('isMobileView');
 const playlists = ref({});
 const playlistsObtained = ref(false);
 const playTrack = inject('isPlaying');
@@ -50,6 +51,12 @@ const handleActionsContent = () => {
     updateCurrentActionsSongId(props.song.idTrack);
   }
 }
+// Handle song playback when we are in mobile view
+const handlePlayTrackMobile = (idTrack) => {
+  if (isMobileView) {
+    props.handlePlayTrack(idTrack);
+  }
+}
 
 // Every time tracklists change, we have to reload the playlists available to add the current song
 watch(
@@ -72,7 +79,7 @@ watch(
 </script>
 
 <template>
-    <div class="song-card">
+    <div @click="handlePlayTrackMobile(song.idTrack)" class="song-card">
         <div class="song-thumbnail">
             <img :src="song.thumbnail" alt="thumbnail">
         </div>
@@ -81,19 +88,22 @@ watch(
             <div class="song-artist">{{ song.artists[0]?.name }}</div>
           </div>
         <IconMusicPlayingAnimation  v-if="playTrack && idPlayingTrack == song.idTrack && checkPlayingTracklist(idTracklist)" />
-        <div class="play-pause-btn">
-            <font-awesome-icon 
-              v-if="!playTrack || idPlayingTrack != song.idTrack || (idPlayingTrack == song.idTrack && !checkPlayingTracklist(idTracklist))" 
-              :icon="['fas', 'play']" 
-              @click="handlePlayTrack(song.idTrack)"
-            />
-            <font-awesome-icon 
-              v-else 
-              :icon="['fas', 'pause']" 
-              @click="handlePlayTrack(0)"
-            />
+        <div 
+          v-if="!isMobileView"
+          class="play-pause-btn"
+        >
+          <font-awesome-icon 
+            v-if="!playTrack || idPlayingTrack != song.idTrack || (idPlayingTrack == song.idTrack && !checkPlayingTracklist(idTracklist))" 
+            :icon="['fas', 'play']" 
+            @click="handlePlayTrack(song.idTrack)"
+          />
+          <font-awesome-icon 
+            v-else 
+            :icon="['fas', 'pause']" 
+            @click="handlePlayTrack(0)"
+          />
         </div>
-        <div class="song-duration">{{ song.duration }}</div>
+        <div v-if="!isMobileView" class="song-duration">{{ song.duration }}</div>
         <div class="song-actions">
           <div @click="handleActionsContent" class="song-actions-btn">...</div>
           <div v-if="showActionsContent" class="song-actions-content">
@@ -259,5 +269,14 @@ watch(
 .playlists-to-add:hover {
   color: white;
   background: #333;
+}
+
+@media screen and (max-width: 800px) {
+  .song-actions-btn {
+    font-size: 18px;
+  }
+  .song-actions {
+    margin-left: 20px;
+  }
 }
 </style>

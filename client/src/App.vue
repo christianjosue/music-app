@@ -630,6 +630,7 @@ provide('handleAlbumView', handleAlbumView);
 provide('handleArtistView', handleArtistView);
 provide('idPlayingTrack', idPlayingTrack);
 provide('isPlaying', playTrack);
+provide('isMobileView', isMobileView);
 provide('openAddSongsModal', openAddSongsModal);
 provide('openCreatePlaylistModal', openCreatePlaylistModal);
 provide('openDeleteTracklistDialog', openDeleteTracklistDialog);
