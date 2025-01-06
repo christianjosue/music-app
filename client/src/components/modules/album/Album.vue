@@ -178,4 +178,19 @@ h3 {
     margin: 0;
     padding: 20px 0;
 }
+
+@media screen and (max-width: 565px) {
+    .album-container {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .thumbnail {
+        width: 180px;
+        height: 180px;
+    }
+    h1 {
+        font-size: 50px;
+    }
+}
 </style>
