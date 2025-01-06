@@ -141,4 +141,10 @@ p {
     background: white;
     color: black;
 }
+
+@media screen and (max-width: 500px) {
+	dialog {
+		max-width: 200px;
+	}
+}
 </style>
