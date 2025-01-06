@@ -826,6 +826,8 @@ provide('updateCurrentActionsSongId', updateCurrentActionsSongId);
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
 }
 .menu-top {
   background-color: #111;
@@ -855,6 +857,7 @@ provide('updateCurrentActionsSongId', updateCurrentActionsSongId);
   border-radius: 10px;
   display: flex;
   position: relative;
+  overflow: hidden;
 }
 .menu-item {
   font-size: 17px;

@@ -61,9 +61,12 @@ watch(
 }
 
 h1 {
-    font-size: 80px;
+    font-size: 6vw;
     margin: 0;
     margin-bottom: 30px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
 }
 
 h5 {
@@ -75,6 +78,7 @@ h5 {
 .thumbnail {
     width: 230px;
     height: 230px;
+    min-width: 230px;
     border-radius: 4px;
     background-size: cover;
     background-repeat: no-repeat;
@@ -84,10 +88,31 @@ h5 {
 
 .tracklist-content {
     margin-left: 20px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .tracklist-details {
     display: flex;
     font-size: 14px;
+}
+
+@media screen and (max-width: 800px) {
+    .thumbnail {
+        min-width: 180px;
+        height: 180px;
+        width: 180px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .tracklist-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    .tracklist-content {
+        margin-top: 20px;
+    }
 }
 </style>

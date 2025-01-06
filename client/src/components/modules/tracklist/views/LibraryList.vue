@@ -79,13 +79,13 @@ watch(
                 <th style="width: 35%;" @click="setSort('title')">
                     Title <font-awesome-icon v-if="sortColumn === 'title'" :icon="['fas', sortDirection > 0 ? 'arrow-up' : 'arrow-down']" />
                 </th>
-                <th style="width: 30%;" @click="setSort('album')">
+                <th class="album-column" @click="setSort('album')">
                     Album <font-awesome-icon v-if="sortColumn === 'album'" :icon="['fas', sortDirection > 0 ? 'arrow-up' : 'arrow-down']" />
                 </th>
-                <th style="width: 15%;" @click="setSort('date')">
+                <th class="date-column" @click="setSort('date')">
                     Added's <font-awesome-icon v-if="sortColumn === 'date'" :icon="['fas', sortDirection > 0 ? 'arrow-up' : 'arrow-down']" />
                 </th>
-                <th style="width: 10%;" @click="setSort('time')">
+                <th class="time-column" @click="setSort('time')">
                     <font-awesome-icon icon="fa-solid fa-clock" style="margin-right: 5px;" /> 
                     <font-awesome-icon v-if="sortColumn === 'time'" :icon="['fas', sortDirection > 0 ? 'arrow-up' : 'arrow-down']" />
                 </th>
@@ -291,5 +291,42 @@ td {
 }
 .search-icon.active {
     color: white !important;
+}
+.album-column {
+    width: 30%;
+}
+.date-column {
+    width: 15%;
+}
+.time-column {
+    width: 10%;
+}
+
+@media screen and (max-width: 1000px) {
+    .album-column {
+        display: none;
+    }
+    .date-column {
+        width: 30%;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    .list-options {
+        flex-direction: column;
+        align-items: center;
+    }
+    .search-input {
+        padding: 10px;
+    }
+    .actions {
+        margin-top: 20px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .date-column {
+        display: none;
+    }
 }
 </style>

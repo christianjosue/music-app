@@ -53,6 +53,8 @@ const props = defineProps({
 
 .menu-content {
     margin-left: 15px;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
 }
 
 img {

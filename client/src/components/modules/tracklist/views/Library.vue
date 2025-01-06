@@ -26,6 +26,7 @@ const props = defineProps({
 <style scoped>
 .library-container {
   flex: 7;
+  overflow: hidden;
 }
 
 h1, h3 {

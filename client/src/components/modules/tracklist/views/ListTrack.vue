@@ -43,6 +43,7 @@ function formatTime() {
 const idPlayingTrack = inject('idPlayingTrack');
 const checkPlayingTracklist = inject('checkPlayingTracklist');
 const isPlaying = inject('isPlaying');
+const isMobileView = inject('isMobileView');
 </script>
 
 <template>
@@ -52,11 +53,11 @@ const isPlaying = inject('isPlaying');
         @mouseleave="onHover = false"
     >
         <td class="container-list">
-            <font-awesome-icon v-if="onHover && idPlayingTrack == track.idTrack && checkPlayingTracklist(idTracklist) && isPlaying"
+            <font-awesome-icon v-if="onHover && idPlayingTrack == track.idTrack && checkPlayingTracklist(idTracklist) && isPlaying && !isMobileView"
                 @click="$emit('pauseTrack')"
                 icon="fa-solid fa-pause"
             />
-            <font-awesome-icon v-else-if="onHover && (!isPlaying || idPlayingTrack != track.idTrack || (idPlayingTrack == track.idTrack && !checkPlayingTracklist(idTracklist)))"
+            <font-awesome-icon v-else-if="onHover && (!isPlaying || idPlayingTrack != track.idTrack || (idPlayingTrack == track.idTrack && !checkPlayingTracklist(idTracklist))) && !isMobileView"
                 @click="$emit('playTrack')"
                 icon="fa-solid fa-play"
             />
@@ -159,5 +160,17 @@ td {
 .remove:hover {
     color: red;
     transform: scale(1.05);
+}
+
+@media screen and (max-width: 1000px) {
+    .album {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .date {
+        display: none;
+    }
 }
 </style>
