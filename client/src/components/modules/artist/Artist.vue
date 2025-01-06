@@ -64,23 +64,25 @@ watch(
             </div>
         </div>
     </div>
-    <div class="artist-songs">
-        <h3>Songs</h3>
-        <SongCard v-for="song in artist?.songs"
-          :key="song.idTrack"
-          :song="song"
-          :handle-play-track="handlePlayTrack"
-          :play-track="playTrack"
-          :id-tracklist="ARTIST_ID_TRACKLIST" 
-        />
-    </div>
-    <div class="artist-albums">
+    <div class="artist-data">
+        <div class="artist-songs">
+            <h3>Songs</h3>
+            <SongCard v-for="song in artist?.songs"
+              :key="song.idTrack"
+              :song="song"
+              :handle-play-track="handlePlayTrack"
+              :play-track="playTrack"
+              :id-tracklist="ARTIST_ID_TRACKLIST" 
+            />
+        </div>
         <h3>Albums</h3>
-        <AlbumCard 
-          v-for="album in artist?.albums"
-          :key="album.idAlbum"
-          :album="album"
-        />
+        <div class="artist-albums">
+            <AlbumCard 
+              v-for="album in artist?.albums"
+              :key="album.idAlbum"
+              :album="album"
+            />
+        </div>
     </div>
 </div>
 </template>
@@ -146,9 +148,27 @@ watch(
     font-weight: 100;
 }
 /* Artist songs and albums */
-.artist-songs,
-.artist-albums {
+.artist-data {
     margin: auto;
     width: 80%;
+}
+.artist-albums {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+@media screen and (max-width: 800px) {
+    .artist-name {
+        font-size: 6rem;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .artist-name {
+        font-size: 4rem;
+    }
+    .artist-monthly-listeners {
+        font-size: 18px;
+    }
 }
 </style>
