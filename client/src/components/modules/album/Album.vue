@@ -191,6 +191,10 @@ h3 {
     }
     h1 {
         font-size: 50px;
+        margin-bottom: 10px;
+    }
+    h5 {
+        margin-top: 10px;
     }
 }
 </style>

@@ -299,4 +299,14 @@ img.active {
 .thumbnailLabel {
 	margin-top: 15px;
 }
+
+@media screen and (max-width: 600px) {
+	.thumbnail {
+		width: 100px;
+		height: 100px;
+	}
+	dialog {
+		max-width: 250px;
+	}
+}
 </style>
