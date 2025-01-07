@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref } from 'vue';
+import { getCurrentInstance, inject, ref } from 'vue';
 import IconMusicPlayingAnimation from '../../../icons/IconMusicPlayingAnimation.vue';
 const props = defineProps({
     track: {
@@ -16,6 +16,7 @@ const props = defineProps({
     index: {}
 });
 defineEmits(['playTrack', 'pauseTrack']);
+const { emit } = getCurrentInstance();
 const removeSongFromTracklist = inject('removeSongFromTracklist');
 const addedAt = ref('');
 const onHover = ref(false);
@@ -44,6 +45,13 @@ const idPlayingTrack = inject('idPlayingTrack');
 const checkPlayingTracklist = inject('checkPlayingTracklist');
 const isPlaying = inject('isPlaying');
 const isMobileView = inject('isMobileView');
+
+// Play the song displayed in the player when mobile view is active
+const handlePlaySongMobile = () => {
+    if (isMobileView.value) {
+        emit('playTrack');
+    }
+}
 </script>
 
 <template>
@@ -51,6 +59,7 @@ const isMobileView = inject('isMobileView');
         class="track" 
         @mouseover="onHover = true" 
         @mouseleave="onHover = false"
+        @click="handlePlaySongMobile"
     >
         <td class="container-list">
             <font-awesome-icon v-if="onHover && idPlayingTrack == track.idTrack && checkPlayingTracklist(idTracklist) && isPlaying && !isMobileView"
@@ -169,7 +178,8 @@ td {
 }
 
 @media screen and (max-width: 600px) {
-    .date {
+    .date,
+    .time {
         display: none;
     }
 }

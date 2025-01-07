@@ -53,7 +53,7 @@ const handleActionsContent = () => {
 }
 // Handle song playback when we are in mobile view
 const handlePlayTrackMobile = (idTrack) => {
-  if (isMobileView) {
+  if (isMobileView.value) {
     props.handlePlayTrack(idTrack);
   }
 }
