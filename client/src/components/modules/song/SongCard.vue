@@ -276,7 +276,7 @@ watch(
     font-size: 18px;
   }
   .song-actions {
-    margin-left: 20px;
+    display: none;
   }
 }
 </style>
