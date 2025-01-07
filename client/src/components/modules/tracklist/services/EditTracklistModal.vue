@@ -70,6 +70,9 @@ const validateForm = () => {
 	} else if (badWordsFilter.value.isProfane(tracklistName.value)) {
 		nameErrorMessage.value = "You can not use bad words";
 		nameError.value = true;
+	} else if (tracklistName.value.trim().length > 20) {
+		nameErrorMessage.value = "You can not use more than 20 characters";
+		nameError.value = true;
 	} else {
 		nameErrorMessage.value = "";
 		nameError.value = false;
