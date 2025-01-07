@@ -297,6 +297,7 @@ function updateProgressBar() {
         <input 
           @input="changeProgressTrack"
           @mouseup="updateProgressBar"
+          @touchend="updateProgressBar"
           @mousedown="reload = false"
           @mouseover="changeProgressTrackColor"
           @mouseleave="changeProgressTrackColor"
