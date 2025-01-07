@@ -325,7 +325,8 @@ td {
 }
 
 @media screen and (max-width: 600px) {
-    .date-column {
+    .date-column,
+    .time-column {
         display: none;
     }
 }

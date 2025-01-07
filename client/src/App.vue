@@ -893,6 +893,7 @@ provide('updateCurrentActionsSongId', updateCurrentActionsSongId);
   padding: 2px 8px;
   margin: 0;
   border-radius: 5px;
+  margin-left: 5px;
   cursor: pointer;
   transition: all .3s ease;
 }
