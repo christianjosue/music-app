@@ -386,4 +386,10 @@ label {
 .add-remove-btn.in-tracklist .line {
     background-color: red;
 }
+
+@media screen and (max-width: 800px) {
+    .player-container {
+        display: none;
+    }
+}
 </style>

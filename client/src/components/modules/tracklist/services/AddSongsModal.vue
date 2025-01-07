@@ -42,7 +42,7 @@ watch(
 dialog {
 	padding: 1rem 3rem;
 	background: #222;
-  color: white;
+  	color: white;
 	max-width: 400px;
 	padding-top: 2rem;
 	border-radius: 20px;
@@ -108,6 +108,25 @@ form {
 	}
 	to {
 		opacity: 1;
+	}
+}
+
+@media screen and (max-width: 800px) {
+	dialog {
+		max-width: 300px;
+	}
+	form {
+		width: 300px;
+	}
+}
+
+@media screen and (max-width: 400px) {
+	dialog {
+		max-width: 200px;
+		padding: 20px;
+	}
+	form {
+		width: 200px;
 	}
 }
 </style>
