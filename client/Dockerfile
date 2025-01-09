@@ -10,7 +10,7 @@ COPY package*.json ./
 # Install all dependencies
 RUN npm install
 
-# copiar los archivos y carpetas del proyecto al directorio de trabajo actual (es decir, la carpeta 'app')
+# Copy project files and directories to the working directory 
 COPY . .
 
 # Command to run the node server
