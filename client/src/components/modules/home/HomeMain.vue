@@ -99,15 +99,4 @@ h1 {
   display: flex;
   flex-wrap: wrap;
 }
-::-webkit-scrollbar {
-  width: 12px;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  transition: all 0.3s ease;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.4);
-  transition: all 0.3s ease;
-}
 </style>
