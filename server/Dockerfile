@@ -21,12 +21,13 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Copy app's files
 COPY . .
 
-# Install composer's dependencies 
-RUN composer install
+# Copy entrypoint script and grants it execute permission
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 # Grants write permissions
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Run migrations and start the Laravel server
-CMD php artisan serve --host=0.0.0.0 --port=8000
+# Run the script
+CMD ["/entrypoint.sh"]
