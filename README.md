@@ -2,7 +2,8 @@
 
 This project is a music application that combines a Laravel backend, a Vue.js frontend client, and a Python auxiliary Flask server for specific tasks. The entire project is dockerized and can be easily started with `docker-compose up`.
 
-This app is inspired by Spotify, just for development purposes.
+This app is inspired by Spotify, just for development purposes. This app has no authentication because it would be a barrier for people to test the app. The goal is
+everyone can easily use the app without the necessity of been registered.
 
 ## 🗂️ Project Structure
 
@@ -57,23 +58,33 @@ cp server/.env.example server/.env
 cp client/.env.example client/.env
 ```
 Make sure to configure database and other parameters according to your environment.
-In order to get AWS credentials, ask to the project owner for it.
+In order to get AWS credentials, ask for it to the project owner.
 
-3. Start services with Docker Compose:
+3. Extra configuration:
+
+If you are using Linux or macOS, I recommend you to remove polling option. It is only needed if you use Windows, otherwise hot reloading on node server will not work.
+In order to remove this polling option, go to client\vite.config.js file and remove the following piece of code:
+
+```js
+server: {
+    watch: {
+      usePolling: true
+    },
+    host: '0.0.0.0'
+}
+```
+
+4. Start services with Docker Compose:
 
 ```bash
 docker-compose up --build
 ```
 
-4. Run database migrations
-
-```bash
-php artisan migrate:refresh --seed
-```
+Running the previous command migrations and seeders will be also executed
 
 5. Access the application:
 
-- Frontend: http://localhost:5173
+- Music app: http://localhost:5173
 - phpMyAdmin: http://localhost:8081
 - Backend: http://localhost:8000 (API)
 - Python Server: http://localhost:5000 (API)
