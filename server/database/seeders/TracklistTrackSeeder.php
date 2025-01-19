@@ -15,7 +15,23 @@ class TracklistTrackSeeder extends Seeder
     {
         TracklistTrack::create([
             'idTracklist' => 1,
-            'idTrack' => 1
+            'idTrack' => 5
+        ]);
+        TracklistTrack::create([
+            'idTracklist' => 1,
+            'idTrack' => 8
+        ]);
+        TracklistTrack::create([
+            'idTracklist' => 1,
+            'idTrack' => 15
+        ]);
+        TracklistTrack::create([
+            'idTracklist' => 1,
+            'idTrack' => 10
+        ]);
+        TracklistTrack::create([
+            'idTracklist' => 1,
+            'idTrack' => 12
         ]);
         TracklistTrack::create([
             'idTracklist' => 1,
@@ -23,7 +39,7 @@ class TracklistTrackSeeder extends Seeder
         ]);
         TracklistTrack::create([
             'idTracklist' => 1,
-            'idTrack' => 3
+            'idTrack' => 20
         ]);
     }
 }

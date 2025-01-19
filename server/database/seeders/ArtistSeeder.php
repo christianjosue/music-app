@@ -14,22 +14,22 @@ class ArtistSeeder extends Seeder
     public function run(): void
     {
         Artist::create([
-            'name' => 'JC Reyes',
-            'thumbnail' => 'https://s1.abcstatics.com/lavozdigital/www/multimedia/provincia/2023/11/13/jcreyes-R2eYa2e2dK2YDUKl5mYdU5M-1200x840@abc.jpg',
-            'cover' => 'https://s1.abcstatics.com/lavozdigital/www/multimedia/provincia/2024/08/14/jc-reyes-U08171513341gyT-1200x630@abc.jpg',
-            'monthlyListeners' => 240000
+            'name' => 'RYYZN',
+            'thumbnail' => 'https://yt3.googleusercontent.com/x6zf6dteUg3bYn0FL_hAn7LJjEbnkFGzm8e5ws0V3sM6uMkw_ZCDRx1KTim3YLu3NVcTEUUtT84=s900-c-k-c0x00ffffff-no-rj',
+            'cover' => 'https://cdn-images.dzcdn.net/images/artist/5fca5b41ff89a36ce5339ab4257be7de/500x500.jpg',
+            'monthlyListeners' => 140000
         ]);
         Artist::create([
-            'name' => 'Bad Bunny',
-            'thumbnail' => 'https://e00-marca.uecdn.es/assets/multimedia/imagenes/2023/10/13/16971904238942.jpg',
-            'cover' => 'https://www.billboard.com/wp-content/uploads/2024/05/bad-bunny-style-2023-bullet-train-billboard-espanol-1548.jpg?w=875&h=583&crop=1',
-            'monthlyListeners' => 1250000
+            'name' => 'NEFFEX',
+            'thumbnail' => 'https://ih1.redbubble.net/image.5173605952.8417/flat,750x,075,f-pad,750x1000,f8f8f8.jpg',
+            'cover' => 'https://imageio.forbes.com/specials-images/imageserve/5da6105ddb402600062023c0/NEFFEX--Left-to-right--Bryce-Savage-and-Cameron-Wales--Photo-by-Jonathan-Weiner-/960x0.jpg?format=jpg&width=960',
+            'monthlyListeners' => 4610000
         ]);
         Artist::create([
-            'name' => 'Eminem',
-            'thumbnail' => 'https://dynamicmedia.livenationinternational.com/Media/g/r/s/fd60e188-86ab-437b-b4e1-d33b5ac52b66.jpg',
-            'cover' => 'https://cdn.themedizine.com/2024/04/eminem-nuevo-disco-the-medizine-1200x675.jpg',
-            'monthlyListeners' => 995000
+            'name' => 'NCS',
+            'thumbnail' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/NoCopyrightSounds_logo_black-white.svg/1200px-NoCopyrightSounds_logo_black-white.svg.png',
+            'cover' => 'https://i.ytimg.com/vi/5z_SPHwspo8/maxresdefault.jpg',
+            'monthlyListeners' => 10580000
         ]);
     }
 }

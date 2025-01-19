@@ -14,7 +14,7 @@ class TracklistSeeder extends Seeder
     public function run(): void
     {
         Tracklist::create([
-            'name' => 'TestTracklist',
+            'name' => 'Custom Playlist',
             'thumbnail' => 3
         ]);
     }

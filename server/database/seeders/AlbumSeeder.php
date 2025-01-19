@@ -15,18 +15,18 @@ class AlbumSeeder extends Seeder
     {
         Album::create([
             'idArtist' => 1,
-            'title' => 'Vicios',
-            'cover' => 'https://m.media-amazon.com/images/I/61Wi4aAGpYL._UXNaN_FMjpg_QL85_.jpg'
+            'title' => 'Here For The Night',
+            'cover' => 'https://cdn-images.dzcdn.net/images/cover/3271af485d2be55f2749bab7005dda28/1900x1900-000000-80-0-0.jpg'
         ]);
         Album::create([
             'idArtist' => 2,
-            'title' => 'Nadie sabe',
-            'cover' => 'https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/13/21/22/132122a1-2ef2-381b-94b6-7b9449dcaa4a/197190137897.jpg/1200x1200bf-60.jpg'
+            'title' => 'Space',
+            'cover' => 'https://cdn-images.dzcdn.net/images/cover/ee7e22a7a5b42b0c60dc980b1b513b1c/0x1900-000000-80-0-0.jpg'
         ]);
         Album::create([
             'idArtist' => 3,
-            'title' => 'Curtain Call: The Hits',
-            'cover' => 'https://i.scdn.co/image/ab67616d0000b273eab40fc794b88b9d1e012578'
+            'title' => 'Elevate',
+            'cover' => 'https://i.pinimg.com/1200x/7a/53/be/7a53bead35df9a0225b00798f7d68a49.jpg'
         ]);
     }
 }
