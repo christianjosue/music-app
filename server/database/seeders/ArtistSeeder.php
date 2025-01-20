@@ -15,7 +15,7 @@ class ArtistSeeder extends Seeder
     {
         Artist::create([
             'name' => 'RYYZN',
-            'thumbnail' => 'https://yt3.googleusercontent.com/x6zf6dteUg3bYn0FL_hAn7LJjEbnkFGzm8e5ws0V3sM6uMkw_ZCDRx1KTim3YLu3NVcTEUUtT84=s900-c-k-c0x00ffffff-no-rj',
+            'thumbnail' => 'https://i.scdn.co/image/130eba85258cff8aacc40aee82a72f46745a6bd9',
             'cover' => 'https://cdn-images.dzcdn.net/images/artist/5fca5b41ff89a36ce5339ab4257be7de/500x500.jpg',
             'monthlyListeners' => 140000
         ]);

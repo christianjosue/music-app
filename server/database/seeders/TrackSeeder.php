@@ -97,7 +97,7 @@ class TrackSeeder extends Seeder
             'idAlbum' => 3,
             'title' => 'Shine',
             'src' => 'shine.mp3',
-            'thumbnail' => 'https://static.wikia.nocookie.net/nocopyrightsounds/images/a/a9/Shine.jpg/revision/latest/scale-to-width-down/1200?cb=20220221010700',
+            'thumbnail' => 'https://i1.sndcdn.com/artworks-000564569483-1rclom-t500x500.jpg',
             'duration' => '5:15'
         ]);
         Track::create([
@@ -160,7 +160,7 @@ class TrackSeeder extends Seeder
             'idAlbum' => 3,
             'title' => 'Earth',
             'src' => 'earth.mp3',
-            'thumbnail' => 'https://static.wikia.nocookie.net/nocopyrightsounds/images/1/1e/Earth.png/revision/latest?cb=20220801170750',
+            'thumbnail' => 'https://i1.sndcdn.com/artworks-000145205114-lm98qe-t500x500.jpg',
             'duration' => '3:54'
         ]);
     }

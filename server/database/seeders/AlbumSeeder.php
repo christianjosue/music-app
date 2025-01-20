@@ -15,7 +15,7 @@ class AlbumSeeder extends Seeder
     {
         Album::create([
             'idArtist' => 1,
-            'title' => 'Here For The Night',
+            'title' => 'The Night',
             'cover' => 'https://cdn-images.dzcdn.net/images/cover/3271af485d2be55f2749bab7005dda28/1900x1900-000000-80-0-0.jpg'
         ]);
         Album::create([
@@ -26,7 +26,7 @@ class AlbumSeeder extends Seeder
         Album::create([
             'idArtist' => 3,
             'title' => 'Elevate',
-            'cover' => 'https://i.pinimg.com/1200x/7a/53/be/7a53bead35df9a0225b00798f7d68a49.jpg'
+            'cover' => 'https://i1.sndcdn.com/artworks-000102769935-nkultb-t500x500.jpg'
         ]);
     }
 }
