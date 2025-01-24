@@ -95,7 +95,13 @@ const createTracklist = async (tracklistData) => {
   });
   const data = await response.json();
   // Display the correspondant notification
-  if (data.tracklist == null) {
+  if (data.limitError) {
+    toast.error("Playlists limit reached. You cannot create more than six playlists", {
+      timeout: 5000
+    });
+    // Close the dialog
+    showTracklistModal.value = false;
+  } else if (data.tracklist == null) {
     toast.error("An error occurred while creating the tracklist", {
       timeout: 3000
     });

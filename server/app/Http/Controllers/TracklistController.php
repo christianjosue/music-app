@@ -57,12 +57,19 @@ class TracklistController extends Controller
     public function createTracklist(Request $request)
     {
         try {
-            // Creates a tracklist
-            $tracklist = new Tracklist();
-            $tracklist->name = $request->input('name');
-            $tracklist->thumbnail = $request->input('thumbnail');
-            if (!$tracklist->save()) {
-                $tracklist = null;
+            // Retrieves number of created tracklists
+            $tracklistsCreated = Tracklist::count();
+            // Only creates the new tracklist if there are not six or more tracklists already in the db
+            if ($tracklistsCreated < 6) {
+                // Creates a tracklist
+                $tracklist = new Tracklist();
+                $tracklist->name = $request->input('name');
+                $tracklist->thumbnail = $request->input('thumbnail');
+                if (!$tracklist->save()) {
+                    $tracklist = null;
+                }
+            } else {
+                return response()->json(['limitError' => true]);
             }
 
             return response()->json(['tracklist' => $tracklist]);
