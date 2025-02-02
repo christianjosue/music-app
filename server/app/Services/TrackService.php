@@ -50,8 +50,10 @@ class TrackService
      */
     public function getLyrics($artist, $song)
     {
+        // Get Flask API URL from .env file
+        $flaskUrl = env('FLASK_API_URL', 'http://python:5000');
         // Request the song lyrics to python server
-        $lyricsResponse = Http::post('http://python:5000/get-lyrics', [
+        $lyricsResponse = Http::post("{$flaskUrl}/get-lyrics", [
             'artist' => $artist,
             'song' => $song,
         ]);
