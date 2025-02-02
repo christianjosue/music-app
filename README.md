@@ -2,8 +2,8 @@
 
 This project is a music application that combines a Laravel backend, a Vue.js frontend client, and a Python auxiliary Flask server for specific tasks. The entire project is dockerized and can be easily started with `docker-compose up`.
 
-This app is inspired by Spotify, just for development purposes. This app has no authentication because it would be a barrier for people to test the app. The goal is
-everyone can easily use the app without the necessity of been registered.
+This app is inspired by Spotify, just for development purposes. It has no authentication because it would be a barrier for people to test the app. The goal is
+everyone can easily use it without the necessity of been registered.
 
 ## 🗂️ Project Structure
 
