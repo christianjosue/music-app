@@ -251,6 +251,7 @@ function lyricsToObject() {
     let minutes = parseInt(timeArray[0]);
     let seconds = parseFloat(timeArray[1]);
     let totalTime = minutes * 60 + seconds;
+    totalTime = totalTime.toFixed(2);
     lyricsObject = { ...lyricsObject, [totalTime]: text };
   });
 }
