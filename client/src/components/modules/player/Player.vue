@@ -227,6 +227,7 @@ function changeVolume(e) {
 function changeProgressTrack(e) {
   if (Object.keys(props.currentTrack).length > 0) {
     isPlaying.value = true;
+    props.setCurrentTrack(idPlayingTrackCopy.value, idPlayingTracklistCopy.value);
     currentProgressTrack.value = e.target.value;
     props.updateLyricsProgressBar(audio);
   }
@@ -239,15 +240,17 @@ function changeVolumeColor() {
 
 // Handles the color of the progress bar
 function changeProgressTrackColor() {
-  colorProgressTrack.value = colorProgressTrack.value === "#fff" ? "#1db954" : "#fff";
+  if (Object.keys(props.currentTrack).length > 0) {
+    colorProgressTrack.value = colorProgressTrack.value === "#fff" ? "#1db954" : "#fff";
+  }
 }
 
 // Updates the progress bar depending on the transcurred time of the track
 function updateProgressBar() {
   if (Object.keys(props.currentTrack).length > 0) {
     audio.currentTime = audio.duration * currentProgressTrack.value / 100;
-    reload.value = true;
   }
+  reload.value = true;
 }
 </script>
 
