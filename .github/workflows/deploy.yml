@@ -1,0 +1,35 @@
+name: Deploy to Railway
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install Railway CLI
+      run: |
+        curl -fsSL cli.new | sh
+        railway login --token ${{ secrets.RAILWAY_TOKEN }}
+
+    - name: Deploy Laravel server
+      run: |
+        cd server
+        railway up --service api-laravel
+
+    - name: Deploy Flask server
+      run: |
+        cd tasks
+        railway up --service api-flask
+    
+    - name: Deploy Vue server
+      run: |
+        cd client
+        railway up --service vue-app
+          
