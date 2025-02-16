@@ -1,9 +1,9 @@
 # 🎵 Music App
 
-This project is a music application that combines a Laravel backend, a Vue.js frontend client, and a Python auxiliary Flask server for specific tasks. The entire project is dockerized and can be easily started with `docker-compose up`.
+This project is a music application that combines a Laravel backend, a Vue.js frontend client, and a Python auxiliary Flask server for specific tasks such as get songs lyrics. The entire project is dockerized and can be easily started with `docker-compose up`. The app is deployed to production on Railway when pushing to the master branch.
 
 This app is inspired by Spotify, just for development purposes. It has no authentication because it would be a barrier for people to test the app. The goal is
-everyone can easily use it without the necessity of been registered.
+everyone can easily use it without the requirement of been registered.
 
 ## 🗂️ Project Structure
 
