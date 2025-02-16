@@ -20,21 +20,20 @@ jobs:
       - name: Deploy Laravel server
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_BUILDER: nixpacks
         run: |
-          cd server
           railway up --service api-laravel
 
       - name: Deploy Flask server
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: |
-          cd tasks
           railway up --service api-flask
       
       - name: Deploy Vue server
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_BUILDER: nixpacks
         run: |
-          cd client
           railway up --service vue-app
           
